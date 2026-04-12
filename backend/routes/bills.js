@@ -70,7 +70,10 @@ router.post('/', async (req, res) => {
     const gstPct    = parseFloat(gst_percent) || 0;
     const gstAmount = subtotal * (gstPct / 100);
     const total     = subtotal + gstAmount;
-    const billId    = 'GRB' + Date.now().toString().slice(-6);
+
+    // Get next sequential bill number from Supabase (works across all devices)
+    const seqResult = await pool.query(`SELECT nextval('bill_number_seq') AS num`);
+    const billId    = String(seqResult.rows[0].num).padStart(4, '0');
 
     await client.query('BEGIN');
 
