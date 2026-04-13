@@ -12,20 +12,24 @@ app.use(express.json());
 // ── Serve frontend static files ────────────────────
 app.use(express.static(path.join(__dirname, '../frontend')));
 
-// ── API Routes ─────────────────────────────────────
-app.use('/api/bills',     require('./routes/bills'));
-app.use('/api/customers', require('./routes/customers'));
-app.use('/api/products',  require('./routes/products'));
-app.use('/api/reports',   require('./routes/reports'));
+// ── Auth Routes (public) ───────────────────────────
+app.use('/api/auth', require('./routes/auth'));
 
-// ── Health check ───────────────────────────────────
+// ── Protected API Routes ───────────────────────────
+const auth = require('./middleware/auth');
+app.use('/api/bills',     auth, require('./routes/bills'));
+app.use('/api/customers', auth, require('./routes/customers'));
+app.use('/api/products',  auth, require('./routes/products'));
+app.use('/api/reports',   auth, require('./routes/reports'));
+
+// ── Health check (public) ──────────────────────────
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', app: 'GRB Billing' });
 });
 
-// ── Fallback → serve dashboard ─────────────────────
+// ── Fallback → serve login page ────────────────────
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/dashboard.html'));
+  res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
 
 // ── Start ──────────────────────────────────────────
