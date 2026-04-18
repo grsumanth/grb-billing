@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
     let params = [];
 
     if (search) {
-      query  += ' WHERE name ILIKE $1 OR phone ILIKE $1';
+      query  += ' WHERE name ILIKE $1 OR phone ILIKE $1 OR email ILIKE $1';
       params  = [`%${search}%`];
     }
 
@@ -43,7 +43,7 @@ router.get('/:id', async (req, res) => {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 router.post('/', async (req, res) => {
   try {
-    const { name, phone, address, notes } = req.body;
+    const { name, phone, email, address, notes } = req.body;
 
     if (!name || !phone) {
       return res.status(400).json({ error: 'Name and phone are required.' });
@@ -55,9 +55,9 @@ router.post('/', async (req, res) => {
     }
 
     const result = await pool.query(
-      `INSERT INTO customers (name, phone, address, notes)
-       VALUES ($1, $2, $3, $4) RETURNING *`,
-      [name.trim(), phone.trim(), address || null, notes || null]
+      `INSERT INTO customers (name, phone, email, address, notes)
+       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [name.trim(), phone.trim(), email||null, address||null, notes||null]
     );
 
     res.status(201).json(result.rows[0]);
@@ -71,16 +71,16 @@ router.post('/', async (req, res) => {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 router.put('/:id', async (req, res) => {
   try {
-    const { name, phone, address, notes } = req.body;
+    const { name, phone, email, address, notes } = req.body;
 
     if (!name || !phone) {
       return res.status(400).json({ error: 'Name and phone are required.' });
     }
 
     const result = await pool.query(
-      `UPDATE customers SET name = $1, phone = $2, address = $3, notes = $4
-       WHERE id = $5 RETURNING *`,
-      [name.trim(), phone.trim(), address || null, notes || null, req.params.id]
+      `UPDATE customers SET name=$1, phone=$2, email=$3, address=$4, notes=$5
+       WHERE id=$6 RETURNING *`,
+      [name.trim(), phone.trim(), email||null, address||null, notes||null, req.params.id]
     );
 
     if (!result.rows.length) return res.status(404).json({ error: 'Customer not found.' });

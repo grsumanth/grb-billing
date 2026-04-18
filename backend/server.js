@@ -13,7 +13,10 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, '../frontend')));
 
 // ── Auth Routes (public) ───────────────────────────
-app.use('/api/auth', require('./routes/auth'));
+app.use('/api/auth',  require('./routes/auth'));
+
+// ── Email Routes (forgot password public, send bill protected inside route) ──
+app.use('/api/email', require('./routes/email'));
 
 // ── Protected API Routes ───────────────────────────
 const auth = require('./middleware/auth');

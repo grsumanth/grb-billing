@@ -342,7 +342,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
     <button class="nb" onclick="pg('reports')" id="nb-reports"><span class="ni">📊</span> Reports</button>
   </nav>
   <div class="sb-foot">
-    <button class="lbtn" onclick="toast('To close: press the Back button or close the browser tab.','warn')">ℹ Close App</button>
+    <button class="lbtn" onclick="logout()">⬅ Logout</button>
   </div>
 </aside>
 
@@ -412,6 +412,9 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
           <button class="bred" onclick="clearBill()">🗑 Clear</button>
           <button class="bprim" onclick="printBill()">🖨 Print Bill</button>
         </div>
+        <div style="padding:0 1.4rem .9rem;">
+          <button onclick="emailBill()" style="width:100%;padding:.7rem;background:transparent;border:2px solid var(--burg);color:var(--burg);border-radius:11px;font-family:var(--font-ui);font-size:.92rem;font-weight:700;cursor:pointer;transition:all .2s;min-height:46px;" onmouseover="this.style.background='#fff0e8'" onmouseout="this.style.background='transparent'">📧 Email Bill to Customer</button>
+        </div>
         <!-- Bill Size -->
         <div style="padding:0 1.4rem 1.1rem;display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:.85rem;">
           <span style="font-size:.72rem;font-weight:700;color:var(--burg3);text-transform:uppercase;letter-spacing:.8px;">Bill Size</span>
@@ -457,7 +460,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
     <div class="card" style="overflow:hidden">
       <div style="overflow-x:auto">
         <table class="dtbl">
-          <thead><tr><th>#</th><th>Name</th><th>Phone</th><th>Address</th><th>Notes</th><th>Actions</th></tr></thead>
+          <thead><tr><th>#</th><th>Name</th><th>Phone</th><th>Email</th><th>Address</th><th>Notes</th><th>Actions</th></tr></thead>
           <tbody id="cBody"></tbody>
         </table>
       </div>
@@ -529,6 +532,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
     <div class="mgrid">
       <div class="ig2"><label>Full Name *</label><input type="text" id="cName" placeholder="Customer full name" autocomplete="off"/></div>
       <div class="ig2"><label>Phone *</label><input type="tel" id="cPhone" placeholder="9XXXXXXXXX" inputmode="tel"/></div>
+      <div class="ig2 full"><label>Email Address</label><input type="email" id="cEmail" placeholder="customer@email.com" inputmode="email"/></div>
       <div class="ig2 full"><label>Address</label><textarea id="cAddr" rows="2" placeholder="Address (shown on bill)..."></textarea></div>
       <div class="ig2 full"><label>Notes</label><textarea id="cNotes" rows="2" placeholder="Internal notes..."></textarea></div>
     </div>
@@ -568,6 +572,27 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
 
 <script>
 const API = '/api';
+
+// ── AUTH CHECK — redirect to login if no token ──
+const grb_token = localStorage.getItem('grb_token');
+if(!grb_token){ window.location.replace('index.html'); throw new Error('Not logged in'); }
+
+// Show user name in topbar
+const grb_user = JSON.parse(localStorage.getItem('grb_user')||'{}');
+document.addEventListener('DOMContentLoaded',()=>{
+  if(grb_user.name) document.getElementById('uname').textContent = grb_user.name;
+});
+
+// ── LOGOUT ──
+function logout(){
+  if(!confirm('Are you sure you want to logout?')) return;
+  localStorage.removeItem('grb_token');
+  localStorage.removeItem('grb_user');
+  localStorage.removeItem('grb_bills');
+  localStorage.removeItem('grb_prods');
+  localStorage.removeItem('grb_custs');
+  window.location.replace('index.html');
+}
 
 // ── TOAST NOTIFICATION (fix #11 - confirmation after save) ──
 function toast(msg, type='success'){
@@ -626,7 +651,9 @@ async function api(method, path, body=null){
     return null;
   }
   try{
+    const token=localStorage.getItem('grb_token');
     const opts={method,headers:{'Content-Type':'application/json'}};
+    if(token) opts.headers['Authorization']='Bearer '+token;
     if(body) opts.body=JSON.stringify(body);
     const res=await fetch(API+path,opts);
     if(!res.ok){
@@ -748,28 +775,27 @@ function onProd(){const p=prods.find(z=>z.id===document.getElementById('pSel').v
 function openCustMod(id=null){
   document.getElementById('cEditId').value=id||'';
   document.getElementById('cModTitle').textContent=id?'Edit Customer':'Add Customer';
-  if(id){const c=custs.find(z=>z.id===id);document.getElementById('cName').value=c.name;document.getElementById('cPhone').value=c.phone;document.getElementById('cAddr').value=c.address||'';document.getElementById('cNotes').value=c.notes||'';}
-  else{['cName','cPhone','cAddr','cNotes'].forEach(f=>document.getElementById(f).value='');}
+  if(id){const c=custs.find(z=>z.id===id);document.getElementById('cName').value=c.name;document.getElementById('cPhone').value=c.phone;document.getElementById('cEmail').value=c.email||'';document.getElementById('cAddr').value=c.address||'';document.getElementById('cNotes').value=c.notes||'';}
+  else{['cName','cPhone','cEmail','cAddr','cNotes'].forEach(f=>document.getElementById(f).value='');}
   document.getElementById('custMod').classList.remove('hide');
   setTimeout(()=>document.getElementById('cName').focus(),300);
 }
 async function saveCust(){
   const name=document.getElementById('cName').value.trim();
   const phone=document.getElementById('cPhone').value.trim();
+  const email=document.getElementById('cEmail').value.trim();
   const address=document.getElementById('cAddr').value.trim();
   const notes=document.getElementById('cNotes').value.trim();
   if(!name||!phone){toast('Name and Phone are required.','error');return;}
-  // fix #9: phone validation
   if(!/^[0-9+\-\s]{7,15}$/.test(phone)){toast('Enter a valid phone number.','error');return;}
-  // fix #6: client-side duplicate phone check
   const eid=document.getElementById('cEditId').value;
   const dup=custs.find(c=>c.phone===phone&&c.id!==eid);
   if(dup){toast('A customer with this phone already exists.','error');return;}
   const btn=document.querySelector('#custMod .bprim');
   btn.textContent='Saving...';btn.disabled=true;
   let result;
-  if(eid) result=await api('PUT','/customers/'+eid,{name,phone,address,notes});
-  else result=await api('POST','/customers',{name,phone,address,notes});
+  if(eid) result=await api('PUT','/customers/'+eid,{name,phone,email,address,notes});
+  else result=await api('POST','/customers',{name,phone,email,address,notes});
   btn.textContent='Save Customer';btn.disabled=false;
   if(result||!isOnline){
     await loadFromBackend();renderCusts();closeMod('custMod');
@@ -789,6 +815,7 @@ function renderCusts(){
     <td>${i+1}</td>
     <td><strong>${x(c.name)}</strong></td>
     <td>${x(c.phone)}</td>
+    <td style="font-size:.82rem">${x(c.email)||'—'}</td>
     <td style="font-size:.82rem">${x(c.address)||'—'}</td>
     <td style="font-size:.78rem;color:#7A4050;max-width:120px">${x(c.notes)||'—'}</td>
     <td><button class="bedit" onclick="openCustMod('${c.id}')">✏ Edit</button><button class="bdel" onclick="delCust('${c.id}')">🗑</button></td>
@@ -879,6 +906,51 @@ function clearBill(){
   document.getElementById('gstBadge').classList.add('hide');
   renderBill();recalc();
 }
+// ── EMAIL BILL ──
+async function emailBill(){
+  const cname=document.getElementById('bCust').value.trim();
+  const cid=document.getElementById('bCust').dataset.cid;
+  if(!cname){toast('Please enter a customer name first.','error');return;}
+
+  // Find customer email
+  const cust=custs.find(c=>c.id===cid);
+  const defaultEmail=cust?cust.email||'':'';
+  const toEmail=prompt('Send bill to email address:', defaultEmail);
+  if(!toEmail) return;
+  if(!toEmail.includes('@')){toast('Please enter a valid email.','error');return;}
+
+  // Need to save bill first if not saved
+  if(!curBill.length){toast('Please add items to bill first.','error');return;}
+
+  toast('Saving and sending bill...','warn');
+  const sub=curBill.reduce((s,i)=>s+i.total,0);
+  const gstOn=document.getElementById('gstChk').checked;
+  const gstPct=gstOn?Math.max(0,parseFloat(document.getElementById('gstPct').value)||0):0;
+  const gst=gstOn?sub*(gstPct/100):0;
+  const grand=sub+gst;
+
+  const billPayload={
+    customer_name:cname,customer_id:cid||null,gst_percent:gstPct,
+    items:curBill.map(it=>({product_id:it.pid||null,product_name:it.name,type:it.type,quantity:it.qty,price:it.price}))
+  };
+  const saved=await api('POST','/bills',billPayload);
+  if(!saved){toast('Failed to save bill.','error');return;}
+
+  // Send email
+  const sent=await api('POST','/email/send-bill',{bill_id:saved.id, to_email:toEmail});
+  if(sent){
+    toast('Bill emailed to '+toEmail+' ✓');
+    bills.unshift({
+      id:saved.id,date:saved.created_at,customer:cname,
+      items:curBill.length,gst,total:grand,
+      gst_percent:gstPct,subtotal:sub,
+      bill_items:curBill.map(it=>({product_name:it.name,type:it.type,quantity:it.qty,price:it.price,total:it.total}))
+    });
+    localStorage.setItem('grb_bills',JSON.stringify(bills));
+    todaySummary();clearBill();
+  }
+}
+
 async function printBill(){
   const cname=document.getElementById('bCust').value.trim();
   if(!cname){alert('Please enter a customer name.');return;}
