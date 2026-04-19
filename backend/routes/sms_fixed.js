@@ -47,27 +47,26 @@ router.post('/send-bill', auth, async (req, res) => {
     const message = `GRB Pooja Items\nBill #${bill.id}\n${itemLines}\nSubtotal:Rs.${parseFloat(bill.subtotal).toFixed(0)}${gstLine}\nTOTAL:Rs.${parseFloat(bill.total).toFixed(0)}\nThank you!`;
 
     // Send via Fast2SMS
-    const response = await axios.post(
-      'https://www.fast2sms.com/dev/bulkV2',
-      {
+    const response = await axios({
+      method: 'get',
+      url: 'https://www.fast2sms.com/dev/bulkV2',
+      params: {
+        authorization: process.env.FAST2SMS_API,
         route: 'q',
         message: message,
         language: 'english',
         flash: 0,
         numbers: digits
-      },
-      {
-        headers: {
-          authorization: process.env.FAST2SMS_API,
-          'Content-Type': 'application/json'
-        }
       }
-    );
+    });
+
+    console.log('Fast2SMS response:', response.data);
 
     if (response.data.return === true) {
       res.json({ message: `Bill SMS sent to +91${digits} successfully.` });
     } else {
-      res.status(500).json({ error: 'SMS sending failed. Check Fast2SMS balance.' });
+      console.error('Fast2SMS error:', response.data);
+      res.status(500).json({ error: response.data.message || 'SMS sending failed. Check Fast2SMS balance.' });
     }
   } catch (err) {
     console.error('SMS error:', err.message);
