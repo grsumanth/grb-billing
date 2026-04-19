@@ -412,8 +412,10 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
           <button class="bred" onclick="clearBill()">🗑 Clear</button>
           <button class="bprim" onclick="printBill()">🖨 Print Bill</button>
         </div>
-        <div style="padding:0 1.4rem .9rem;">
-          <button onclick="emailBill()" style="width:100%;padding:.7rem;background:transparent;border:2px solid var(--burg);color:var(--burg);border-radius:11px;font-family:var(--font-ui);font-size:.92rem;font-weight:700;cursor:pointer;transition:all .2s;min-height:46px;" onmouseover="this.style.background='#fff0e8'" onmouseout="this.style.background='transparent'">📧 Email Bill to Customer</button>
+        <div style="padding:0 1.4rem .5rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;">
+          <button onclick="emailBill()" style="padding:.65rem .4rem;background:transparent;border:2px solid var(--burg);color:var(--burg);border-radius:11px;font-family:var(--font-ui);font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;min-height:46px;">📧 Email</button>
+          <button onclick="whatsappBill()" style="padding:.65rem .4rem;background:transparent;border:2px solid #25D366;color:#128C7E;border-radius:11px;font-family:var(--font-ui);font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;min-height:46px;">💬 WhatsApp</button>
+          <button onclick="smsBill()" style="padding:.65rem .4rem;background:transparent;border:2px solid #0088cc;color:#0088cc;border-radius:11px;font-family:var(--font-ui);font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;min-height:46px;">📱 SMS</button>
         </div>
         <!-- Bill Size -->
         <div style="padding:0 1.4rem 1.1rem;display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:.85rem;">
@@ -531,7 +533,12 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
     <input type="hidden" id="cEditId"/>
     <div class="mgrid">
       <div class="ig2"><label>Full Name *</label><input type="text" id="cName" placeholder="Customer full name" autocomplete="off"/></div>
-      <div class="ig2"><label>Phone *</label><input type="tel" id="cPhone" placeholder="9XXXXXXXXX" inputmode="tel"/></div>
+      <div class="ig2"><label>Phone *</label>
+        <div style="display:flex;align-items:center;gap:.4rem;">
+          <span style="padding:.72rem .7rem;background:#fff0e8;border:2px solid var(--cream3);border-radius:10px;font-size:16px;font-weight:700;color:var(--burg);white-space:nowrap;">+91</span>
+          <input type="tel" id="cPhone" placeholder="9XXXXXXXXX" inputmode="tel" maxlength="10" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)" style="flex:1"/>
+        </div>
+      </div>
       <div class="ig2 full"><label>Email Address</label><input type="email" id="cEmail" placeholder="customer@email.com" inputmode="email"/></div>
       <div class="ig2 full"><label>Address</label><textarea id="cAddr" rows="2" placeholder="Address (shown on bill)..."></textarea></div>
       <div class="ig2 full"><label>Notes</label><textarea id="cNotes" rows="2" placeholder="Internal notes..."></textarea></div>
@@ -906,49 +913,98 @@ function clearBill(){
   document.getElementById('gstBadge').classList.add('hide');
   renderBill();recalc();
 }
-// ── EMAIL BILL ──
-async function emailBill(){
+// ── FORMAT PHONE ──
+function formatPhone(phone){
+  return phone.replace(/\D/g,'').replace(/^91/,'').replace(/^0/,'').slice(0,10);
+}
+
+// ── WHATSAPP BILL ──
+async function whatsappBill(){
   const cname=document.getElementById('bCust').value.trim();
   const cid=document.getElementById('bCust').dataset.cid;
   if(!cname){toast('Please enter a customer name first.','error');return;}
-
-  // Find customer email
-  const cust=custs.find(c=>c.id===cid);
-  const defaultEmail=cust?cust.email||'':'';
-  const toEmail=prompt('Send bill to email address:', defaultEmail);
-  if(!toEmail) return;
-  if(!toEmail.includes('@')){toast('Please enter a valid email.','error');return;}
-
-  // Need to save bill first if not saved
   if(!curBill.length){toast('Please add items to bill first.','error');return;}
 
-  toast('Saving and sending bill...','warn');
+  const cust=custs.find(c=>c.id===cid);
+  const defaultPhone=cust?formatPhone(cust.phone||''):'';
+  const phone=prompt('Customer WhatsApp number (10 digits):', defaultPhone);
+  if(!phone) return;
+  const digits=formatPhone(phone);
+  if(digits.length!==10){toast('Please enter a valid 10-digit number.','error');return;}
+
+  // Save bill first
+  const saved=await saveBillForSharing(cname,cid);
+  if(!saved) return;
+
+  toast('Opening WhatsApp...','success');
+  const res=await api('POST','/sms/whatsapp-link',{bill_id:saved.id, phone:digits});
+  if(res&&res.link){
+    window.open(res.link,'_blank');
+  }
+}
+
+// ── SMS BILL ──
+async function smsBill(){
+  const cname=document.getElementById('bCust').value.trim();
+  const cid=document.getElementById('bCust').dataset.cid;
+  if(!cname){toast('Please enter a customer name first.','error');return;}
+  if(!curBill.length){toast('Please add items to bill first.','error');return;}
+
+  const cust=custs.find(c=>c.id===cid);
+  const defaultPhone=cust?formatPhone(cust.phone||''):'';
+  const phone=prompt('Customer mobile number (10 digits):', defaultPhone);
+  if(!phone) return;
+  const digits=formatPhone(phone);
+  if(digits.length!==10){toast('Please enter a valid 10-digit number.','error');return;}
+
+  // Save bill first
+  const saved=await saveBillForSharing(cname,cid);
+  if(!saved) return;
+
+  toast('Sending SMS...','warn');
+  const res=await api('POST','/sms/send-bill',{bill_id:saved.id, phone:digits});
+  if(res) toast('SMS sent to +91'+digits+' ✓');
+}
+
+// ── SAVE BILL FOR SHARING (used by WhatsApp/SMS/Email) ──
+async function saveBillForSharing(cname, cid){
   const sub=curBill.reduce((s,i)=>s+i.total,0);
   const gstOn=document.getElementById('gstChk').checked;
   const gstPct=gstOn?Math.max(0,parseFloat(document.getElementById('gstPct').value)||0):0;
   const gst=gstOn?sub*(gstPct/100):0;
   const grand=sub+gst;
-
   const billPayload={
     customer_name:cname,customer_id:cid||null,gst_percent:gstPct,
     items:curBill.map(it=>({product_id:it.pid||null,product_name:it.name,type:it.type,quantity:it.qty,price:it.price}))
   };
   const saved=await api('POST','/bills',billPayload);
-  if(!saved){toast('Failed to save bill.','error');return;}
+  if(!saved){toast('Failed to save bill.','error');return null;}
+  bills.unshift({
+    id:saved.id,date:saved.created_at,customer:cname,
+    items:curBill.length,gst,total:grand,
+    gst_percent:gstPct,subtotal:sub,
+    bill_items:curBill.map(it=>({product_name:it.name,type:it.type,quantity:it.qty,price:it.price,total:it.total}))
+  });
+  localStorage.setItem('grb_bills',JSON.stringify(bills));
+  todaySummary();clearBill();
+  return saved;
+}
 
-  // Send email
+async function emailBill(){
+  const cname=document.getElementById('bCust').value.trim();
+  const cid=document.getElementById('bCust').dataset.cid;
+  if(!cname){toast('Please enter a customer name first.','error');return;}
+  if(!curBill.length){toast('Please add items to bill first.','error');return;}
+  const cust=custs.find(c=>c.id===cid);
+  const defaultEmail=cust?cust.email||'':'';
+  const toEmail=prompt('Send bill to email address:', defaultEmail);
+  if(!toEmail) return;
+  if(!toEmail.includes('@')){toast('Please enter a valid email.','error');return;}
+  toast('Saving and sending bill...','warn');
+  const saved=await saveBillForSharing(cname,cid);
+  if(!saved) return;
   const sent=await api('POST','/email/send-bill',{bill_id:saved.id, to_email:toEmail});
-  if(sent){
-    toast('Bill emailed to '+toEmail+' ✓');
-    bills.unshift({
-      id:saved.id,date:saved.created_at,customer:cname,
-      items:curBill.length,gst,total:grand,
-      gst_percent:gstPct,subtotal:sub,
-      bill_items:curBill.map(it=>({product_name:it.name,type:it.type,quantity:it.qty,price:it.price,total:it.total}))
-    });
-    localStorage.setItem('grb_bills',JSON.stringify(bills));
-    todaySummary();clearBill();
-  }
+  if(sent) toast('Bill emailed to '+toEmail+' ✓');
 }
 
 async function printBill(){

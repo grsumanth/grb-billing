@@ -58,8 +58,8 @@ async function sendBill(toEmail, customerName, bill) {
   `).join('');
 
   const now = new Date(bill.created_at);
-  const dateStr = now.toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'});
-  const timeStr = now.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
+  const dateStr = now.toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric', timeZone:'Asia/Kolkata'});
+  const timeStr = now.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit', hour12:true, timeZone:'Asia/Kolkata'});
 
   await transporter.sendMail({
     from: `"GRB Pooja Items" <${process.env.GMAIL_USER}>`,
@@ -76,9 +76,8 @@ async function sendBill(toEmail, customerName, bill) {
             <div style="font-size:2rem;margin-bottom:8px;">ॐ</div>
             <div style="font-size:22px;font-weight:900;color:#F0CC6A;letter-spacing:2px;">GRB POOJA ITEMS</div>
             <div style="font-size:11px;color:rgba(201,168,76,0.6);margin-top:4px;letter-spacing:2px;text-transform:uppercase;">Sacred Supplies · Trusted Quality</div>
-            <div style="margin-top:12px;display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,0.7);">
-              <span>${dateStr} ${timeStr}</span>
-              <span>Bill No: <strong style="color:#F0CC6A">#${bill.id}</strong></span>
+            <div style="margin-top:12px;font-size:12px;color:rgba(255,255,255,0.7);">
+              <span>${dateStr} &nbsp;${timeStr}</span> &nbsp;&nbsp; Bill No: <strong style="color:#F0CC6A">#${bill.id}</strong>
             </div>
           </div>
           <!-- Customer -->
