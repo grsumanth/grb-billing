@@ -4,270 +4,297 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>GRB Pooja Items — Login</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Baloo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <style>
+*{box-sizing:border-box;margin:0;padding:0;}
 :root{
   --burg:#780116;--burg2:#9B0A20;--burg3:#5C0011;--burg4:#3D000B;
   --gold:#C9A84C;--gold2:#F0CC6A;
   --cream:#FDF6EC;--cream2:#F5E9D0;--cream3:#EDD8B0;
-  --bg:#FBF3E8;--text:#2A0008;--muted:#7A4050;--border:#EDD8B0;
+  --sb:#2A0008;--sb2:#1A0005;
+  --text:#2A0008;--muted:#7A4050;
   --font:'Baloo 2',cursive;
 }
-*{box-sizing:border-box;margin:0;padding:0;}
+html,body{min-height:100vh;}
 body{
-  font-family:var(--font);background:var(--bg);
-  min-height:100vh;display:flex;align-items:center;justify-content:center;
-  padding:1rem;
-  background-image:radial-gradient(circle at 20% 80%, rgba(120,1,22,0.06) 0%, transparent 50%),
-                   radial-gradient(circle at 80% 20%, rgba(201,168,76,0.06) 0%, transparent 50%);
+  font-family:var(--font);
+  background:linear-gradient(160deg,var(--burg4) 0%,var(--sb) 50%,var(--sb2) 100%);
+  display:flex;align-items:center;justify-content:center;
+  padding:1.5rem 1rem;min-height:100vh;
+  position:relative;overflow:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse at 25% 25%,rgba(201,168,76,0.07) 0%,transparent 55%),
+    radial-gradient(ellipse at 75% 75%,rgba(120,1,22,0.12) 0%,transparent 55%);
+  pointer-events:none;
 }
 
-.auth-box{
+/* Floating particles */
+.particle{
+  position:fixed;border-radius:50%;
+  background:rgba(201,168,76,0.12);
+  animation:float linear infinite;pointer-events:none;
+}
+@keyframes float{
+  0%{transform:translateY(100vh) rotate(0deg);opacity:0;}
+  10%{opacity:1;}
+  90%{opacity:1;}
+  100%{transform:translateY(-100px) rotate(360deg);opacity:0;}
+}
+
+.page{
   width:100%;max-width:420px;
-  background:white;border-radius:24px;
-  box-shadow:0 0 0 1px rgba(201,168,76,0.2), 0 20px 60px rgba(120,1,22,0.12);
-  border-top:4px solid var(--burg);
-  overflow:hidden;
+  position:relative;z-index:1;
 }
 
-/* Header */
-.auth-header{
-  background:linear-gradient(135deg,var(--burg4),var(--burg));
-  padding:2rem 2rem 1.6rem;text-align:center;position:relative;
+/* ── BRAND HEADER ── */
+.brand-header{
+  background:linear-gradient(135deg,var(--burg4),var(--burg3));
+  border-radius:24px 24px 0 0;
+  padding:1.8rem 2rem 1.6rem;
+  text-align:center;
+  border-top:4px solid var(--burg);
+  position:relative;overflow:hidden;
+  box-shadow:0 0 0 1px rgba(201,168,76,0.15);
 }
-.auth-header::after{
-  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,transparent,var(--gold2),var(--gold),var(--gold2),transparent);
+.brand-header::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--burg),var(--gold2),var(--gold),var(--gold2),var(--burg));
+}
+.brand-header::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 0%,rgba(201,168,76,0.08) 0%,transparent 70%);
+  pointer-events:none;
 }
 .logo-wrap{
-  width:60px;height:60px;margin:0 auto 1rem;
-  background:linear-gradient(135deg,rgba(255,255,255,0.15),rgba(255,255,255,0.05));
-  border:2px solid rgba(201,168,76,0.4);border-radius:16px;
-  display:flex;align-items:center;justify-content:center;font-size:2rem;
-  box-shadow:0 4px 16px rgba(0,0,0,0.2);
+  width:80px;height:80px;border-radius:50%;
+  border:3px solid var(--gold);
+  margin:0 auto .9rem;overflow:hidden;
+  box-shadow:
+    0 0 0 5px rgba(201,168,76,0.12),
+    0 8px 24px rgba(0,0,0,0.4),
+    0 0 30px rgba(201,168,76,0.15);
+  position:relative;z-index:1;
 }
-.auth-title{
+.logo-wrap img{width:100%;height:100%;object-fit:cover;}
+.brand-name{
   font-family:'Cinzel Decorative',serif;
-  font-size:1.1rem;color:var(--gold2);
-  text-shadow:0 1px 8px rgba(0,0,0,0.3);letter-spacing:.5px;
+  font-size:1.8rem;font-weight:700;
+  color:var(--gold2);
+  text-shadow:0 2px 12px rgba(0,0,0,0.5),0 0 20px rgba(201,168,76,0.25);
+  letter-spacing:3px;line-height:1;
+  position:relative;z-index:1;
 }
-.auth-sub{font-size:.75rem;color:rgba(201,168,76,0.6);margin-top:.3rem;letter-spacing:1px;text-transform:uppercase;}
+.brand-sub{
+  font-size:.82rem;font-weight:600;
+  color:rgba(201,168,76,0.65);
+  letter-spacing:1.5px;text-transform:uppercase;
+  margin-top:.3rem;position:relative;z-index:1;
+}
+.govinda-line{
+  margin-top:.9rem;
+  display:flex;align-items:center;justify-content:center;gap:.5rem;
+  color:rgba(201,168,76,0.5);font-size:.75rem;font-weight:600;
+  letter-spacing:.5px;position:relative;z-index:1;
+}
+.gold-divider{
+  height:1px;flex:1;
+  background:linear-gradient(90deg,transparent,rgba(201,168,76,0.3),transparent);
+}
 
-/* Tabs */
-.tabs{display:flex;border-bottom:2px solid var(--cream3);}
+/* ── LOGIN CARD ── */
+.login-card{
+  background:var(--cream);
+  border-radius:0 0 24px 24px;
+  padding:1.8rem 2rem 2rem;
+  box-shadow:
+    0 0 0 1px rgba(201,168,76,0.15),
+    0 20px 60px rgba(0,0,0,0.5);
+}
+.login-title{
+  font-family:'Cinzel Decorative',serif;
+  font-size:.95rem;color:var(--burg);
+  margin-bottom:.2rem;letter-spacing:.3px;
+}
+.login-sub{font-size:.78rem;color:var(--muted);margin-bottom:1.2rem;}
+
+.tabs{display:flex;gap:.4rem;margin-bottom:1.1rem;}
 .tab{
-  flex:1;padding:.9rem;text-align:center;
-  font-family:var(--font);font-size:.9rem;font-weight:700;
-  cursor:pointer;border:none;background:transparent;
-  color:var(--muted);transition:all .2s;
+  flex:1;padding:.6rem;text-align:center;
+  font-family:var(--font);font-size:.87rem;font-weight:700;
+  cursor:pointer;border:2px solid var(--cream3);
+  border-radius:11px;background:#fff;color:var(--muted);transition:all .22s;
 }
-.tab.on{color:var(--burg);border-bottom:3px solid var(--burg);margin-bottom:-2px;}
-
-/* Form */
-.auth-form{padding:1.6rem 1.8rem 2rem;display:none;}
-.auth-form.on{display:block;}
-
-.field{margin-bottom:1.1rem;}
+.tab.on{
+  background:linear-gradient(135deg,var(--burg3),var(--burg));
+  color:#fff;border-color:var(--burg);
+  box-shadow:0 4px 14px rgba(120,1,22,0.35),inset 0 1px 0 rgba(201,168,76,0.2);
+}
+.field{margin-bottom:.9rem;}
 .field label{
-  display:block;font-size:.72rem;font-weight:700;
-  color:var(--burg3);text-transform:uppercase;
-  letter-spacing:.8px;margin-bottom:.35rem;
+  display:block;font-size:.68rem;font-weight:700;
+  color:var(--burg3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:.3rem;
 }
-.field input{
-  width:100%;padding:.75rem 1rem;
-  border:2px solid var(--cream3);border-radius:11px;
-  font-family:var(--font);font-size:16px;
-  color:var(--text);background:var(--cream);
+.field input,.field select{
+  width:100%;padding:.72rem 1rem;border:2px solid var(--cream3);border-radius:11px;
+  font-family:var(--font);font-size:16px;color:var(--text);background:var(--cream);
   outline:none;transition:all .22s;
 }
-.field input:focus{
-  border-color:var(--burg);background:white;
-  box-shadow:0 0 0 3px rgba(120,1,22,0.08);
+.field input:focus,.field select:focus{
+  border-color:var(--burg);background:#fff;box-shadow:0 0 0 3px rgba(120,1,22,0.08);
 }
-
-.btn-auth{
-  width:100%;padding:.85rem;margin-top:.5rem;
+.btn{
+  width:100%;padding:.82rem;margin-top:.3rem;
   background:linear-gradient(135deg,var(--burg3),var(--burg),var(--burg2));
-  color:white;border:none;border-radius:12px;
+  color:#fff;border:none;border-radius:12px;
   font-family:var(--font);font-size:1rem;font-weight:800;
-  cursor:pointer;transition:all .22s;
-  box-shadow:0 4px 16px rgba(120,1,22,0.35);
-  position:relative;overflow:hidden;min-height:50px;
+  cursor:pointer;transition:all .22s;min-height:50px;
+  box-shadow:0 4px 16px rgba(120,1,22,0.4);
+  position:relative;overflow:hidden;
 }
-.btn-auth:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(120,1,22,0.45);}
-.btn-auth:active{transform:scale(.98);}
-.btn-auth:disabled{opacity:.7;cursor:not-allowed;transform:none;}
-
-/* Error / Success */
-.msg{
-  padding:.7rem 1rem;border-radius:10px;
-  font-size:.85rem;font-weight:600;margin-bottom:1rem;
-  display:none;
+.btn::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(201,168,76,0.18),transparent);
+  transform:translateX(-100%);transition:transform .5s;
 }
-.msg.error{background:#fff0f0;color:#cc2222;border:1px solid #ffcccc;}
-.msg.success{background:#f0fff0;color:#1a6b1a;border:1px solid #b3e6b3;}
-.msg.show{display:block;}
+.btn:hover::after{transform:translateX(100%);}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(120,1,22,0.5);}
+.btn:active{transform:scale(.98);}
+.btn:disabled{opacity:.7;cursor:not-allowed;transform:none;}
+.msg{padding:.65rem .9rem;border-radius:10px;font-size:.83rem;font-weight:600;margin-bottom:.9rem;display:none;}
+.msg.error{background:#fff0f0;color:#cc2222;border:1px solid #ffcccc;display:block;}
+.msg.success{background:#f0fff4;color:#1a6b1a;border:1px solid #b3e6b3;display:block;}
+.forgot{display:block;text-align:right;color:var(--muted);font-size:.78rem;font-weight:600;text-decoration:none;margin-top:.35rem;}
+.forgot:hover{color:var(--burg);}
+.auth-form{display:none;}.auth-form.on{display:block;}
 
-/* Role select */
-.field select{
-  width:100%;padding:.75rem 1rem;
-  border:2px solid var(--cream3);border-radius:11px;
-  font-family:var(--font);font-size:16px;
-  color:var(--text);background:var(--cream);
-  outline:none;transition:all .22s;
+/* Image placeholder */
+.img-placeholder-section{
+  margin-top:1.4rem;
+  border:2px dashed rgba(201,168,76,0.25);
+  border-radius:14px;padding:1.2rem;
+  text-align:center;
+  color:rgba(201,168,76,0.4);font-size:.78rem;
+  font-weight:600;letter-spacing:.3px;
 }
-.field select:focus{border-color:var(--burg);background:white;box-shadow:0 0 0 3px rgba(120,1,22,0.08);}
-
-.divider{text-align:center;color:var(--muted);font-size:.78rem;margin:.8rem 0;}
 </style>
 </head>
 <body>
 
-<div class="auth-box">
-  <!-- Header -->
-  <div class="auth-header">
-    <div class="logo-wrap">ॐ</div>
-    <div class="auth-title">GRB Pooja Items</div>
-    <div class="auth-sub">Billing System</div>
-  </div>
+<!-- Floating particles -->
+<div class="particle" style="width:8px;height:8px;left:15%;animation-duration:8s;animation-delay:0s;"></div>
+<div class="particle" style="width:5px;height:5px;left:35%;animation-duration:12s;animation-delay:2s;"></div>
+<div class="particle" style="width:10px;height:10px;left:60%;animation-duration:9s;animation-delay:4s;"></div>
+<div class="particle" style="width:6px;height:6px;left:80%;animation-duration:11s;animation-delay:1s;"></div>
+<div class="particle" style="width:4px;height:4px;left:90%;animation-duration:7s;animation-delay:3s;"></div>
 
-  <!-- Tabs -->
-  <div class="tabs">
-    <button class="tab on" onclick="switchTab('login')">Login</button>
-    <button class="tab" onclick="switchTab('signup')">Sign Up</button>
-  </div>
+<div class="page">
 
-  <!-- LOGIN FORM -->
-  <div class="auth-form on" id="form-login">
-    <div class="msg" id="login-msg"></div>
-    <div class="field">
-      <label>Email Address</label>
-      <input type="email" id="login-email" placeholder="you@example.com" inputmode="email" autocomplete="email"/>
+  <!-- Brand Header -->
+  <div class="brand-header">
+    <div class="logo-wrap">
+      <img src="data:image/png;base64,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" alt="GRB Logo"/>
     </div>
-    <div class="field">
-      <label>Password</label>
-      <input type="password" id="login-pass" placeholder="Enter your password" autocomplete="current-password"/>
-    </div>
-    <button class="btn-auth" onclick="doLogin()">Login</button>
-    <div style="text-align:center;margin-top:.9rem;">
-      <a href="forgot-password.html" style="color:var(--muted);font-size:.83rem;font-weight:600;text-decoration:none;">Forgot password?</a>
+    <div class="brand-name">GRB</div>
+    <div class="brand-sub">Pooja Items</div>
+    <div class="govinda-line">
+      <div class="gold-divider"></div>
+      <span>🙏 Jay Govinda · Jay Tirupati Balaji 🙏</span>
+      <div class="gold-divider"></div>
     </div>
   </div>
 
-  <!-- SIGNUP FORM -->
-  <div class="auth-form" id="form-signup">
-    <div class="msg" id="signup-msg"></div>
-    <div class="field">
-      <label>Full Name</label>
-      <input type="text" id="signup-name" placeholder="Your full name" autocomplete="name"/>
+  <!-- Login Card -->
+  <div class="login-card">
+    <div class="login-title">Welcome Back</div>
+    <div class="login-sub">Login to GRB Billing System</div>
+
+    <div class="tabs">
+      <button class="tab on" onclick="switchTab('login')">Login</button>
+      <button class="tab" onclick="switchTab('signup')">Sign Up</button>
     </div>
-    <div class="field">
-      <label>Email Address</label>
-      <input type="email" id="signup-email" placeholder="you@example.com" inputmode="email" autocomplete="email"/>
+
+    <!-- LOGIN -->
+    <div class="auth-form on" id="form-login">
+      <div class="msg" id="login-msg"></div>
+      <div class="field">
+        <label>Email Address</label>
+        <input type="email" id="login-email" placeholder="you@example.com" inputmode="email" autocomplete="email"/>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="login-pass" placeholder="Enter your password" autocomplete="current-password"/>
+      </div>
+      <a href="forgot-password.html" class="forgot">Forgot password?</a>
+      <button class="btn" onclick="doLogin()" style="margin-top:.8rem">Login to Dashboard</button>
     </div>
-    <div class="field">
-      <label>Password</label>
-      <input type="password" id="signup-pass" placeholder="Min 6 characters" autocomplete="new-password"/>
+
+    <!-- SIGNUP -->
+    <div class="auth-form" id="form-signup">
+      <div class="msg" id="signup-msg"></div>
+      <div class="field"><label>Full Name</label><input type="text" id="signup-name" placeholder="Your full name" autocomplete="name"/></div>
+      <div class="field"><label>Email Address</label><input type="email" id="signup-email" placeholder="you@example.com" inputmode="email"/></div>
+      <div class="field"><label>Password</label><input type="password" id="signup-pass" placeholder="Min 6 characters" autocomplete="new-password"/></div>
+      <div class="field"><label>Role</label><select id="signup-role"><option value="staff">Staff</option><option value="admin">Admin</option></select></div>
+      <button class="btn" onclick="doSignup()">Create Account</button>
     </div>
-    <div class="field">
-      <label>Role</label>
-      <select id="signup-role">
-        <option value="staff">Staff</option>
-        <option value="admin">Admin</option>
-      </select>
+
+    <!-- Image placeholder for later -->
+    <div class="img-placeholder-section" id="imgPlaceholder" style="display:none;">
+      📸 Your custom image will appear here
     </div>
-    <button class="btn-auth" onclick="doSignup()">Create Account</button>
   </div>
+
 </div>
 
 <script>
-// Redirect if already logged in
-if(localStorage.getItem('grb_token')){
-  window.location.replace('dashboard.html');
-}
-
+if(localStorage.getItem('grb_token')) window.location.replace('dashboard.html');
 function switchTab(tab){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('on',(tab==='login'&&i===0)||(tab==='signup'&&i===1)));
   document.querySelectorAll('.auth-form').forEach(f=>f.classList.remove('on'));
-  document.querySelector(`.tab:${tab==='login'?'first':'last'}-child`).classList.add('on');
   document.getElementById('form-'+tab).classList.add('on');
 }
-
-function showMsg(id, text, type){
-  const el=document.getElementById(id);
-  el.textContent=text;
-  el.className='msg '+type+' show';
-}
-function hideMsg(id){ document.getElementById(id).className='msg'; }
-
+function showMsg(id,text,type){const el=document.getElementById(id);el.textContent=text;el.className='msg '+type;}
 async function doLogin(){
   const email=document.getElementById('login-email').value.trim();
   const pass=document.getElementById('login-pass').value;
-  hideMsg('login-msg');
-
-  if(!email||!pass){ showMsg('login-msg','Please fill in all fields.','error'); return; }
-
-  const btn=document.querySelector('#form-login .btn-auth');
-  btn.textContent='Logging in...'; btn.disabled=true;
-
+  if(!email||!pass){showMsg('login-msg','Please fill in all fields.','error');return;}
+  const btn=document.querySelector('#form-login .btn');
+  btn.textContent='Logging in...';btn.disabled=true;
   try{
-    const res=await fetch('/api/auth/login',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({email,password:pass})
-    });
+    const res=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})});
     const data=await res.json();
-    if(!res.ok){ showMsg('login-msg',data.error,'error'); return; }
-
-    // Save token and user
-    localStorage.setItem('grb_token', data.token);
-    localStorage.setItem('grb_user', JSON.stringify(data.user));
-
+    if(!res.ok){showMsg('login-msg',data.error,'error');return;}
+    localStorage.setItem('grb_token',data.token);
+    localStorage.setItem('grb_user',JSON.stringify(data.user));
     showMsg('login-msg','Login successful! Redirecting...','success');
-    setTimeout(()=>window.location.replace('dashboard.html'), 800);
-  }catch(e){
-    showMsg('login-msg','Connection error. Please try again.','error');
-  }finally{
-    btn.textContent='Login'; btn.disabled=false;
-  }
+    setTimeout(()=>window.location.replace('dashboard.html'),800);
+  }catch(e){showMsg('login-msg','Connection error. Please try again.','error');}
+  finally{btn.textContent='Login to Dashboard';btn.disabled=false;}
 }
-
 async function doSignup(){
   const name=document.getElementById('signup-name').value.trim();
   const email=document.getElementById('signup-email').value.trim();
   const pass=document.getElementById('signup-pass').value;
   const role=document.getElementById('signup-role').value;
-  hideMsg('signup-msg');
-
-  if(!name||!email||!pass){ showMsg('signup-msg','Please fill in all fields.','error'); return; }
-  if(pass.length<6){ showMsg('signup-msg','Password must be at least 6 characters.','error'); return; }
-
-  const btn=document.querySelector('#form-signup .btn-auth');
-  btn.textContent='Creating account...'; btn.disabled=true;
-
+  if(!name||!email||!pass){showMsg('signup-msg','Please fill in all fields.','error');return;}
+  if(pass.length<6){showMsg('signup-msg','Password must be at least 6 characters.','error');return;}
+  const btn=document.querySelector('#form-signup .btn');
+  btn.textContent='Creating account...';btn.disabled=true;
   try{
-    const res=await fetch('/api/auth/signup',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({name,email,password:pass,role})
-    });
+    const res=await fetch('/api/auth/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,password:pass,role})});
     const data=await res.json();
-    if(!res.ok){ showMsg('signup-msg',data.error,'error'); return; }
-
-    localStorage.setItem('grb_token', data.token);
-    localStorage.setItem('grb_user', JSON.stringify(data.user));
-
+    if(!res.ok){showMsg('signup-msg',data.error,'error');return;}
+    localStorage.setItem('grb_token',data.token);
+    localStorage.setItem('grb_user',JSON.stringify(data.user));
     showMsg('signup-msg','Account created! Redirecting...','success');
-    setTimeout(()=>window.location.replace('dashboard.html'), 800);
-  }catch(e){
-    showMsg('signup-msg','Connection error. Please try again.','error');
-  }finally{
-    btn.textContent='Create Account'; btn.disabled=false;
-  }
+    setTimeout(()=>window.location.replace('dashboard.html'),800);
+  }catch(e){showMsg('signup-msg','Connection error. Please try again.','error');}
+  finally{btn.textContent='Create Account';btn.disabled=false;}
 }
-
-// Allow Enter key to submit
-document.addEventListener('keydown', e=>{
+document.addEventListener('keydown',e=>{
   if(e.key==='Enter'){
     if(document.getElementById('form-login').classList.contains('on')) doLogin();
     else doSignup();
