@@ -336,10 +336,10 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
   </div>
   <nav class="sb-nav">
     <button class="nb on" onclick="pg('billing')" id="nb-billing"><span class="ni">🧾</span> Billing</button>
-    <button class="nb" onclick="pg('estimates')" id="nb-estimates"><span class="ni">📋</span> Estimates</button>
     <button class="nb" onclick="pg('customers')" id="nb-customers"><span class="ni">👤</span> Customers</button>
     <button class="nb" onclick="pg('products')" id="nb-products"><span class="ni">📦</span> Products</button>
     <button class="nb" onclick="pg('gallery')" id="nb-gallery"><span class="ni">🖼️</span> Gallery</button>
+    <button class="nb" onclick="pg('profile')" id="nb-profile"><span class="ni">⚙️</span> Profile</button>
     <div class="ndiv"></div>
     <button class="nb" onclick="pg('reports')" id="nb-reports"><span class="ni">📊</span> Reports</button>
   </nav>
@@ -489,32 +489,70 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
     </div>
   </section>
 
-  <!-- ESTIMATES PAGE -->
-  <section class="page" id="page-estimates">
-    <div class="ph">
-      <h2>Estimates</h2>
-      <button class="bprim" style="flex:none;padding:.55rem 1.2rem;min-height:44px" onclick="newEstimate()">+ New Estimate</button>
-    </div>
-    <div class="sbar"><input type="text" placeholder="🔍 Search estimates..." oninput="srchEstimates(this.value)"/></div>
-    <div class="card" style="overflow:hidden">
-      <div style="overflow-x:auto">
-        <table class="dtbl">
-          <thead><tr><th>Est. No</th><th>Date</th><th>Customer</th><th>Items</th><th>Total</th><th>Actions</th></tr></thead>
-          <tbody id="estBody"></tbody>
-        </table>
-      </div>
-      <div class="empty" id="estEmpty">No estimates created yet</div>
-    </div>
-  </section>
 
   <!-- GALLERY PAGE -->
   <section class="page" id="page-gallery">
     <div class="ph">
       <h2>Gallery</h2>
-      <button class="bprim" style="flex:none;padding:.55rem 1.2rem;min-height:44px" onclick="openGalleryModal()">+ Add Image</button>
+      <button class="bprim" style="flex:none;padding:.55rem 1.2rem;min-height:44px" onclick="openGalleryModal()">+ Add Category</button>
     </div>
-    <div id="galleryGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;"></div>
-    <div class="empty" id="galleryEmpty">No images added yet</div>
+    <!-- Gallery Grid — each card is a category with multiple images -->
+    <div id="galleryGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;"></div>
+    <div class="empty" id="galleryEmpty">No items added yet</div>
+  </section>
+
+  <!-- GALLERY VIEW (full images of a category) -->
+  <section class="page" id="page-gallery-view">
+    <div class="ph">
+      <h2 id="galleryViewTitle">Category</h2>
+      <button class="bred" style="flex:none;padding:.5rem 1rem;min-height:44px" onclick="pg('gallery')">← Back</button>
+    </div>
+    <div style="margin-bottom:1rem;display:flex;gap:.6rem;flex-wrap:wrap;" id="galleryViewActions"></div>
+    <div id="galleryViewGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.8rem;"></div>
+  </section>
+
+
+  <!-- PROFILE PAGE -->
+  <section class="page" id="page-profile">
+    <div class="ph"><h2>My Profile</h2></div>
+    <div class="card" style="max-width:500px;margin:0 auto;">
+      <div class="ctitle">Profile Settings</div>
+      <div style="padding:1.5rem;display:flex;flex-direction:column;align-items:center;gap:1.2rem;">
+        <!-- Profile Picture -->
+        <div style="position:relative;">
+          <div id="profilePicWrap" style="width:100px;height:100px;border-radius:50%;border:3px solid var(--gold);overflow:hidden;background:var(--cream2);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(120,1,22,0.15);">
+            <img id="profilePicImg" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;"/>
+            <span id="profilePicPlaceholder" style="font-size:2.5rem;">👤</span>
+          </div>
+          <label for="profilePicInput" style="position:absolute;bottom:0;right:0;background:var(--burg);color:white;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.8rem;box-shadow:0 2px 8px rgba(0,0,0,0.3);">✏</label>
+          <input type="file" id="profilePicInput" accept="image/*" style="display:none;" onchange="handleProfilePic(this)"/>
+        </div>
+        <!-- Name -->
+        <div style="width:100%;">
+          <label style="display:block;font-size:.7rem;font-weight:700;color:var(--burg3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:.3rem;">Full Name</label>
+          <input type="text" id="profileName" placeholder="Your full name" style="width:100%;padding:.72rem 1rem;border:2px solid var(--cream3);border-radius:11px;font-family:var(--font-ui);font-size:16px;color:var(--text);background:var(--cream);outline:none;"/>
+        </div>
+        <!-- Phone -->
+        <div style="width:100%;">
+          <label style="display:block;font-size:.7rem;font-weight:700;color:var(--burg3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:.3rem;">Phone Number</label>
+          <div style="display:flex;align-items:center;gap:.4rem;">
+            <span style="padding:.72rem .7rem;background:#fff0e8;border:2px solid var(--cream3);border-radius:10px;font-size:16px;font-weight:700;color:var(--burg);white-space:nowrap;">+91</span>
+            <input type="tel" id="profilePhone" placeholder="10-digit number" maxlength="10" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)"" style="flex:1;padding:.72rem 1rem;border:2px solid var(--cream3);border-radius:11px;font-family:var(--font-ui);font-size:16px;color:var(--text);background:var(--cream);outline:none;"/>
+          </div>
+        </div>
+        <!-- Email (readonly) -->
+        <div style="width:100%;">
+          <label style="display:block;font-size:.7rem;font-weight:700;color:var(--burg3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:.3rem;">Email Address</label>
+          <input type="email" id="profileEmail" readonly style="width:100%;padding:.72rem 1rem;border:2px solid var(--cream3);border-radius:11px;font-family:var(--font-ui);font-size:16px;color:var(--muted);background:var(--cream2);outline:none;cursor:not-allowed;"/>
+        </div>
+        <!-- Role (readonly) -->
+        <div style="width:100%;">
+          <label style="display:block;font-size:.7rem;font-weight:700;color:var(--burg3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:.3rem;">Role</label>
+          <input type="text" id="profileRole" readonly style="width:100%;padding:.72rem 1rem;border:2px solid var(--cream3);border-radius:11px;font-family:var(--font-ui);font-size:16px;color:var(--muted);background:var(--cream2);outline:none;cursor:not-allowed;"/>
+        </div>
+        <button class="bprim" onclick="saveProfile()" style="width:100%;min-height:50px;">Save Profile</button>
+      </div>
+    </div>
   </section>
 
   <!-- REPORTS PAGE -->
@@ -544,9 +582,6 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
   <button class="bnb on" onclick="pg('billing')" id="bnb-billing">
     <span class="bni">🧾</span><span class="bnl">Billing</span>
   </button>
-  <button class="bnb" onclick="pg('estimates')" id="bnb-estimates">
-    <span class="bni">📋</span><span class="bnl">Estimates</span>
-  </button>
   <button class="bnb" onclick="pg('customers')" id="bnb-customers">
     <span class="bni">👤</span><span class="bnl">Customers</span>
   </button>
@@ -555,6 +590,9 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
   </button>
   <button class="bnb" onclick="pg('gallery')" id="bnb-gallery">
     <span class="bni">🖼️</span><span class="bnl">Gallery</span>
+  </button>
+  <button class="bnb" onclick="pg('profile')" id="bnb-profile">
+    <span class="bni">👤</span><span class="bnl">Profile</span>
   </button>
   <button class="bnb" onclick="pg('reports')" id="bnb-reports">
     <span class="bni">📊</span><span class="bnl">Reports</span>
@@ -626,28 +664,44 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
 
 <!-- GALLERY MODAL -->
 <div class="ov hide" id="galleryModal">
-  <div class="mb">
-    <h3 id="galleryModalTitle">Add Image</h3>
+  <div class="mb wide">
+    <h3 id="galleryModalTitle">Add Category</h3>
     <input type="hidden" id="galleryEditId"/>
     <div class="ig2 full" style="margin-bottom:.9rem">
-      <label>Product Name *</label>
-      <input type="text" id="galleryName" placeholder="e.g. Agarbatti Set"/>
+      <label>Category Name *</label>
+      <input type="text" id="galleryName" placeholder="e.g. Agarbatti Set, Navarathnalu"/>
     </div>
     <div class="ig2 full" style="margin-bottom:.9rem">
-      <label>Price (₹) *</label>
+      <label>Price (₹)</label>
       <input type="number" id="galleryPrice" placeholder="0.00" min="0" step="0.01" inputmode="decimal"/>
     </div>
     <div class="ig2 full" style="margin-bottom:.9rem">
-      <label>Image *</label>
-      <input type="file" id="galleryFile" accept="image/*" onchange="previewGalleryImg(this)"
-        style="padding:.6rem;font-size:15px;background:white;"/>
-      <div id="galleryPreview" style="margin-top:.5rem;display:none;">
-        <img id="galleryPreviewImg" style="width:100%;max-height:160px;object-fit:contain;border-radius:10px;border:1px solid var(--border);background:var(--cream);"/>
-      </div>
+      <label>Images * (Select multiple)</label>
+      <input type="file" id="galleryFile" accept="image/*" multiple onchange="previewGalleryImgs(this)"
+        style="padding:.6rem;font-size:15px;background:white;border:2px solid var(--cream3);border-radius:10px;width:100%;"/>
+      <div id="galleryPreviewGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:.5rem;margin-top:.6rem;"></div>
     </div>
     <div class="macts">
-      <button class="bprim" style="flex:1;padding:.72rem" onclick="saveGalleryItem()">Save</button>
+      <button class="bprim" style="flex:1;padding:.72rem" onclick="saveGalleryItem()">Save Category</button>
       <button class="bout" onclick="closeMod('galleryModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- GALLERY ADD IMAGES MODAL (add more images to existing category) -->
+<div class="ov hide" id="galleryAddImgModal">
+  <div class="mb">
+    <h3>Add More Images</h3>
+    <input type="hidden" id="galleryAddImgId"/>
+    <div class="ig2 full" style="margin-bottom:.9rem">
+      <label>Select Images</label>
+      <input type="file" id="galleryAddFile" accept="image/*" multiple onchange="previewAddImgs(this)"
+        style="padding:.6rem;font-size:15px;background:white;border:2px solid var(--cream3);border-radius:10px;width:100%;"/>
+      <div id="galleryAddPreview" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:.5rem;margin-top:.6rem;"></div>
+    </div>
+    <div class="macts">
+      <button class="bprim" style="flex:1;padding:.72rem" onclick="addMoreImages()">Add Images</button>
+      <button class="bout" onclick="closeMod('galleryAddImgModal')">Cancel</button>
     </div>
   </div>
 </div>
@@ -1080,7 +1134,7 @@ function printEstimate(id){
 }
 
 // ── GALLERY ────────────────────────────────────────
-let galleryItems = JSON.parse(localStorage.getItem('grb_gallery') || '[]');
+galleryItems = JSON.parse(localStorage.getItem('grb_gallery') || '[]');
 let galleryImgData = '';
 
 function openGalleryModal(id=null){
@@ -1125,14 +1179,25 @@ function saveGalleryItem(){
   const eid   = document.getElementById('galleryEditId').value;
   if(!name){ toast('Product name is required.','error'); return; }
   if(isNaN(price)||price<0){ toast('Enter a valid price.','error'); return; }
-  if(!galleryImgData && !eid){ toast('Please select an image.','error'); return; }
-  const item = { id: eid || Date.now().toString(), name, price, img: galleryImgData || (eid ? galleryItems.find(g=>g.id===eid)?.img : '') };
-  if(eid){ const idx = galleryItems.findIndex(g=>g.id===eid); galleryItems[idx] = item; }
-  else galleryItems.push(item);
-  localStorage.setItem('grb_gallery', JSON.stringify(galleryItems));
-  renderGallery();
-  closeMod('galleryModal');
-  toast(eid ? 'Image updated ✓' : 'Image added ✓');
+  if(!galleryImgData && !eid){ toast('Please select at least one image.','error'); return; }
+
+  if(eid){
+    // Edit existing — update name/price, optionally add new image
+    const item = galleryItems.find(g=>g.id===eid);
+    item.name = name; item.price = price;
+    if(galleryImgData) item.images = [...(item.images||[item.img||'']), galleryImgData];
+    localStorage.setItem('grb_gallery', JSON.stringify(galleryItems));
+    renderGallery(); closeMod('galleryModal');
+    toast('Item updated ✓');
+  } else {
+    // New item
+    const item = { id: Date.now().toString(), name, price, images: galleryImgData ? [galleryImgData] : [] };
+    galleryItems.push(item);
+    localStorage.setItem('grb_gallery', JSON.stringify(galleryItems));
+    renderGallery(); closeMod('galleryModal');
+    toast('Item added ✓');
+  }
+  galleryImgData = '';
 }
 
 function deleteGalleryItem(id){
@@ -1150,16 +1215,20 @@ function renderGallery(){
   if(!galleryItems.length){ empty.style.display=''; return; }
   empty.style.display = 'none';
   galleryItems.forEach(item => {
+    const images = item.images || (item.img ? [item.img] : []);
+    const thumb  = images[0] || '';
     grid.innerHTML += `
       <div style="background:#fff;border-radius:14px;overflow:hidden;border:1px solid var(--border);border-top:3px solid var(--burg);box-shadow:0 4px 16px rgba(120,1,22,0.07);transition:transform .2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
-        <div style="height:140px;overflow:hidden;background:var(--cream);">
-          <img src="${item.img}" alt="${x(item.name)}" style="width:100%;height:100%;object-fit:contain;"/>
+        <div style="height:140px;overflow:hidden;background:var(--cream);cursor:pointer;position:relative;" onclick="viewGalleryItem('${item.id}')">
+          ${thumb ? `<img src="${thumb}" style="width:100%;height:100%;object-fit:contain;"/>` : `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:.8rem;">No Image</div>`}
+          ${images.length>1?`<div style="position:absolute;top:6px;right:6px;background:var(--burg);color:white;border-radius:20px;padding:2px 8px;font-size:.7rem;font-weight:700;">+${images.length}</div>`:''}
         </div>
         <div style="padding:.7rem;">
           <div style="font-weight:700;font-size:.88rem;color:var(--text);margin-bottom:.2rem;">${x(item.name)}</div>
           <div style="font-family:var(--font-num);font-weight:800;color:var(--burg);font-size:.95rem;">₹${parseFloat(item.price).toFixed(2)}</div>
           <div style="display:flex;gap:.4rem;margin-top:.5rem;">
-            <button class="bedit" style="flex:1;font-size:.75rem;padding:.3rem;" onclick="openGalleryModal('${item.id}')">✏ Edit</button>
+            <button class="bedit" style="flex:1;font-size:.75rem;padding:.3rem;" onclick="viewGalleryItem('${item.id}')">👁 View</button>
+            <button class="bedit" style="flex:1;font-size:.75rem;padding:.3rem;" onclick="openGalleryModal('${item.id}')">✏</button>
             <button class="bdel" style="flex:none;" onclick="deleteGalleryItem('${item.id}')">🗑</button>
           </div>
         </div>
@@ -1167,21 +1236,82 @@ function renderGallery(){
   });
 }
 
-// ── NAVIGATION (updated to include estimates+gallery) ──
+let currentGalleryId = null;
+function viewGalleryItem(id){
+  currentGalleryId = id;
+  const item = galleryItems.find(g=>g.id===id);
+  if(!item) return;
+  const images = item.images || (item.img ? [item.img] : []);
+  const content = document.getElementById('galleryViewContent');
+  content.innerHTML = `
+    <div style="font-family:'Cinzel Decorative',serif;font-size:1rem;color:var(--burg);margin-bottom:.3rem;">${x(item.name)}</div>
+    <div style="font-family:var(--font-num);font-weight:800;color:var(--burg);font-size:1.1rem;margin-bottom:1rem;">₹${parseFloat(item.price).toFixed(2)}</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.7rem;">
+      ${images.map((img,i)=>`
+        <div style="border-radius:10px;overflow:hidden;border:1.5px solid var(--border);background:var(--cream);position:relative;">
+          <img src="${img}" style="width:100%;height:120px;object-fit:contain;display:block;"/>
+          <button onclick="deleteGalleryImage('${id}',${i})" style="position:absolute;top:4px;right:4px;background:rgba(120,1,22,0.8);color:white;border:none;border-radius:50%;width:22px;height:22px;font-size:.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+        </div>`).join('')}
+    </div>
+    <label style="display:flex;align-items:center;gap:.5rem;margin-top:1rem;padding:.6rem 1rem;background:var(--cream2);border:2px dashed var(--cream3);border-radius:10px;cursor:pointer;font-size:.84rem;color:var(--muted);font-weight:600;">
+      <span>📸 Add more images</span>
+      <input type="file" accept="image/*" multiple style="display:none;" onchange="addMoreImages('${id}',this)"/>
+    </label>`;
+  document.getElementById('galleryViewModal').classList.remove('hide');
+}
+
+function addMoreImages(id, input){
+  const item = galleryItems.find(g=>g.id===id);
+  if(!item) return;
+  item.images = item.images || (item.img ? [item.img] : []);
+  const files = Array.from(input.files);
+  let loaded = 0;
+  files.forEach(file=>{
+    if(file.size>2*1024*1024){ toast('Image must be under 2MB.','error'); return; }
+    const reader = new FileReader();
+    reader.onload = e => {
+      item.images.push(e.target.result);
+      loaded++;
+      if(loaded===files.length){
+        localStorage.setItem('grb_gallery',JSON.stringify(galleryItems));
+        renderGallery();
+        viewGalleryItem(id);
+        toast(`${loaded} image(s) added ✓`);
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function deleteGalleryImage(id, idx){
+  if(!confirm('Remove this image?')) return;
+  const item = galleryItems.find(g=>g.id===id);
+  if(!item) return;
+  item.images = item.images || [];
+  item.images.splice(idx, 1);
+  localStorage.setItem('grb_gallery',JSON.stringify(galleryItems));
+  renderGallery();
+  viewGalleryItem(id);
+  toast('Image removed.');
+}
+
 function pg(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
   document.querySelectorAll('.bnb').forEach(b=>b.classList.remove('on'));
-  document.getElementById('page-'+name).classList.add('on');
+  const pageEl=document.getElementById('page-'+name);
+  if(pageEl) pageEl.classList.add('on');
   if(document.getElementById('nb-'+name)) document.getElementById('nb-'+name).classList.add('on');
   if(document.getElementById('bnb-'+name)) document.getElementById('bnb-'+name).classList.add('on');
-  const t={billing:'Billing',customers:'Customers',products:'Products',reports:'Reports & Analytics',estimates:'Estimates',gallery:'Gallery'};
+  const t={billing:'Billing',customers:'Customers',products:'Products',
+    reports:'Reports & Analytics',gallery:'Gallery','gallery-view':'Gallery',
+    profile:'My Profile'};
   document.getElementById('ptitle').textContent=t[name]||name;
   if(name==='products') renderProds();
   if(name==='customers') renderCusts();
   if(name==='reports') renderReports();
-  if(name==='estimates') renderEstimatesTable();
   if(name==='gallery') renderGallery();
+  if(name==='profile') loadProfile();
 }
 
 // ── PRODUCTS ──
@@ -1661,10 +1791,12 @@ function reprintBill(id){
   setTimeout(()=>w.print(),500);
 }
 
-// ── SUPABASE KEEPALIVE (fix #10 - prevent free plan pause) ──
+// ── SUPABASE KEEPALIVE ──
 setInterval(async()=>{
   if(isOnline) await fetch(API+'/health').catch(()=>{});
-},5*60*1000); // ping every 5 minutes
+},5*60*1000);
+
+// ── BILL SIZE ──
 function saveBillSize(){
   const w=document.getElementById('billW').value;
   const h=document.getElementById('billH').value;
@@ -1686,12 +1818,250 @@ function setPreset(w,h){
 function updatePresetHighlight(w,h){
   [{id:'presetA4',w:21,h:29.7},{id:'presetA5',w:14.8,h:21},{id:'presetR',w:8,h:20}].forEach(p=>{
     const el=document.getElementById(p.id);
+    if(!el) return;
     const on=Math.abs(p.w-w)<0.1&&Math.abs(p.h-h)<0.1;
     el.style.background=on?'linear-gradient(135deg,var(--burg3),var(--burg))':'var(--cream)';
     el.style.color=on?'#fff':'var(--muted)';
     el.style.borderColor=on?'var(--burg)':'var(--cream3)';
   });
 }
+
+// ── GALLERY (Multiple images per category) ──
+let galleryItems=[];
+let galleryNewImgs=[];
+let galleryAddNewImgs=[];
+
+function openGalleryModal(id=null){
+  galleryNewImgs=[];
+  document.getElementById('galleryEditId').value=id||'';
+  document.getElementById('galleryModalTitle').textContent=id?'Edit Category':'Add Category';
+  document.getElementById('galleryName').value='';
+  document.getElementById('galleryPrice').value='';
+  document.getElementById('galleryFile').value='';
+  document.getElementById('galleryPreviewGrid').innerHTML='';
+  if(id){
+    const item=galleryItems.find(g=>g.id===id);
+    if(item){
+      document.getElementById('galleryName').value=item.name;
+      document.getElementById('galleryPrice').value=item.price;
+    }
+  }
+  document.getElementById('galleryModal').classList.remove('hide');
+}
+
+function previewGalleryImgs(input){
+  const files=Array.from(input.files);
+  const grid=document.getElementById('galleryPreviewGrid');
+  grid.innerHTML='';
+  galleryNewImgs=[];
+  let loaded=0;
+  files.forEach((file,i)=>{
+    if(file.size>3*1024*1024){toast('Image '+file.name+' is over 3MB, skipped.','error');return;}
+    const reader=new FileReader();
+    reader.onload=e=>{
+      galleryNewImgs[i]=e.target.result;
+      grid.innerHTML+=`<div style="position:relative;"><img src="${e.target.result}" style="width:100%;height:80px;object-fit:cover;border-radius:8px;border:1px solid var(--border);"/></div>`;
+      loaded++;
+      if(loaded===files.length) toast(loaded+' image(s) ready','success');
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function saveGalleryItem(){
+  const name=document.getElementById('galleryName').value.trim();
+  const price=parseFloat(document.getElementById('galleryPrice').value)||0;
+  const eid=document.getElementById('galleryEditId').value;
+  if(!name){toast('Category name is required.','error');return;}
+  if(!eid&&!galleryNewImgs.filter(Boolean).length){toast('Please select at least one image.','error');return;}
+  if(eid){
+    const idx=galleryItems.findIndex(g=>g.id===eid);
+    galleryItems[idx].name=name;
+    galleryItems[idx].price=price;
+    if(galleryNewImgs.filter(Boolean).length){
+      galleryItems[idx].images=[...galleryItems[idx].images,...galleryNewImgs.filter(Boolean)];
+    }
+  } else {
+    galleryItems.push({id:Date.now().toString(),name,price,images:galleryNewImgs.filter(Boolean)});
+  }
+  localStorage.setItem('grb_gallery',JSON.stringify(galleryItems));
+  renderGallery();
+  closeMod('galleryModal');
+  toast(eid?'Category updated ✓':'Category added ✓');
+}
+
+function openAddImagesModal(id){
+  galleryAddNewImgs=[];
+  document.getElementById('galleryAddImgId').value=id;
+  document.getElementById('galleryAddFile').value='';
+  document.getElementById('galleryAddPreview').innerHTML='';
+  document.getElementById('galleryAddImgModal').classList.remove('hide');
+}
+
+function previewAddImgs(input){
+  const files=Array.from(input.files);
+  const grid=document.getElementById('galleryAddPreview');
+  grid.innerHTML='';
+  galleryAddNewImgs=[];
+  files.forEach((file,i)=>{
+    if(file.size>3*1024*1024){toast('Image too large, skipped.','error');return;}
+    const reader=new FileReader();
+    reader.onload=e=>{
+      galleryAddNewImgs[i]=e.target.result;
+      grid.innerHTML+=`<img src="${e.target.result}" style="width:100%;height:80px;object-fit:cover;border-radius:8px;border:1px solid var(--border);"/>`;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function addMoreImages(){
+  const id=document.getElementById('galleryAddImgId').value;
+  const imgs=galleryAddNewImgs.filter(Boolean);
+  if(!imgs.length){toast('Please select images.','error');return;}
+  const idx=galleryItems.findIndex(g=>g.id===id);
+  if(idx<0) return;
+  galleryItems[idx].images=[...galleryItems[idx].images,...imgs];
+  localStorage.setItem('grb_gallery',JSON.stringify(galleryItems));
+  closeMod('galleryAddImgModal');
+  toast(imgs.length+' image(s) added ✓');
+  // refresh view if open
+  if(!document.getElementById('page-gallery-view').classList.contains('on')) return;
+  viewGalleryCategory(id);
+}
+
+function deleteGalleryItem(id){
+  if(!confirm('Delete this category and all its images?'))return;
+  galleryItems=galleryItems.filter(g=>g.id!==id);
+  localStorage.setItem('grb_gallery',JSON.stringify(galleryItems));
+  renderGallery();
+  toast('Category deleted.');
+}
+
+function deleteGalleryImage(itemId,imgIdx){
+  if(!confirm('Delete this image?'))return;
+  const idx=galleryItems.findIndex(g=>g.id===itemId);
+  galleryItems[idx].images.splice(imgIdx,1);
+  localStorage.setItem('grb_gallery',JSON.stringify(galleryItems));
+  viewGalleryCategory(itemId);
+  toast('Image deleted.');
+}
+
+function renderGallery(){
+  const grid=document.getElementById('galleryGrid');
+  const empty=document.getElementById('galleryEmpty');
+  grid.innerHTML='';
+  if(!galleryItems.length){empty.style.display='';return;}
+  empty.style.display='none';
+  galleryItems.forEach(item=>{
+    const thumb=item.images&&item.images.length?item.images[0]:'';
+    const count=item.images?item.images.length:0;
+    grid.innerHTML+=`
+      <div onclick="viewGalleryCategory('${item.id}')" style="background:#fff;border-radius:14px;overflow:hidden;border:1px solid var(--border);border-top:3px solid var(--burg);box-shadow:0 4px 16px rgba(120,1,22,0.07);cursor:pointer;transition:transform .2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="height:130px;overflow:hidden;background:var(--cream);position:relative;">
+          ${thumb?`<img src="${thumb}" style="width:100%;height:100%;object-fit:cover;"/>`:`<div style="height:100%;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:2rem;">📷</div>`}
+          ${count>1?`<div style="position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,0.6);color:white;border-radius:10px;padding:.15rem .5rem;font-size:.72rem;font-weight:700;">+${count} pics</div>`:''}
+        </div>
+        <div style="padding:.7rem;">
+          <div style="font-weight:700;font-size:.88rem;color:var(--text);margin-bottom:.2rem;">${x(item.name)}</div>
+          <div style="font-family:var(--font-num);font-weight:800;color:var(--burg);font-size:.9rem;">₹${parseFloat(item.price).toFixed(2)}</div>
+          <div style="display:flex;gap:.4rem;margin-top:.5rem;" onclick="event.stopPropagation()">
+            <button class="bedit" style="flex:1;font-size:.72rem;padding:.28rem;" onclick="openGalleryModal('${item.id}')">✏</button>
+            <button class="bedit" style="flex:1;font-size:.72rem;padding:.28rem;" onclick="openAddImagesModal('${item.id}')">+📷</button>
+            <button class="bdel" style="flex:none;" onclick="deleteGalleryItem('${item.id}')">🗑</button>
+          </div>
+        </div>
+      </div>`;
+  });
+}
+
+function viewGalleryCategory(id){
+  const item=galleryItems.find(g=>g.id===id);
+  if(!item) return;
+  document.getElementById('galleryViewTitle').textContent=item.name+' — ₹'+parseFloat(item.price).toFixed(2);
+  document.getElementById('galleryViewActions').innerHTML=`
+    <button class="bprim" style="padding:.5rem 1rem;min-height:40px;font-size:.85rem;" onclick="openAddImagesModal('${id}')">+ Add More Images</button>
+    <button class="bedit" onclick="openGalleryModal('${id}')">✏ Edit Name/Price</button>
+    <button class="bred" style="padding:.5rem 1rem;min-height:40px;font-size:.85rem;" onclick="deleteGalleryItem('${id}');pg('gallery')">🗑 Delete Category</button>
+  `;
+  const grid=document.getElementById('galleryViewGrid');
+  grid.innerHTML='';
+  if(!item.images||!item.images.length){
+    grid.innerHTML='<div style="padding:2rem;color:var(--muted);text-align:center;">No images yet. Add some!</div>';
+  } else {
+    item.images.forEach((img,i)=>{
+      grid.innerHTML+=`
+        <div style="border-radius:12px;overflow:hidden;border:1px solid var(--border);position:relative;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+          <img src="${img}" style="width:100%;height:150px;object-fit:cover;display:block;" onclick="openFullImg('${id}',${i})"/>
+          <button onclick="deleteGalleryImage('${id}',${i})" style="position:absolute;top:4px;right:4px;background:rgba(120,1,22,0.85);color:white;border:none;border-radius:6px;width:26px;height:26px;cursor:pointer;font-size:.8rem;">✕</button>
+        </div>`;
+    });
+  }
+  pg('gallery-view');
+}
+
+function openFullImg(itemId,idx){
+  const item=galleryItems.find(g=>g.id===itemId);
+  if(!item||!item.images[idx]) return;
+  const w=window.open('','_blank');
+  w.document.write(`<html><body style="margin:0;background:#000;display:flex;align-items:center;justify-content:center;min-height:100vh;"><img src="${item.images[idx]}" style="max-width:100%;max-height:100vh;object-fit:contain;"/></body></html>`);
+  w.document.close();
+}
+
+// ── PROFILE ──
+async function loadProfile(){
+  try{
+    const data=await api('GET','/profile');
+    if(!data) return;
+    document.getElementById('profileName').value=data.name||'';
+    document.getElementById('profilePhone').value=(data.phone||'').replace(/^\+?91/,'').slice(0,10);
+    document.getElementById('profileEmail').value=data.email||'';
+    document.getElementById('profileRole').value=data.role||'';
+    if(data.profile_pic){
+      document.getElementById('profilePicImg').src=data.profile_pic;
+      document.getElementById('profilePicImg').style.display='block';
+      document.getElementById('profilePicPlaceholder').style.display='none';
+    }
+  }catch(e){console.warn('Profile load error:',e);}
+}
+
+let profilePicData='';
+function handleProfilePic(input){
+  const file=input.files[0];
+  if(!file) return;
+  if(file.size>2*1024*1024){toast('Image must be under 2MB.','error');return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    profilePicData=e.target.result;
+    document.getElementById('profilePicImg').src=profilePicData;
+    document.getElementById('profilePicImg').style.display='block';
+    document.getElementById('profilePicPlaceholder').style.display='none';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function saveProfile(){
+  const name=document.getElementById('profileName').value.trim();
+  const phone=document.getElementById('profilePhone').value.trim();
+  if(!name){toast('Name is required.','error');return;}
+  const btn=document.querySelector('#page-profile .bprim');
+  btn.textContent='Saving...';btn.disabled=true;
+  const result=await api('PUT','/profile',{
+    name,
+    phone:phone?'+91'+phone:null,
+    profile_pic:profilePicData||null
+  });
+  btn.textContent='Save Profile';btn.disabled=false;
+  if(result){
+    // Update local storage and topbar
+    const user=JSON.parse(localStorage.getItem('grb_user')||'{}');
+    user.name=result.name;
+    localStorage.setItem('grb_user',JSON.stringify(user));
+    document.getElementById('uname').textContent=result.name;
+    toast('Profile saved ✓');
+  }
+}
+
+// ── NAVIGATION (updated) ──
 
 // ── UTILS ──
 function closeMod(id){document.getElementById(id).classList.add('hide');}
@@ -1707,12 +2077,14 @@ if(!localStorage.getItem('grb_cleared_v1')){
 prods=JSON.parse(localStorage.getItem('grb_prods')||'[]');
 custs=JSON.parse(localStorage.getItem('grb_custs')||'[]');
 bills=JSON.parse(localStorage.getItem('grb_bills')||'[]');
-estimates=JSON.parse(localStorage.getItem('grb_estimates')||'[]');
 galleryItems=JSON.parse(localStorage.getItem('grb_gallery')||'[]');
 fillDrop();todaySummary();renderProds();renderCusts();
 loadFromBackend();
 loadBillSize();
 setTimeout(flushQueue,2000);
+// Show user name
+const _u=JSON.parse(localStorage.getItem('grb_user')||'{}');
+if(_u.name) document.getElementById('uname').textContent=_u.name;
 </script>
 </body>
 </html>

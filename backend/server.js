@@ -63,8 +63,8 @@ const smsLimiter = rateLimit({
 });
 
 // ── Body Parser ────────────────────────────────────
-app.use(express.json({ limit: '10kb' })); // limit request body size
-app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(express.json({ limit: '5mb' })); // increased for profile pic base64
+app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 
 // ── Serve Frontend ─────────────────────────────────
 app.use(express.static(path.join(__dirname, '../frontend')));
@@ -78,8 +78,8 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/email/forgot-password', otpLimiter);
 app.use('/api/email', require('./routes/email'));
 
-// ── SMS Routes (rate limited) ──────────────────────
-app.use('/api/sms', smsLimiter, require('./routes/sms'));
+// ── SMS/WhatsApp Routes ────────────────────────────
+app.use('/api/sms', require('./routes/sms'));
 
 // ── Protected API Routes ───────────────────────────
 const auth = require('./middleware/auth');
@@ -87,6 +87,10 @@ app.use('/api/bills',     auth, require('./routes/bills'));
 app.use('/api/customers', auth, require('./routes/customers'));
 app.use('/api/products',  auth, require('./routes/products'));
 app.use('/api/reports',   auth, require('./routes/reports'));
+app.use('/api/profile',   auth, require('./routes/profile'));
+
+// ── PDF Route (public) ─────────────────────────────
+app.use('/api/bills', require('./routes/pdf'));
 
 // ── Health Check (public) ──────────────────────────
 app.get('/api/health', (req, res) => {
