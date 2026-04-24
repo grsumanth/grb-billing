@@ -1721,7 +1721,7 @@ function saveGalleryItem(){
     galleryItems[idx].name=name;
     galleryItems[idx].price=price;
     if(galleryNewImgs.filter(Boolean).length){
-      galleryItems[idx].images=[...galleryItems[idx].images,...galleryNewImgs.filter(Boolean)];
+      galleryItems[idx].images=[...(galleryItems[idx].images||[]),...galleryNewImgs.filter(Boolean)];
     }
   } else {
     galleryItems.push({id:Date.now().toString(),name,price,images:galleryNewImgs.filter(Boolean)});
@@ -1762,7 +1762,7 @@ function addMoreImages(){
   if(!imgs.length){toast('Please select images.','error');return;}
   const idx=galleryItems.findIndex(g=>g.id===id);
   if(idx<0) return;
-  galleryItems[idx].images=[...galleryItems[idx].images,...imgs];
+  galleryItems[idx].images=[...(galleryItems[idx].images||[]),...imgs];
   localStorage.setItem('grb_gallery',JSON.stringify(galleryItems));
   closeMod('galleryAddImgModal');
   toast(imgs.length+' image(s) added ✓');
@@ -1782,7 +1782,7 @@ function deleteGalleryItem(id){
 function deleteGalleryImage(itemId,imgIdx){
   if(!confirm('Delete this image?'))return;
   const idx=galleryItems.findIndex(g=>g.id===itemId);
-  galleryItems[idx].images.splice(imgIdx,1);
+  if(galleryItems[idx].images) galleryItems[idx].images.splice(imgIdx,1);
   localStorage.setItem('grb_gallery',JSON.stringify(galleryItems));
   viewGalleryCategory(itemId);
   toast('Image deleted.');
