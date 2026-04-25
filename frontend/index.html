@@ -171,14 +171,19 @@ body::before{
 .auth-form{display:none;}.auth-form.on{display:block;}
 
 /* Image placeholder */
-.img-placeholder-section{
-  margin-top:1.4rem;
-  border:2px dashed rgba(201,168,76,0.25);
-  border-radius:14px;padding:1.2rem;
-  text-align:center;
-  color:rgba(201,168,76,0.4);font-size:.78rem;
-  font-weight:600;letter-spacing:.3px;
+.btn-fp{
+  width:100%;padding:.75rem;margin-top:.6rem;
+  background:transparent;
+  border:2px solid var(--burg);color:var(--burg);
+  border-radius:12px;font-family:var(--font);
+  font-size:.95rem;font-weight:700;
+  cursor:pointer;transition:all .22s;min-height:50px;
+  display:flex;align-items:center;justify-content:center;gap:.5rem;
 }
+.btn-fp:hover{background:rgba(120,1,22,0.06);}
+.btn-fp:active{transform:scale(.98);}
+.fp-pulse{animation:fpPulse 1.5s ease infinite;}
+@keyframes fpPulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.6;transform:scale(1.1);}}
 </style>
 </head>
 <body>
@@ -217,14 +222,18 @@ body::before{
       <div class="msg" id="login-msg"></div>
       <div class="field">
         <label>Email Address</label>
-        <input type="email" id="login-email" placeholder="you@example.com" inputmode="email" autocomplete="email"/>
+        <input type="email" id="login-email" placeholder="you@example.com" inputmode="email" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       </div>
       <div class="field">
         <label>Password</label>
-        <input type="password" id="login-pass" placeholder="Enter your password" autocomplete="current-password"/>
+        <input type="password" id="login-pass" placeholder="Enter your password" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')"/>
       </div>
       <a href="forgot-password.html" class="forgot">Forgot password?</a>
       <button class="btn" onclick="doLogin()" style="margin-top:.8rem">Login to Dashboard</button>
+      <button class="btn-fp" onclick="doFingerprint()" id="fpBtn" style="display:none;">
+        <span style="font-size:1.4rem;">👆</span> Login with Fingerprint
+      </button>
+      <div id="fp-status" style="text-align:center;font-size:.78rem;color:var(--muted);margin-top:.5rem;display:none;"></div>
     </div>
 
     <!-- SIGNUP -->
@@ -232,8 +241,8 @@ body::before{
       <div class="msg" id="signup-msg"></div>
       <div class="field"><label>Full Name</label><input type="text" id="signup-name" placeholder="Your full name" autocomplete="name"/></div>
       <div class="field"><label>Email Address</label><input type="email" id="signup-email" placeholder="you@example.com" inputmode="email"/></div>
-      <div class="field"><label>Password</label><input type="password" id="signup-pass" placeholder="Min 6 characters" autocomplete="new-password"/></div>
-      <div class="field"><label>Role</label><select id="signup-role"><option value="staff">Staff</option><option value="admin">Admin</option></select></div>
+      <div class="field"><label>Password</label><input type="password" id="signup-pass" placeholder="Min 6 characters" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')"/></div>
+      <div class="field"><label>Role</label><select id="signup-role"><option value="user">User</option><option value="admin">Admin</option></select></div>
       <button class="btn" onclick="doSignup()">Create Account</button>
     </div>
 
@@ -246,13 +255,82 @@ body::before{
 </div>
 
 <script>
+// 1. Clear browser saved credentials/history
+if(window.history && window.history.replaceState) window.history.replaceState(null,'',window.location.href);
 if(localStorage.getItem('grb_token')) window.location.replace('dashboard.html');
+
+// ── FINGERPRINT (WebAuthn) ──
+async function checkFingerprintSupport(){
+  try{
+    if(!window.PublicKeyCredential) return false;
+    return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+  }catch(e){return false;}
+}
+
+async function registerFingerprint(userId,userName){
+  try{
+    const challenge=new Uint8Array(32);
+    crypto.getRandomValues(challenge);
+    const cred=await navigator.credentials.create({publicKey:{
+      challenge,
+      rp:{name:'GRB Billing',id:window.location.hostname},
+      user:{id:Uint8Array.from(userId,c=>c.charCodeAt(0)),name:userName,displayName:userName},
+      pubKeyCredParams:[{alg:-7,type:'public-key'}],
+      authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required'},
+      timeout:60000
+    }});
+    const credId=btoa(String.fromCharCode(...new Uint8Array(cred.rawId)));
+    localStorage.setItem('grb_fp_cred_id',credId);
+    localStorage.setItem('grb_fp_user_id',userId);
+    return true;
+  }catch(e){console.warn('FP register:',e.message);return false;}
+}
+
+async function doFingerprint(){
+  const btn=document.getElementById('fpBtn');
+  const status=document.getElementById('fp-status');
+  const credId=localStorage.getItem('grb_fp_cred_id');
+  if(!credId){
+    status.style.display='block';status.style.color='#cc2222';
+    status.textContent='No fingerprint registered. Login with password first.';return;
+  }
+  try{
+    btn.querySelector('span').style.animation='fpPulse 1s infinite';
+    status.style.display='block';status.style.color='var(--muted)';
+    status.textContent='Verifying fingerprint...';
+    const challenge=new Uint8Array(32);crypto.getRandomValues(challenge);
+    const credentialId=Uint8Array.from(atob(credId),c=>c.charCodeAt(0));
+    const assertion=await navigator.credentials.get({publicKey:{
+      challenge,rpId:window.location.hostname,
+      allowCredentials:[{id:credentialId,type:'public-key'}],
+      userVerification:'required',timeout:60000
+    }});
+    if(assertion){
+      const savedToken=localStorage.getItem('grb_fp_token');
+      const savedUser=localStorage.getItem('grb_fp_user_json');
+      if(savedToken&&savedUser){
+        localStorage.setItem('grb_token',savedToken);
+        localStorage.setItem('grb_user',savedUser);
+        status.textContent='✓ Verified! Redirecting...';status.style.color='#1a6b1a';
+        setTimeout(()=>window.location.replace('dashboard.html'),600);
+      } else {
+        status.textContent='Session expired. Login with password once.';status.style.color='#cc2222';
+      }
+    }
+  }catch(e){
+    btn.querySelector('span').style.animation='';
+    status.style.color='#cc2222';
+    status.textContent=e.name==='NotAllowedError'?'Fingerprint cancelled.':'Error: '+e.message;
+  }
+}
+
 function switchTab(tab){
   document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('on',(tab==='login'&&i===0)||(tab==='signup'&&i===1)));
   document.querySelectorAll('.auth-form').forEach(f=>f.classList.remove('on'));
   document.getElementById('form-'+tab).classList.add('on');
 }
 function showMsg(id,text,type){const el=document.getElementById(id);el.textContent=text;el.className='msg '+type;}
+
 async function doLogin(){
   const email=document.getElementById('login-email').value.trim();
   const pass=document.getElementById('login-pass').value;
@@ -265,11 +343,21 @@ async function doLogin(){
     if(!res.ok){showMsg('login-msg',data.error,'error');return;}
     localStorage.setItem('grb_token',data.token);
     localStorage.setItem('grb_user',JSON.stringify(data.user));
-    showMsg('login-msg','Login successful! Redirecting...','success');
+    localStorage.setItem('grb_fp_token',data.token);
+    localStorage.setItem('grb_fp_user_json',JSON.stringify(data.user));
+    // Auto-register fingerprint on first login
+    const hasFp=await checkFingerprintSupport();
+    if(hasFp&&!localStorage.getItem('grb_fp_cred_id')){
+      showMsg('login-msg','Setting up fingerprint login...','success');
+      await registerFingerprint(data.user.id,data.user.name||data.user.email);
+    } else {
+      showMsg('login-msg','Login successful! Redirecting...','success');
+    }
     setTimeout(()=>window.location.replace('dashboard.html'),800);
   }catch(e){showMsg('login-msg','Connection error. Please try again.','error');}
   finally{btn.textContent='Login to Dashboard';btn.disabled=false;}
 }
+
 async function doSignup(){
   const name=document.getElementById('signup-name').value.trim();
   const email=document.getElementById('signup-email').value.trim();
@@ -290,12 +378,30 @@ async function doSignup(){
   }catch(e){showMsg('signup-msg','Connection error. Please try again.','error');}
   finally{btn.textContent='Create Account';btn.disabled=false;}
 }
+
 document.addEventListener('keydown',e=>{
   if(e.key==='Enter'){
     if(document.getElementById('form-login').classList.contains('on')) doLogin();
     else doSignup();
   }
 });
+
+// Show fingerprint button if previously registered
+(async()=>{
+  const supported=await checkFingerprintSupport();
+  const fpBtn=document.getElementById('fpBtn');
+  const fpStatus=document.getElementById('fp-status');
+  if(supported){
+    fpBtn.style.display='flex';
+    if(localStorage.getItem('grb_fp_cred_id')){
+      fpStatus.style.display='block';
+      fpStatus.textContent='👆 Tap fingerprint button to login instantly';
+    } else {
+      fpStatus.style.display='block';
+      fpStatus.textContent='Fingerprint will be set up after first login';
+    }
+  }
+})();
 </script>
 </body>
 </html>

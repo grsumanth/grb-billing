@@ -73,7 +73,7 @@ router.post('/', async (req, res) => {
 
     // Get next sequential bill number from Supabase (works across all devices)
     const seqResult = await pool.query(`SELECT nextval('bill_number_seq') AS num`);
-    const billId    = String(seqResult.rows[0].num).padStart(4, '0');
+    const billId    = String(seqResult.rows[0].num);
 
     await client.query('BEGIN');
 

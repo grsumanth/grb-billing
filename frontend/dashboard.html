@@ -352,7 +352,13 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
 <main class="main">
   <div class="topbar">
     <div class="tb-title" id="ptitle">Billing</div>
-    <div class="ubadge"><span id="uname">Admin</span></div>
+    <div class="ubadge" onclick="pg('profile')" style="cursor:pointer;display:flex;align-items:center;gap:.5rem;">
+      <div id="topbarPicWrap" style="width:28px;height:28px;border-radius:50%;overflow:hidden;border:1.5px solid rgba(201,168,76,0.5);background:rgba(201,168,76,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <img id="topbarPic" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;"/>
+        <span id="topbarInitial" style="font-size:.75rem;font-weight:800;color:var(--gold2);">A</span>
+      </div>
+      <span id="uname">Admin</span>
+    </div>
   </div>
 
   <!-- BILLING PAGE -->
@@ -1857,13 +1863,31 @@ async function loadProfile(){
     document.getElementById('profileName').value=data.name||'';
     document.getElementById('profilePhone').value=(data.phone||'').replace(/^\+?91/,'').slice(0,10);
     document.getElementById('profileEmail').value=data.email||'';
-    document.getElementById('profileRole').value=data.role||'';
+    // Fix role display - show Admin or User (not staff)
+    const roleDisplay = data.role==='admin'?'Admin':'User';
+    document.getElementById('profileRole').value=roleDisplay;
     if(data.profile_pic){
       document.getElementById('profilePicImg').src=data.profile_pic;
       document.getElementById('profilePicImg').style.display='block';
       document.getElementById('profilePicPlaceholder').style.display='none';
+      // Update topbar profile pic
+      updateTopbarPic(data.profile_pic, data.name);
     }
   }catch(e){console.warn('Profile load error:',e);}
+}
+
+function updateTopbarPic(picUrl, name){
+  const img=document.getElementById('topbarPic');
+  const initial=document.getElementById('topbarInitial');
+  if(picUrl){
+    img.src=picUrl;
+    img.style.display='block';
+    initial.style.display='none';
+  } else if(name){
+    initial.textContent=name.charAt(0).toUpperCase();
+    initial.style.display='block';
+    img.style.display='none';
+  }
 }
 
 function handleProfilePic(input){
@@ -1893,11 +1917,13 @@ async function saveProfile(){
   });
   btn.textContent='Save Profile';btn.disabled=false;
   if(result){
-    // Update local storage and topbar
     const user=JSON.parse(localStorage.getItem('grb_user')||'{}');
     user.name=result.name;
+    if(profilePicData) user.profile_pic=profilePicData;
     localStorage.setItem('grb_user',JSON.stringify(user));
     document.getElementById('uname').textContent=result.name;
+    // Update topbar profile pic immediately
+    updateTopbarPic(profilePicData||result.profile_pic||null, result.name);
     toast('Profile saved ✓');
   }
 }
@@ -1923,9 +1949,11 @@ fillDrop();todaySummary();renderProds();renderCusts();
 loadFromBackend();
 loadBillSize();
 setTimeout(flushQueue,2000);
-// Show user name
+// Load user info and profile pic
 const _u=JSON.parse(localStorage.getItem('grb_user')||'{}');
 if(_u.name) document.getElementById('uname').textContent=_u.name;
+if(_u.profile_pic) updateTopbarPic(_u.profile_pic, _u.name);
+else if(_u.name) updateTopbarPic(null, _u.name);
 </script>
 </body>
 </html>
