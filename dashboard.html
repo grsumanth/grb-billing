@@ -1,0 +1,2409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>GRB Pooja Items</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --burg:#780116;--burg2:#9B0A20;--burg3:#5C0011;--burg4:#3D000B;
+  --gold:#C9A84C;--gold2:#F0CC6A;
+  --cream:#FFFFFF;--cream2:#F1F5F9;--cream3:#E2E8F0;
+  --sb:#2A0008;--sb2:#1A0005;
+  --bg:#F8FAFC;--text:#0F172A;--muted:#475569;--border:#E2E8F0;
+  --font-ui:'Helvetica Neue',Helvetica,Arial,sans-serif;
+  --font-num:'JetBrains Mono',monospace;
+  --sw:230px;
+  --bot-nav:64px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-ui);background:var(--bg);color:var(--text);display:flex;min-height:100vh;}
+
+/* ═══════════════ SIDEBAR (desktop) ═══════════════ */
+.sb{
+  width:var(--sw);position:fixed;top:0;left:0;bottom:0;z-index:50;
+  background:linear-gradient(180deg,var(--burg4) 0%,var(--sb) 40%,var(--sb2) 100%);
+  border-right:1px solid rgba(201,168,76,0.15);
+  box-shadow:4px 0 30px rgba(0,0,0,0.4);
+  display:flex;flex-direction:column;
+  transition:transform .3s ease;
+}
+.sb::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--burg),var(--gold2),var(--gold),var(--gold2),var(--burg));}
+.sb-logo{display:flex;align-items:center;gap:.85rem;padding:1.4rem 1.2rem 1.2rem;border-bottom:1px solid rgba(201,168,76,0.12);}
+.logo-icon{width:42px;height:42px;flex-shrink:0;background:linear-gradient(135deg,var(--burg),var(--burg2));
+  border:2px solid rgba(201,168,76,0.5);border-radius:11px;display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;box-shadow:0 4px 12px rgba(0,0,0,0.3);}
+.sb-brand{font-family:'Cinzel Decorative',serif;font-size:.8rem;color:var(--gold2);line-height:1.25;}
+.sb-sub{font-size:.63rem;color:rgba(201,168,76,0.5);text-transform:uppercase;letter-spacing:1.2px;}
+.sb-nav{flex:1;padding:1rem .8rem;display:flex;flex-direction:column;gap:.3rem;overflow-y:auto;}
+.nb{display:flex;align-items:center;gap:.85rem;padding:.78rem 1rem;border:none;
+  background:transparent;color:rgba(255,255,255,0.45);border-radius:12px;
+  font-family:var(--font-ui);font-size:.9rem;font-weight:600;cursor:pointer;
+  transition:all .22s;text-align:left;width:100%;}
+.nb:hover{background:rgba(201,168,76,0.08);color:rgba(255,255,255,0.8);}
+.nb.on{background:linear-gradient(135deg,var(--burg),var(--burg2));color:#fff;
+  box-shadow:0 4px 16px rgba(120,1,22,0.5),inset 0 1px 0 rgba(201,168,76,0.2);}
+.ni{font-size:1.1rem;}
+.ndiv{height:1px;background:rgba(201,168,76,0.1);margin:.4rem 0;}
+.sb-foot{padding:.8rem;border-top:1px solid rgba(201,168,76,0.1);}
+.lbtn{width:100%;padding:.6rem;background:transparent;border:1px solid rgba(201,168,76,0.2);
+  color:rgba(255,255,255,0.4);border-radius:10px;font-family:var(--font-ui);font-size:.82rem;
+  font-weight:600;cursor:pointer;transition:all .2s;}
+.lbtn:hover{border-color:var(--gold);color:var(--gold2);background:rgba(201,168,76,0.07);}
+
+/* ═══════════════ MAIN ═══════════════ */
+.main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+
+/* ═══════════════ TOPBAR ═══════════════ */
+.topbar{
+  background:linear-gradient(135deg,var(--burg3),var(--burg));
+  padding:.85rem 1.5rem;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:30;box-shadow:0 2px 20px rgba(120,1,22,0.4);
+}
+.topbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold2),var(--gold),var(--gold2),transparent);}
+.tb-title{font-family:'Cinzel Decorative',serif;font-size:1rem;color:var(--gold2);letter-spacing:.4px;}
+.ubadge{background:rgba(201,168,76,0.15);color:var(--gold2);padding:.32rem .9rem;
+  border-radius:20px;font-size:.8rem;font-weight:700;border:1px solid rgba(201,168,76,0.35);}
+
+/* ═══════════════ PAGES ═══════════════ */
+.page{display:none;padding:1.5rem;animation:pgIn .25s ease;}
+.page.on{display:block;}
+@keyframes pgIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;gap:.8rem;}
+.ph h2{font-family:'Cinzel Decorative',serif;font-size:1rem;color:var(--burg);}
+
+/* ═══════════════ CARDS ═══════════════ */
+.card{background:#fff;border-radius:14px;box-shadow:0 2px 16px rgba(120,1,22,0.07);
+  border:1px solid var(--border);border-top:3px solid var(--burg);overflow:hidden;}
+.ctitle{font-family:'Cinzel Decorative',serif;font-size:.88rem;font-weight:700;
+  padding:1rem 1.4rem;border-bottom:1px solid var(--border);color:var(--burg);
+  background:linear-gradient(135deg,#F8FAFC,#fff);display:flex;align-items:center;gap:.5rem;}
+.ctitle::before{content:'';width:4px;height:16px;background:linear-gradient(180deg,var(--gold2),var(--gold));border-radius:4px;}
+
+/* ═══════════════ BILLING LAYOUT ═══════════════ */
+.bl{display:grid;grid-template-columns:1fr 280px;gap:1.4rem;align-items:start;}
+.fr{padding:.9rem 1.4rem 0;display:grid;grid-template-columns:1fr;gap:.9rem;}
+.fr.t3{grid-template-columns:2fr 1fr 1.2fr;}
+.fg label{display:block;font-size:.72rem;font-weight:700;color:var(--burg3);
+  text-transform:uppercase;letter-spacing:.8px;margin-bottom:.32rem;}
+.fg input,.fg select{width:100%;padding:.65rem .9rem;border:2px solid var(--cream3);
+  border-radius:10px;font-family:var(--font-ui);font-size:16px;color:var(--text);
+  background:var(--cream);outline:none;transition:all .22s;}
+.fg input:focus,.fg select:focus{border-color:var(--burg);background:#fff;box-shadow:0 0 0 3px rgba(120,1,22,0.08);}
+.ci-row{display:flex;gap:.4rem;}.ci-row input{flex:1;}
+.sugg{background:#fff;border:2px solid var(--border);border-radius:10px;margin-top:4px;
+  box-shadow:0 8px 24px rgba(120,1,22,0.12);max-height:160px;overflow-y:auto;}
+.sugg.hide{display:none;}
+.si{padding:.65rem .9rem;cursor:pointer;font-size:.9rem;border-bottom:1px solid var(--cream2);transition:background .15s;}
+.si:hover,.si:active{background:var(--cream2);}
+.si:last-child{border-bottom:none;}
+.bsm{padding:.65rem .85rem;border-radius:8px;border:2px solid var(--cream3);
+  background:var(--cream);cursor:pointer;font-size:1rem;transition:all .2s;min-width:44px;min-height:44px;}
+.bsm:hover{border-color:var(--burg);background:var(--cream2);}
+.badd{margin:.9rem 1.4rem;padding:.7rem 1.4rem;background:linear-gradient(135deg,var(--burg3),var(--burg));
+  color:#fff;border:none;border-radius:10px;font-family:var(--font-ui);font-size:.95rem;
+  font-weight:700;cursor:pointer;transition:all .22s;box-shadow:0 4px 14px rgba(120,1,22,0.3);
+  width:calc(100% - 2.8rem);}
+.badd:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(120,1,22,0.4);}
+.twrap{overflow-x:auto;padding:0 1.4rem;}
+.btbl{width:100%;border-collapse:collapse;font-size:.86rem;}
+.btbl th{text-align:left;padding:.55rem .65rem;color:var(--burg3);font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.6px;border-bottom:2px solid var(--cream3);
+  background:linear-gradient(135deg,var(--cream2),#fff);}
+.btbl td{padding:.55rem .65rem;border-bottom:1px solid var(--cream2);}
+.btbl tr:hover td{background:var(--cream2);}
+.btbl tr:last-child td{border-bottom:none;}
+.bdel{background:#fff0f0;border:none;padding:.35rem .65rem;border-radius:6px;
+  cursor:pointer;color:#c00;font-size:.88rem;transition:background .2s;min-width:36px;min-height:36px;}
+.bdel:hover,.bdel:active{background:#ffdddd;}
+.empty{text-align:center;padding:1.5rem;color:var(--muted);font-size:.85rem;}
+
+/* GST */
+.gst-r{display:flex;align-items:center;justify-content:space-between;padding:.8rem 1.4rem;
+  font-size:.9rem;font-weight:600;color:var(--burg);border-top:1px solid var(--border);
+  background:linear-gradient(135deg,var(--cream2),#fff);gap:.6rem;flex-wrap:wrap;}
+.gst-pct-wrap{display:flex;align-items:center;gap:.3rem;}
+.gst-pct-wrap.hide{display:none!important;}
+.tog{position:relative;display:inline-block;width:48px;height:26px;}
+.tog input{opacity:0;width:0;height:0;}
+.sl{position:absolute;cursor:pointer;inset:0;background:#cbd5e1;border-radius:24px;transition:.3s;}
+.sl::before{content:'';position:absolute;width:20px;height:20px;left:3px;bottom:3px;
+  background:#fff;border-radius:50%;transition:.3s;}
+input:checked+.sl{background:linear-gradient(135deg,var(--burg),var(--burg2));}
+input:checked+.sl::before{transform:translateX(22px);}
+.totals{padding:0 1.4rem .5rem;}
+.tr2{display:flex;justify-content:space-between;padding:.45rem 0;font-size:.9rem;
+  color:var(--muted);border-bottom:1px solid var(--cream2);}
+.tr2 span:last-child{font-family:var(--font-num);}
+.tr2.grand{font-size:1.15rem;font-weight:800;color:var(--burg);border-bottom:none;padding-top:.65rem;}
+.gstline.hide{display:none;}
+.arow{display:flex;gap:.8rem;padding:.9rem 1.4rem 1.2rem;}
+
+/* Buttons */
+.bprim{flex:1;padding:.8rem;
+  background:linear-gradient(135deg,var(--burg3),var(--burg) 50%,var(--burg2));
+  color:#fff;border:none;border-radius:11px;font-family:var(--font-ui);
+  font-size:.95rem;font-weight:800;cursor:pointer;transition:all .22s;
+  box-shadow:0 4px 16px rgba(120,1,22,0.35);position:relative;overflow:hidden;
+  min-height:48px;}
+.bprim::before{content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(201,168,76,0.22),transparent);
+  transform:translateX(-100%);transition:transform .5s;}
+.bprim:hover::before{transform:translateX(100%);}
+.bprim:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(120,1,22,0.45);}
+.bprim:active{transform:scale(.98);}
+.bred{padding:.75rem 1.1rem;background:transparent;border:2px solid #ffcccc;color:#cc3333;
+  border-radius:11px;font-family:var(--font-ui);font-size:.9rem;font-weight:700;
+  cursor:pointer;transition:all .2s;min-height:48px;}
+.bred:hover,.bred:active{background:#fff5f5;border-color:#cc3333;}
+
+/* Summary */
+.sstat{padding:.9rem 1.4rem;border-bottom:1px solid var(--border);background:linear-gradient(135deg,#fff,var(--bg));}
+.slbl{font-size:.7rem;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);font-weight:700;}
+.sval{font-size:1.7rem;font-weight:800;color:var(--burg);margin-top:.1rem;font-family:var(--font-num);}
+.rtitle{font-size:.73rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;
+  color:var(--burg3);padding:.9rem 1.4rem .45rem;}
+.rlist{padding:0 1.4rem .9rem;}
+.nodata{font-size:.82rem;color:var(--muted);text-align:center;padding:.9rem 0;}
+.rbi{padding:.5rem 0;border-bottom:1px solid var(--cream2);font-size:.83rem;}
+.rbi:last-child{border-bottom:none;}
+.rbn{font-weight:700;}.rba{font-weight:800;color:var(--burg);float:right;font-family:var(--font-num);}
+.rbt{color:var(--muted);font-size:.75rem;}
+
+/* Tables */
+.sbar{margin-bottom:1rem;}
+.sbar input{width:100%;padding:.7rem 1rem;border:2px solid var(--cream3);border-radius:11px;
+  font-family:var(--font-ui);font-size:16px;outline:none;background:#fff;transition:border-color .2s;}
+.sbar input:focus{border-color:var(--burg);}
+.dtbl{width:100%;border-collapse:collapse;font-size:.87rem;}
+.dtbl th{text-align:left;padding:.7rem 1rem;color:var(--burg3);font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.6px;background:linear-gradient(135deg,var(--cream2),#fff);
+  border-bottom:2px solid var(--cream3);}
+.dtbl td{padding:.7rem 1rem;border-bottom:1px solid var(--cream2);}
+.dtbl tr:last-child td{border-bottom:none;}
+.dtbl tr:hover td,.dtbl tr:active td{background:var(--cream2);}
+.dtbl td:nth-child(4),.dtbl td:nth-child(5),.dtbl td:nth-child(6){font-family:var(--font-num);}
+.btbl td:nth-child(4),.btbl td:nth-child(5),.btbl td:nth-child(6){font-family:var(--font-num);}
+input[type=number]{font-family:var(--font-num)!important;font-size:16px!important;}
+.bedit{background:var(--cream2);border:none;padding:.35rem .75rem;border-radius:7px;cursor:pointer;
+  color:var(--burg);font-size:.82rem;font-family:var(--font-ui);font-weight:600;
+  margin-right:.3rem;transition:background .2s;min-height:36px;}
+.bedit:hover,.bedit:active{background:var(--cream3);}
+.bdelbill{background:#fff0f0;border:1.5px solid #ffcccc;padding:.32rem .8rem;border-radius:7px;
+  cursor:pointer;color:#cc2222;font-size:.78rem;font-family:var(--font-ui);font-weight:600;
+  transition:all .2s;white-space:nowrap;min-height:36px;}
+.bdelbill:hover,.bdelbill:active{background:#ffdddd;border-color:#cc2222;}
+
+/* Reports grid */
+.rgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.1rem;margin-bottom:1.4rem;}
+.rcard{padding:1.3rem;text-align:center;}
+.rico{font-size:2rem;margin-bottom:.4rem;}
+.rcard h3{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.6px;margin-bottom:.5rem;}
+.rval{font-size:1.8rem;font-weight:800;color:var(--burg);font-family:var(--font-num);}
+.rlbl{font-size:.72rem;color:var(--muted);margin-top:.2rem;}
+
+/* Modals */
+.ov{position:fixed;inset:0;background:rgba(26,0,5,0.65);backdrop-filter:blur(5px);
+  display:flex;align-items:center;justify-content:center;z-index:200;padding:1rem;}
+.ov.hide{display:none;}
+.mb{background:var(--cream);border-radius:20px;padding:1.6rem;width:100%;max-width:460px;
+  box-shadow:0 0 0 1px rgba(201,168,76,0.3),0 30px 80px rgba(0,0,0,0.35);
+  border-top:3px solid var(--burg);max-height:90vh;overflow-y:auto;}
+.mb h3{font-family:'Cinzel Decorative',serif;font-size:.95rem;font-weight:700;
+  color:var(--burg);margin-bottom:1.2rem;letter-spacing:.3px;}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;}
+.ig2{margin-bottom:0;}.ig2.full{grid-column:1/-1;}
+.ig2 label{display:block;font-size:.72rem;font-weight:700;color:var(--burg3);
+  text-transform:uppercase;letter-spacing:.8px;margin-bottom:.32rem;}
+.ig2 input,.ig2 select,.ig2 textarea{width:100%;padding:.7rem .9rem;border:2px solid var(--cream3);
+  border-radius:10px;font-family:var(--font-ui);font-size:16px;color:var(--text);
+  background:#fff;outline:none;transition:all .22s;resize:vertical;}
+.ig2 input:focus,.ig2 select:focus,.ig2 textarea:focus{border-color:var(--burg);box-shadow:0 0 0 3px rgba(120,1,22,0.08);}
+.macts{display:flex;gap:.8rem;margin-top:1.2rem;}
+.bout{flex:1;padding:.75rem;border:2px solid var(--cream3);background:transparent;
+  border-radius:11px;font-family:var(--font-ui);font-size:.92rem;font-weight:600;
+  color:var(--muted);cursor:pointer;transition:all .2s;min-height:48px;}
+.bout:hover,.bout:active{border-color:var(--burg);color:var(--burg);}
+.pklist{max-height:240px;overflow-y:auto;margin-top:.8rem;border:2px solid var(--border);border-radius:10px;}
+.pki{padding:.75rem 1rem;cursor:pointer;border-bottom:1px solid var(--cream2);font-size:.9rem;transition:background .15s;}
+.pki:last-child{border-bottom:none;}.pki:hover,.pki:active{background:var(--cream2);}
+.pkn{font-weight:700;}.pkd{font-size:.78rem;color:var(--muted);}
+.pill{background:var(--cream2);color:var(--burg);padding:.2rem .55rem;border-radius:6px;font-size:.76rem;font-weight:700;}
+
+/* Bottom nav (mobile only - hidden on desktop) */
+.bot-nav{display:none;}
+
+/* ═══════════════ TABLET (≤900px) ═══════════════ */
+@media(max-width:900px){
+  :root{--sw:200px;}
+  .bl{grid-template-columns:1fr;}
+  .rgrid{grid-template-columns:repeat(2,1fr);}
+  .fr.t3{grid-template-columns:1fr 1fr;}
+}
+
+/* ═══════════════ MOBILE (≤640px) ═══════════════ */
+@media(max-width:640px){
+  /* Hide sidebar, show bottom nav */
+  .sb{display:none;}
+  .main{margin-left:0;padding-bottom:var(--bot-nav);}
+
+  /* Topbar smaller */
+  .topbar{padding:.7rem 1rem;}
+  .tb-title{font-size:.9rem;}
+  .ubadge{font-size:.75rem;padding:.28rem .7rem;}
+
+  /* Pages */
+  .page{padding:1rem;}
+  .ph{margin-bottom:1rem;}
+  .ph h2{font-size:.9rem;}
+
+  /* Billing full width stacked */
+  .bl{grid-template-columns:1fr;gap:1rem;}
+
+  /* 3-col form → 1 col */
+  .fr.t3{grid-template-columns:1fr;}
+
+  /* Reports 2x2 grid */
+  .rgrid{grid-template-columns:repeat(2,1fr);gap:.8rem;}
+  .rcard{padding:1rem;}
+  .rico{font-size:1.6rem;}
+  .rval{font-size:1.4rem;}
+  .rcard h3{font-size:.68rem;}
+
+  /* Modal full width from bottom */
+  .ov{align-items:flex-end;padding:0;}
+  .mb{border-radius:20px 20px 0 0;max-width:100%;width:100%;max-height:88vh;
+    padding:1.4rem 1.2rem 2rem;}
+
+  /* Tables scroll */
+  .twrap{padding:0 1rem;}
+  .dtbl{font-size:.82rem;}
+  .dtbl th{padding:.6rem .7rem;font-size:.67rem;}
+  .dtbl td{padding:.6rem .7rem;}
+
+  /* Bottom navigation bar */
+  .bot-nav{
+    display:flex;position:fixed;bottom:0;left:0;right:0;z-index:50;
+    background:linear-gradient(180deg,var(--sb) 0%,var(--sb2) 100%);
+    border-top:2px solid rgba(201,168,76,0.2);
+    box-shadow:0 -4px 20px rgba(0,0,0,0.3);
+    height:var(--bot-nav);
+  }
+  .bot-nav::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,transparent,var(--gold2),var(--gold),var(--gold2),transparent);}
+  .bnb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:.18rem;border:none;background:transparent;color:rgba(255,255,255,0.45);
+    cursor:pointer;transition:all .2s;padding:.4rem 0;font-family:var(--font-ui);}
+  .bnb .bni{font-size:1.3rem;transition:transform .2s;}
+  .bnb .bnl{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+  .bnb.on{color:var(--gold2);}
+  .bnb.on .bni{transform:translateY(-2px);}
+
+  /* Bigger touch targets */
+  .badd{padding:.78rem 1.4rem;font-size:1rem;}
+  .bprim{min-height:52px;font-size:1rem;}
+  .bred{min-height:52px;}
+  .bdel{min-width:40px;min-height:40px;padding:.4rem .7rem;}
+  .bedit{min-height:38px;padding:.4rem .8rem;}
+  .bdelbill{min-height:38px;}
+  .fg input,.fg select{font-size:1rem;padding:.7rem .9rem;}
+  .sbar input{font-size:1rem;}
+
+  /* Summary stats row on mobile */
+  .mobile-stats{display:flex;gap:.6rem;overflow-x:auto;padding-bottom:.3rem;}
+  .mobile-stats .sstat{flex:0 0 auto;width:140px;border-radius:12px;border:1px solid var(--border);
+    border-top:3px solid var(--burg);}
+}
+
+@media print{
+  .sb,.topbar,.bot-nav,.modal-overlay{display:none!important;}
+  .main{margin-left:0;padding-bottom:0;}
+  .page{display:block!important;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ SIDEBAR (desktop/tablet) ═══ -->
+<aside class="sb">
+  <div class="sb-logo">
+    <div class="logo-icon">ॐ</div>
+    <div><div class="sb-brand">GRB Pooja</div><div class="sb-sub">Items</div></div>
+  </div>
+  <nav class="sb-nav">
+    <button class="nb on" onclick="pg('billing')" id="nb-billing"><span class="ni">🧾</span> Billing</button>
+    <button class="nb" onclick="pg('customers')" id="nb-customers"><span class="ni">👤</span> Customers</button>
+    <button class="nb" onclick="pg('products')" id="nb-products"><span class="ni">📦</span> Products</button>
+    <button class="nb" onclick="pg('gallery')" id="nb-gallery"><span class="ni">🖼️</span> Gallery</button>
+    <button class="nb" onclick="pg('profile')" id="nb-profile"><span class="ni">⚙️</span> Profile</button>
+    <div class="ndiv"></div>
+    <button class="nb" onclick="pg('reports')" id="nb-reports"><span class="ni">📊</span> Reports</button>
+  </nav>
+  <div class="sb-foot">
+    <button class="lbtn" id="btn-sidebar-logout" onclick="logout()">⬅ Logout</button>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<main class="main">
+  <div class="topbar">
+    <div class="tb-title" id="ptitle">Billing</div>
+    <div class="ubadge" onclick="pg('profile')" style="cursor:pointer;display:flex;align-items:center;gap:.5rem;">
+      <div id="topbarPicWrap" style="width:28px;height:28px;border-radius:50%;overflow:hidden;border:1.5px solid rgba(201,168,76,0.5);background:rgba(201,168,76,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <img id="topbarPic" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;"/>
+        <span id="topbarInitial" style="font-size:.75rem;font-weight:800;color:var(--gold2);">A</span>
+      </div>
+      <span id="uname">Admin</span>
+    </div>
+  </div>
+
+  <!-- BILLING PAGE -->
+  <section class="page on" id="page-billing">
+    <div class="bl">
+      <!-- Bill Form -->
+      <div class="card">
+        <div class="ctitle">New Bill</div>
+        <div class="fr">
+          <div class="fg">
+            <label>Customer Name</label>
+            <div class="ci-row">
+              <input type="text" id="bCust" placeholder="Type name or search..." oninput="srchCust(this.value)" autocomplete="off"/>
+              <button class="bsm" id="btn-pick-customer" onclick="openPicker()" title="Pick from list">📋</button>
+            </div>
+            <div class="sugg hide" id="sugg"></div>
+          </div>
+        </div>
+        <div class="fr t3">
+          <div class="fg"><label>Product</label>
+            <select id="pSel" onchange="onProd()"><option value="">-- Select Product --</option></select>
+          </div>
+          <div class="fg"><label>Qty</label>
+            <input type="number" id="bQty" value="1" min="1" inputmode="numeric"/>
+          </div>
+          <div class="fg"><label>Price (₹)</label>
+            <input type="number" id="bPrice" placeholder="0.00" inputmode="decimal"/>
+          </div>        </div>
+        <button class="badd" id="btn-add-item" onclick="addItem()">＋ Add Item to Bill</button>
+        <div class="twrap">
+          <table class="btbl">
+            <thead><tr><th>#</th><th>Product</th><th>Type</th><th>Qty</th><th>Rate</th><th>Total</th><th></th></tr></thead>
+            <tbody id="bBody"></tbody>
+          </table>
+          <div class="empty" id="bEmpty">No items added yet — select a product above</div>
+        </div>
+        <!-- GST -->
+        <div class="gst-r">
+          <div style="display:flex;align-items:center;gap:.8rem;flex-wrap:wrap">
+            <label class="tog"><input type="checkbox" id="gstChk" onchange="toggleGst()"/><span class="sl"></span></label>
+            <span style="font-weight:700;color:var(--burg)">Apply GST</span>
+            <div class="gst-pct-wrap hide" id="gstPctWrap">
+              <input type="number" id="gstPct" value="5" min="0" max="100" step="0.5"
+                style="width:68px;padding:.36rem .5rem;border:2px solid var(--cream3);border-radius:8px;font-family:inherit;font-size:.92rem;font-weight:700;color:var(--burg);background:var(--cream);outline:none;text-align:center;"
+                oninput="recalc()"/>
+              <span style="font-size:.85rem;color:var(--muted);font-weight:600">%</span>
+            </div>
+          </div>
+          <span id="gstBadge" class="hide" style="background:linear-gradient(135deg,var(--burg3),var(--burg));color:#fff;padding:.22rem .7rem;border-radius:20px;font-size:.78rem;font-weight:700;"></span>
+        </div>
+        <!-- Totals -->
+        <div class="totals">
+          <div class="tr2"><span>Subtotal</span><span id="sub">₹0.00</span></div>
+          <div class="tr2 gstline hide" id="gstLine"><span id="gstLabel">GST (5%)</span><span id="gstAmt">₹0.00</span></div>
+          <div class="tr2 grand"><span>Grand Total</span><span id="gtotal">₹0.00</span></div>
+        </div>
+        <!-- Actions -->
+        <div class="arow">
+          <button class="bred" id="btn-clear-bill" onclick="clearBill()">🗑 Clear</button>
+          <button class="bprim" id="btn-print-bill" onclick="printBill()">🖨 Print Bill</button>
+        </div>
+        <div style="padding:0 1.4rem .5rem;">
+          <button onclick="emailBill()" id="btn-email-bill" style="width:100%;padding:.65rem .4rem;background:transparent;border:2px solid var(--burg);color:var(--burg);border-radius:11px;font-family:var(--font-ui);font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;min-height:46px;">📧 Email Bill</button>
+        </div>
+        <!-- Bill Size -->
+        <div style="padding:0 1.4rem 1.1rem;display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:.85rem;">
+          <span style="font-size:.72rem;font-weight:700;color:var(--burg3);text-transform:uppercase;letter-spacing:.8px;">Bill Size</span>
+          <button onclick="setPreset(21,29.7)" id="presetA4" style="padding:.32rem .7rem;border-radius:7px;border:2px solid var(--cream3);background:var(--cream);font-family:inherit;font-size:.78rem;font-weight:700;color:var(--muted);cursor:pointer;transition:all .2s;min-height:36px;">A4</button>
+          <button onclick="setPreset(14.8,21)" id="presetA5" style="padding:.32rem .7rem;border-radius:7px;border:2px solid var(--cream3);background:var(--cream);font-family:inherit;font-size:.78rem;font-weight:700;color:var(--muted);cursor:pointer;transition:all .2s;min-height:36px;">A5</button>
+          <button onclick="setPreset(8,20)" id="presetR" style="padding:.32rem .7rem;border-radius:7px;border:2px solid var(--cream3);background:var(--cream);font-family:inherit;font-size:.78rem;font-weight:700;color:var(--muted);cursor:pointer;transition:all .2s;min-height:36px;">Receipt</button>
+          <div style="display:flex;align-items:center;gap:.35rem;">
+            <label style="font-size:.74rem;color:var(--muted);font-weight:600">W</label>
+            <input type="number" id="billW" value="14.8" min="5" max="60" step="0.1" inputmode="decimal"
+              style="width:68px;padding:.36rem .5rem;border:2px solid var(--cream3);border-radius:8px;font-family:inherit;font-size:.88rem;font-weight:700;color:var(--burg);background:var(--cream);outline:none;text-align:center;"
+              oninput="saveBillSize()"/>
+            <span style="font-size:.76rem;color:var(--muted)">cm</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:.35rem;">
+            <label style="font-size:.74rem;color:var(--muted);font-weight:600">H</label>
+            <input type="number" id="billH" value="21" min="5" max="100" step="0.1" inputmode="decimal"
+              style="width:68px;padding:.36rem .5rem;border:2px solid var(--cream3);border-radius:8px;font-family:inherit;font-size:.88rem;font-weight:700;color:var(--burg);background:var(--cream);outline:none;text-align:center;"
+              oninput="saveBillSize()"/>
+            <span style="font-size:.76rem;color:var(--muted)">cm</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Today Summary -->
+      <div class="card">
+        <div class="ctitle">Today</div>
+        <div class="sstat"><div class="slbl">Bills Today</div><div class="sval" id="sBills">0</div></div>
+        <div class="sstat"><div class="slbl">Total Sales</div><div class="sval" id="sSales">₹0</div></div>
+        <div class="sstat"><div class="slbl">GST Collected</div><div class="sval" id="sGst">₹0</div></div>
+        <div class="rtitle">Recent Bills</div>
+        <div class="rlist" id="rBills"><div class="nodata">No bills yet today</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CUSTOMERS PAGE -->
+  <section class="page" id="page-customers">
+    <div class="ph">
+      <h2>Customers</h2>
+      <button class="bprim" id="btn-customer-add" style="flex:none;padding:.55rem 1.2rem;min-height:44px" onclick="openCustMod()">+ Add</button>
+    </div>
+    <div class="sbar"><input type="text" id="input-search-customers" placeholder="🔍 Search customers..." oninput="srchCustTbl(this.value)"/></div>
+    <div class="card" style="overflow:hidden">
+      <div style="overflow-x:auto">
+        <table class="dtbl">
+          <thead><tr><th>#</th><th>Name</th><th>Phone</th><th>Email</th><th>Address</th><th>Notes</th><th>Actions</th></tr></thead>
+          <tbody id="cBody"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="cEmpty">No customers added yet</div>
+    </div>
+  </section>
+
+  <!-- PRODUCTS PAGE -->
+  <section class="page" id="page-products">
+    <div class="ph">
+      <h2>Products</h2>
+      <button class="bprim" id="btn-product-add" style="flex:none;padding:.55rem 1.2rem;min-height:44px" onclick="openProdMod()">+ Add</button>
+    </div>
+    <div class="sbar"><input type="text" id="input-search-products" placeholder="🔍 Search products..." oninput="srchProdTbl(this.value)"/></div>
+    <div class="card" style="overflow:hidden">
+      <div style="overflow-x:auto">
+        <table class="dtbl">
+          <thead><tr><th>#</th><th>Name</th><th>Type</th><th>Price</th><th>Actions</th></tr></thead>
+          <tbody id="pBody"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="pEmpty">No products added yet</div>
+    </div>
+  </section>
+
+
+  <!-- GALLERY PAGE -->
+  <section class="page" id="page-gallery">
+    <div class="ph">
+      <h2>Gallery</h2>
+      <button class="bprim" id="btn-gallery-add-category" style="flex:none;padding:.55rem 1.2rem;min-height:44px" onclick="openGalleryModal()">+ Add Category</button>
+    </div>
+    <!-- Gallery Grid — each card is a category with multiple images -->
+    <div id="galleryGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;"></div>
+    <div class="empty" id="galleryEmpty">No items added yet</div>
+  </section>
+
+  <!-- GALLERY VIEW (full images of a category) -->
+  <section class="page" id="page-gallery-view">
+    <div class="ph">
+      <h2 id="galleryViewTitle">Category</h2>
+      <button class="bred" id="btn-gallery-back" style="flex:none;padding:.5rem 1rem;min-height:44px" onclick="pg('gallery')">← Back</button>
+    </div>
+    <div style="margin-bottom:1rem;display:flex;gap:.6rem;flex-wrap:wrap;" id="galleryViewActions"></div>
+    <div id="galleryViewGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.8rem;"></div>
+  </section>
+
+
+  <!-- PROFILE PAGE -->
+  <section class="page" id="page-profile">
+    <div class="ph"><h2>My Profile</h2></div>
+    <div class="card" style="max-width:500px;margin:0 auto;">
+      <div class="ctitle">Profile Settings</div>
+      <div style="padding:1.5rem;display:flex;flex-direction:column;align-items:center;gap:1.2rem;">
+        <!-- Profile Picture -->
+        <div style="position:relative;">
+          <div id="profilePicWrap" style="width:100px;height:100px;border-radius:50%;border:3px solid var(--gold);overflow:hidden;background:var(--cream2);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(120,1,22,0.15);">
+            <img id="profilePicImg" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;"/>
+            <span id="profilePicPlaceholder" style="font-size:2.5rem;">👤</span>
+          </div>
+          <label for="profilePicInput" style="position:absolute;bottom:0;right:0;background:var(--burg);color:white;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.8rem;box-shadow:0 2px 8px rgba(0,0,0,0.3);">✏</label>
+          <input type="file" id="profilePicInput" accept="image/*" style="display:none;" onchange="handleProfilePic(this)"/>
+        </div>
+        <!-- Name -->
+        <div style="width:100%;">
+          <label style="display:block;font-size:.7rem;font-weight:700;color:var(--burg3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:.3rem;">Full Name</label>
+          <input type="text" id="profileName" placeholder="Your full name" style="width:100%;padding:.72rem 1rem;border:2px solid var(--cream3);border-radius:11px;font-family:var(--font-ui);font-size:16px;color:var(--text);background:var(--cream);outline:none;"/>
+        </div>
+        <!-- Phone -->
+        <div style="width:100%;">
+          <label style="display:block;font-size:.7rem;font-weight:700;color:var(--burg3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:.3rem;">Phone Number</label>
+          <div style="display:flex;align-items:center;gap:.4rem;">
+            <span style="padding:.72rem .7rem;background:#fff0e8;border:2px solid var(--cream3);border-radius:10px;font-size:16px;font-weight:700;color:var(--burg);white-space:nowrap;">+91</span>
+            <input type="tel" id="profilePhone" placeholder="10-digit number" maxlength="10" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)" style="flex:1;padding:.72rem 1rem;border:2px solid var(--cream3);border-radius:11px;font-family:var(--font-ui);font-size:16px;color:var(--text);background:var(--cream);outline:none;"/>
+          </div>
+        </div>
+        <!-- Email (readonly) -->
+        <div style="width:100%;">
+          <label style="display:block;font-size:.7rem;font-weight:700;color:var(--burg3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:.3rem;">Email Address</label>
+          <input type="email" id="profileEmail" readonly style="width:100%;padding:.72rem 1rem;border:2px solid var(--cream3);border-radius:11px;font-family:var(--font-ui);font-size:16px;color:var(--muted);background:var(--cream2);outline:none;cursor:not-allowed;"/>
+        </div>
+        <!-- Role (readonly) -->
+        <div style="width:100%;">
+          <label style="display:block;font-size:.7rem;font-weight:700;color:var(--burg3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:.3rem;">Role</label>
+          <input type="text" id="profileRole" readonly style="width:100%;padding:.72rem 1rem;border:2px solid var(--cream3);border-radius:11px;font-family:var(--font-ui);font-size:16px;color:var(--muted);background:var(--cream2);outline:none;cursor:not-allowed;"/>
+        </div>
+        <button class="bprim" id="btn-profile-save" onclick="saveProfile()" style="width:100%;min-height:50px;">Save Profile</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- REPORTS PAGE -->
+  <section class="page" id="page-reports">
+    <div class="ph"><h2>Reports & Analytics</h2></div>
+    <div class="rgrid">
+      <div class="card rcard"><div class="rico">📅</div><h3>Daily Sales</h3><div class="rval" id="rDS">₹0</div><div class="rlbl">Today</div></div>
+      <div class="card rcard"><div class="rico">🧾</div><h3>Total Bills</h3><div class="rval" id="rTB">0</div><div class="rlbl">All Time</div></div>
+      <div class="card rcard"><div class="rico">💰</div><h3>Revenue</h3><div class="rval" id="rTR">₹0</div><div class="rlbl">All Time</div></div>
+      <div class="card rcard"><div class="rico">📦</div><h3>GST</h3><div class="rval" id="rGC">₹0</div><div class="rlbl">All Time</div></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Bill History</div>
+      <div style="overflow-x:auto">
+        <table class="dtbl">
+          <thead><tr><th>Bill No</th><th>Date & Time</th><th>Customer</th><th>Items</th><th>GST</th><th>Total</th><th>Actions</th></tr></thead>
+          <tbody id="hBody"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="hEmpty">No bills recorded yet</div>
+    </div>
+  </section>
+</main>
+
+<!-- ═══ BOTTOM NAV (mobile only) ═══ -->
+<nav class="bot-nav">
+  <button class="bnb on" onclick="pg('billing')" id="bnb-billing">
+    <span class="bni">🧾</span><span class="bnl">Billing</span>
+  </button>
+  <button class="bnb" onclick="pg('customers')" id="bnb-customers">
+    <span class="bni">👤</span><span class="bnl">Customers</span>
+  </button>
+  <button class="bnb" onclick="pg('products')" id="bnb-products">
+    <span class="bni">📦</span><span class="bnl">Products</span>
+  </button>
+  <button class="bnb" onclick="pg('gallery')" id="bnb-gallery">
+    <span class="bni">🖼️</span><span class="bnl">Gallery</span>
+  </button>
+  <button class="bnb" onclick="pg('profile')" id="bnb-profile">
+    <span class="bni">👤</span><span class="bnl">Profile</span>
+  </button>
+  <button class="bnb" onclick="pg('reports')" id="bnb-reports">
+    <span class="bni">📊</span><span class="bnl">Reports</span>
+  </button>
+</nav>
+
+<!-- ESTIMATE MODAL -->
+<div class="ov hide" id="estimateModal">
+  <div class="mb wide" style="max-width:600px;">
+    <h3 id="estModalTitle">New Estimate</h3>
+    <input type="hidden" id="estEditId"/>
+    <div class="ig2 full" style="margin-bottom:.9rem">
+      <label>Customer Name *</label>
+      <input type="text" id="estCust" placeholder="Customer name" autocomplete="off"/>
+    </div>
+    <div style="border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:.9rem;">
+      <table class="dtbl" id="estItemsTable">
+        <thead><tr><th>#</th><th>Item</th><th>Type</th><th>Qty</th><th>Price</th><th>Total</th><th></th></tr></thead>
+        <tbody id="estItemsBody"></tbody>
+      </table>
+    </div>
+    <div style="display:grid;grid-template-columns:2fr 1fr 1.2fr auto;gap:.5rem;margin-bottom:.9rem;align-items:end;">
+      <div class="ig2"><label>Product</label>
+        <select id="estProdSel" onchange="onEstProd()"><option value="">-- Select --</option></select>
+      </div>
+      <div class="ig2"><label>Qty</label><input type="number" id="estQty" value="1" min="1" inputmode="numeric"/></div>
+      <div class="ig2"><label>Price</label><input type="number" id="estPrice" placeholder="0.00" inputmode="decimal"/></div>
+      <button class="bprim" id="btn-estimate-add-item-trigger" style="padding:.65rem .8rem;flex:none;min-height:44px;margin-top:1.2rem;" onclick="addEstItem()">+</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:.9rem;">
+      <label class="tog"><input type="checkbox" id="estGstChk" onchange="recalcEst()"/><span class="sl"></span></label>
+      <span style="font-size:.9rem;font-weight:600;color:var(--burg)">Apply GST</span>
+      <div id="estGstWrap" class="hide" style="display:flex;align-items:center;gap:.3rem;">
+        <input type="number" id="estGstPct" value="5" min="0" max="100"
+          style="width:60px;padding:.35rem .5rem;border:2px solid var(--cream3);border-radius:8px;font-size:.9rem;font-weight:700;color:var(--burg);background:var(--cream);outline:none;text-align:center;"
+          oninput="recalcEst()"/>
+        <span style="font-size:.85rem;color:var(--muted)">%</span>
+      </div>
+    </div>
+    <div style="background:var(--cream2);border-radius:10px;padding:.8rem 1rem;margin-bottom:.9rem;">
+      <div style="display:flex;justify-content:space-between;font-size:.9rem;color:var(--muted);margin-bottom:.3rem;">
+        <span>Subtotal</span><span id="estSub" style="font-family:var(--font-num)">₹0.00</span>
+      </div>
+      <div id="estGstLine" class="hide" style="display:flex;justify-content:space-between;font-size:.9rem;color:var(--muted);margin-bottom:.3rem;">
+        <span id="estGstLabel">GST (5%)</span><span id="estGstAmt" style="font-family:var(--font-num)">₹0.00</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:1.1rem;font-weight:800;color:var(--burg);border-top:1px solid var(--border);padding-top:.5rem;">
+        <span>Total</span><span id="estTotal" style="font-family:var(--font-num)">₹0.00</span>
+      </div>
+    </div>
+    <div class="macts">
+      <button class="bprim" id="btn-save-estimate" style="flex:1;padding:.72rem" onclick="saveEstimate()">Save Estimate</button>
+      <button class="bout" id="btn-cancel-estimate" onclick="closeMod('estimateModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ESTIMATE VIEW MODAL -->
+<div class="ov hide" id="estimateViewModal">
+  <div class="mb wide" style="max-width:560px;">
+    <h3>Estimate Details</h3>
+    <div id="estViewContent"></div>
+    <div class="macts" style="margin-top:1rem;">
+      <button class="bprim" id="btn-print-estimate-view" style="flex:1;padding:.72rem" onclick="printEstimate(currentViewEstId)">🖨 Print</button>
+      <button class="bout" id="btn-close-estimate-view" onclick="closeMod('estimateViewModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- GALLERY MODAL -->
+<div class="ov hide" id="galleryModal">
+  <div class="mb wide">
+    <h3 id="galleryModalTitle">Add Category</h3>
+    <input type="hidden" id="galleryEditId"/>
+    <div class="ig2 full" style="margin-bottom:.9rem">
+      <label>Category Name *</label>
+      <input type="text" id="galleryName" placeholder="e.g. Agarbatti Set, Navarathnalu"/>
+    </div>
+    <div class="ig2 full" style="margin-bottom:.9rem">
+      <label>Price (₹)</label>
+      <input type="number" id="galleryPrice" placeholder="0.00" min="0" step="0.01" inputmode="decimal"/>
+    </div>
+    <div class="ig2 full" style="margin-bottom:.9rem">
+      <label>Images * (Select multiple)</label>
+      <input type="file" id="galleryFile" accept="image/*" multiple onchange="previewGalleryImgs(this)"
+        style="padding:.6rem;font-size:15px;background:white;border:2px solid var(--cream3);border-radius:10px;width:100%;"/>
+      <div id="galleryPreviewGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:.5rem;margin-top:.6rem;"></div>
+    </div>
+    <div class="macts">
+      <button class="bprim" id="btn-save-gallery-category" style="flex:1;padding:.72rem" onclick="saveGalleryItem()">Save Category</button>
+      <button class="bout" id="btn-cancel-gallery-category" onclick="closeMod('galleryModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- GALLERY ADD IMAGES MODAL (add more images to existing category) -->
+<div class="ov hide" id="galleryAddImgModal">
+  <div class="mb">
+    <h3>Add More Images</h3>
+    <input type="hidden" id="galleryAddImgId"/>
+    <div class="ig2 full" style="margin-bottom:.9rem">
+      <label>Select Images</label>
+      <input type="file" id="galleryAddFile" accept="image/*" multiple onchange="previewAddImgs(this)"
+        style="padding:.6rem;font-size:15px;background:white;border:2px solid var(--cream3);border-radius:10px;width:100%;"/>
+      <div id="galleryAddPreview" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:.5rem;margin-top:.6rem;"></div>
+    </div>
+    <div class="macts">
+      <button class="bprim" id="btn-save-more-images" style="flex:1;padding:.72rem" onclick="addMoreImages()">Add Images</button>
+      <button class="bout" id="btn-cancel-more-images" onclick="closeMod('galleryAddImgModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- CUSTOMER MODAL -->
+<div class="ov hide" id="custMod">
+  <div class="mb">
+    <h3 id="cModTitle">Add Customer</h3>
+    <input type="hidden" id="cEditId"/>
+    <div class="mgrid">
+      <div class="ig2"><label>Full Name *</label><input type="text" id="cName" placeholder="Customer full name" autocomplete="off"/></div>
+      <div class="ig2"><label>Phone *</label>
+        <div style="display:flex;align-items:center;gap:.4rem;">
+          <span style="padding:.72rem .7rem;background:#fff0e8;border:2px solid var(--cream3);border-radius:10px;font-size:16px;font-weight:700;color:var(--burg);white-space:nowrap;">+91</span>
+          <input type="tel" id="cPhone" placeholder="9XXXXXXXXX" inputmode="tel" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)" style="flex:1"/>
+        </div>
+      </div>
+      <div class="ig2 full"><label>Email Address</label><input type="email" id="cEmail" placeholder="customer@email.com" inputmode="email"/></div>
+      <div class="ig2 full"><label>Address</label><textarea id="cAddr" rows="2" placeholder="Address (shown on bill)..."></textarea></div>
+      <div class="ig2 full"><label>Notes</label><textarea id="cNotes" rows="2" placeholder="Internal notes..."></textarea></div>
+    </div>
+    <div class="macts">
+      <button class="bprim" id="btn-save-customer" style="flex:1;padding:.75rem" onclick="saveCust()">Save Customer</button>
+      <button class="bout" id="btn-cancel-customer" onclick="closeMod('custMod')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCT MODAL -->
+<div class="ov hide" id="prodMod">
+  <div class="mb">
+    <h3 id="pModTitle">Add Product</h3>
+    <input type="hidden" id="pEditId"/>
+    <div class="ig2" style="margin-bottom:.9rem"><label>Product Name *</label><input type="text" id="pName" placeholder="e.g. Agarbatti" autocomplete="off"/></div>
+    <div class="ig2" style="margin-bottom:.9rem"><label>Unit Type</label>
+      <select id="pType"><option value="Piece">Piece</option><option value="Box">Box</option><option value="Pack">Pack</option><option value="Kg">Kg</option><option value="Set">Set</option><option value="Dozen">Dozen</option></select>
+    </div>
+    <div class="ig2" style="margin-bottom:.9rem"><label>Price (₹) *</label><input type="number" id="pPrice" placeholder="0.00" min="0" step="0.01" inputmode="decimal"/></div>
+    <div class="macts">
+      <button class="bprim" id="btn-save-product" style="flex:1;padding:.75rem" onclick="saveProd()">Save Product</button>
+      <button class="bout" id="btn-cancel-product" onclick="closeMod('prodMod')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- CUSTOMER PICKER MODAL -->
+<div class="ov hide" id="pkMod">
+  <div class="mb">
+    <h3>Select Customer</h3>
+    <div class="ig2"><label>Search</label><input type="text" id="pkSearch" placeholder="Type name or phone..." oninput="filterPk(this.value)" autocomplete="off"/></div>
+    <div id="pkList" class="pklist"></div>
+    <div class="macts" style="margin-top:.9rem"><button class="bout" id="btn-cancel-customer-picker" onclick="closeMod('pkMod')">Cancel</button></div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script>
+const API = API_BASE + '/api';
+
+// ── STATE VARIABLES ──
+let prods=[], custs=[], bills=[], curBill=[];
+let galleryItems=[];
+let galleryNewImgs=[];
+let galleryAddNewImgs=[];
+let profilePicData='';
+
+// ── AUTH CHECK — redirect to login if no token ──
+const grb_token = localStorage.getItem('grb_token');
+if(!grb_token){ window.location.replace('index.html'); throw new Error('Not logged in'); }
+
+// Show user name in topbar
+const grb_user = JSON.parse(localStorage.getItem('grb_user')||'{}');
+document.addEventListener('DOMContentLoaded',()=>{
+  if(grb_user.name) document.getElementById('uname').textContent = grb_user.name;
+});
+
+// ── LOGOUT ──
+function logout(){
+  if(!confirm('Are you sure you want to logout?')) return;
+  localStorage.removeItem('grb_token');
+  localStorage.removeItem('grb_user');
+  localStorage.removeItem('grb_bills');
+  localStorage.removeItem('grb_prods');
+  localStorage.removeItem('grb_custs');
+  window.location.replace('index.html');
+}
+
+// ── TOAST NOTIFICATION (fix #11 - confirmation after save) ──
+function toast(msg, type='success'){
+  const t=document.createElement('div');
+  const bg=type==='success'?'linear-gradient(135deg,#1a6b1a,#2d9e2d)':type==='error'?'linear-gradient(135deg,#780116,#9B0A20)':'linear-gradient(135deg,#7a5c00,#b88a00)';
+  t.style.cssText=`position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;
+    background:${bg};color:#fff;padding:.7rem 1.4rem;border-radius:12px;
+    font-family:var(--font-ui);font-size:.88rem;font-weight:700;
+    box-shadow:0 4px 20px rgba(0,0,0,0.3);white-space:nowrap;
+    animation:fadeIn .3s ease;pointer-events:none;`;
+  t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300);},2500);
+}
+const style=document.createElement('style');
+style.textContent='@keyframes fadeIn{from{opacity:0;transform:translateX(-50%) translateY(10px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}';
+document.head.appendChild(style);
+
+// ── ONLINE/OFFLINE DETECTION (fix #15 - no internet warning) ──
+let isOnline=navigator.onLine;
+const offlineBanner=document.createElement('div');
+offlineBanner.style.cssText=`display:none;position:fixed;top:0;left:0;right:0;z-index:9998;
+  background:#cc3300;color:#fff;text-align:center;padding:.45rem;
+  font-family:var(--font-ui);font-size:.82rem;font-weight:700;letter-spacing:.3px;`;
+offlineBanner.textContent='⚠ No internet connection — changes will not be saved';
+document.body.appendChild(offlineBanner);
+function updateOnlineStatus(){
+  isOnline=navigator.onLine;
+  offlineBanner.style.display=isOnline?'none':'block';
+  if(!isOnline) toast('No internet connection!','error');
+  else toast('Back online ✓','success');
+}
+window.addEventListener('online',updateOnlineStatus);
+window.addEventListener('offline',updateOnlineStatus);
+
+// ── OFFLINE QUEUE (fix #15 - queue actions when offline) ──
+let offlineQueue=JSON.parse(localStorage.getItem('grb_offline_queue')||'[]');
+async function flushQueue(){
+  if(!isOnline||!offlineQueue.length) return;
+  const q=[...offlineQueue]; offlineQueue=[];
+  localStorage.setItem('grb_offline_queue',JSON.stringify(offlineQueue));
+  
+  let tempToRealIdMap = {};
+  for(const item of q){
+    // Replace any temporary IDs in the request body
+    if(item.body && item.body.bill_id && tempToRealIdMap[item.body.bill_id]){
+      item.body.bill_id = tempToRealIdMap[item.body.bill_id];
+    }
+    const res = await api(item.method, item.path, item.body);
+    // If it was a bill creation, map the temp ID to the newly returned real ID
+    if(item.path === '/bills' && item.method === 'POST' && res && res.id && item.tempId){
+      tempToRealIdMap[item.tempId] = res.id;
+    }
+  }
+  await loadFromBackend();
+  toast('Offline changes synced ✓','success');
+}
+window.addEventListener('online',()=>setTimeout(flushQueue,1000));
+
+// ── API HELPER (fix #15 - queue when offline) ──
+async function api(method, path, body=null, tempId=null){
+  if(!isOnline && method!=='GET'){
+    offlineQueue.push({method,path,body,tempId});
+    localStorage.setItem('grb_offline_queue',JSON.stringify(offlineQueue));
+    toast('Saved offline — will sync when online','warn');
+    return null;
+  }
+  try{
+    const token=localStorage.getItem('grb_token');
+    const opts={method,headers:{'Content-Type':'application/json'}};
+    if(token) opts.headers['Authorization']='Bearer '+token;
+    if(body) opts.body=JSON.stringify(body);
+    const res=await fetch(API+path,opts);
+    if(!res.ok){
+      const err=await res.json().catch(()=>({error:'Server error'}));
+      throw new Error(err.error||'API error '+res.status);
+    }
+    return await res.json();
+  }catch(e){
+    console.warn('API error:',e.message);
+    const isNetworkError = e instanceof TypeError || e.message === 'Failed to fetch' || e.message.includes('network') || e.message.includes('fetch');
+    if(method!=='GET' && isNetworkError){
+      offlineQueue.push({method,path,body,tempId});
+      localStorage.setItem('grb_offline_queue',JSON.stringify(offlineQueue));
+      toast('Network error — saved offline to sync later','warn');
+      isOnline = false;
+      offlineBanner.style.display = 'block';
+      return null;
+    }
+    // Handle session expiration or authorization failure (401)
+    if(e.message.includes('Access denied') || e.message.includes('expired') || e.message.includes('login') || e.message.includes('401')){
+      localStorage.removeItem('grb_token');
+      localStorage.removeItem('grb_user');
+      window.location.replace('index.html');
+      return null;
+    }
+    if(method!=='GET') toast('Error: '+e.message,'error');
+    return null;
+  }
+}
+
+// ── STATE ──
+
+// Bill ID is now generated by backend using Supabase sequence
+
+async function loadFromBackend(){
+  try{
+    const [p,c,b]=await Promise.all([
+      api('GET','/products'),
+      api('GET','/customers'),
+      api('GET','/bills'),
+    ]);
+    if(p){prods=p;localStorage.setItem('grb_prods',JSON.stringify(prods));}
+    if(c){custs=c;localStorage.setItem('grb_custs',JSON.stringify(custs));}
+    if(b){
+      // fix #3 & #12: fetch item counts from bill_items
+      bills=await Promise.all(b.map(async bill=>({
+        id:bill.id,
+        date:bill.created_at,
+        customer:bill.customer_name,
+        items:bill.items_count||0,
+        gst:parseFloat(bill.gst_amount)||0,
+        total:parseFloat(bill.total)||0,
+        gst_percent:parseFloat(bill.gst_percent)||0,
+        subtotal:parseFloat(bill.subtotal)||0,
+        bill_items:bill.items||[],
+        pdf_url:bill.pdf_url
+      })));
+      localStorage.setItem('grb_bills',JSON.stringify(bills.slice(0,150)));
+    }
+    fillDrop();todaySummary();
+  }catch(e){
+    console.warn('Backend load failed:',e.message);
+  }
+}
+
+// ── ESTIMATES ──────────────────────────────────────
+let estimates = JSON.parse(localStorage.getItem('grb_estimates') || '[]');
+let estItems  = [];
+let currentViewEstId = null;
+
+function newEstimate(){
+  estItems = [];
+  document.getElementById('estEditId').value = '';
+  document.getElementById('estModalTitle').textContent = 'New Estimate';
+  document.getElementById('estCust').value = '';
+  document.getElementById('estGstChk').checked = false;
+  document.getElementById('estGstPct').value = 5;
+  document.getElementById('estGstWrap').classList.add('hide');
+  document.getElementById('estGstLine').classList.add('hide');
+  renderEstItems(); recalcEst();
+  // populate product dropdown
+  const sel = document.getElementById('estProdSel');
+  sel.innerHTML = '<option value="">-- Select --</option>';
+  prods.forEach(p => sel.innerHTML += `<option value="${p.id}">${x(p.name)} — ₹${p.price}</option>`);
+  document.getElementById('estimateModal').classList.remove('hide');
+}
+
+function onEstProd(){
+  const p = prods.find(z => z.id === document.getElementById('estProdSel').value);
+  document.getElementById('estPrice').value = p ? p.price : '';
+}
+
+function addEstItem(){
+  const pid   = document.getElementById('estProdSel').value;
+  const qty   = parseInt(document.getElementById('estQty').value);
+  const price = parseFloat(document.getElementById('estPrice').value);
+  if(!pid){ toast('Please select a product.','error'); return; }
+  if(!qty||qty<1){ toast('Enter valid quantity.','error'); return; }
+  if(!price||price<=0){ toast('Enter valid price.','error'); return; }
+  const prod = prods.find(p => p.id === pid);
+  estItems.push({ pid, name: prod.name, type: prod.type, qty, price, total: price * qty });
+  renderEstItems(); recalcEst();
+  document.getElementById('estProdSel').value = '';
+  document.getElementById('estQty').value = 1;
+  document.getElementById('estPrice').value = '';
+}
+
+function removeEstItem(i){ estItems.splice(i,1); renderEstItems(); recalcEst(); }
+
+function renderEstItems(){
+  const b = document.getElementById('estItemsBody');
+  b.innerHTML = '';
+  estItems.forEach((it,i) => {
+    b.innerHTML += `<tr>
+      <td>${i+1}</td>
+      <td><strong>${x(it.name)}</strong></td>
+      <td><span class="pill">${x(it.type)}</span></td>
+      <td>${it.qty}</td>
+      <td>₹${it.price.toFixed(2)}</td>
+      <td><strong style="color:var(--burg)">₹${it.total.toFixed(2)}</strong></td>
+      <td><button class="bdel" id="btn-remove-estimate-item-${i}" onclick="removeEstItem(${i})">✕</button></td>
+    </tr>`;
+  });
+}
+
+function recalcEst(){
+  const sub    = estItems.reduce((s,i) => s+i.total, 0);
+  const on     = document.getElementById('estGstChk').checked;
+  const pct    = on ? Math.max(0, parseFloat(document.getElementById('estGstPct').value)||0) : 0;
+  const gst    = on ? sub*(pct/100) : 0;
+  document.getElementById('estSub').textContent   = '₹'+sub.toFixed(2);
+  document.getElementById('estGstAmt').textContent = '₹'+gst.toFixed(2);
+  document.getElementById('estTotal').textContent  = '₹'+(sub+gst).toFixed(2);
+  document.getElementById('estGstLine').style.display = on ? 'flex' : 'none';
+  document.getElementById('estGstWrap').classList.toggle('hide', !on);
+  if(on) document.getElementById('estGstLabel').textContent = `GST (${pct}%)`;
+}
+
+function saveEstimate(){
+  const cname = document.getElementById('estCust').value.trim();
+  if(!cname){ toast('Customer name is required.','error'); return; }
+  if(!estItems.length){ toast('Add at least one item.','error'); return; }
+  const sub    = estItems.reduce((s,i) => s+i.total, 0);
+  const on     = document.getElementById('estGstChk').checked;
+  const pct    = on ? Math.max(0, parseFloat(document.getElementById('estGstPct').value)||0) : 0;
+  const gst    = on ? sub*(pct/100) : 0;
+  const eid    = document.getElementById('estEditId').value;
+  const now    = new Date().toISOString();
+  const estNo  = 'EST' + Date.now().toString().slice(-6);
+  const est = {
+    id: eid || estNo, customer: cname,
+    date: eid ? estimates.find(e=>e.id===eid)?.date || now : now,
+    items: [...estItems], sub, gst, gst_percent: pct, total: sub+gst
+  };
+  if(eid){ const idx = estimates.findIndex(e=>e.id===eid); estimates[idx] = est; }
+  else estimates.unshift(est);
+  localStorage.setItem('grb_estimates', JSON.stringify(estimates));
+  renderEstimatesTable();
+  closeMod('estimateModal');
+  toast(eid ? 'Estimate updated ✓' : 'Estimate saved ✓');
+}
+
+function renderEstimatesTable(q=''){
+  const b = document.getElementById('estBody');
+  const e = document.getElementById('estEmpty');
+  b.innerHTML = '';
+  const list = q ? estimates.filter(est => est.customer.toLowerCase().includes(q.toLowerCase()) || est.id.includes(q)) : estimates;
+  if(!list.length){ e.style.display=''; return; }
+  e.style.display = 'none';
+  list.forEach(est => {
+    const d = new Date(est.date);
+    b.innerHTML += `<tr>
+      <td><code style="font-size:.76rem;background:#fff0e8;color:#780116;padding:.13rem .45rem;border-radius:5px">${est.id}</code></td>
+      <td style="white-space:nowrap">${d.toLocaleDateString('en-IN')}</td>
+      <td><strong>${x(est.customer)}</strong></td>
+      <td style="font-family:var(--font-num)">${est.items.length}</td>
+      <td style="font-family:var(--font-num)"><strong style="color:var(--burg)">₹${est.total.toFixed(2)}</strong></td>
+      <td style="white-space:nowrap">
+        <button class="bedit" id="btn-view-estimate-${est.id}" onclick="viewEstimate('${est.id}')">👁 View</button>
+        <button class="bedit" id="btn-edit-estimate-${est.id}" onclick="editEstimate('${est.id}')">✏ Edit</button>
+        <button class="bdel" id="btn-delete-estimate-${est.id}" onclick="deleteEstimate('${est.id}')">🗑</button>
+      </td>
+    </tr>`;
+  });
+}
+
+function srchEstimates(q){ renderEstimatesTable(q); }
+
+function viewEstimate(id){
+  currentViewEstId = id;
+  const est = estimates.find(e=>e.id===id);
+  if(!est) return;
+  const d = new Date(est.date);
+  const rows = est.items.map((it,i) => `<tr>
+    <td>${i+1}</td><td>${x(it.name)}</td><td>${x(it.type)}</td>
+    <td>${it.qty}</td><td>₹${it.price.toFixed(2)}</td>
+    <td><strong style="color:var(--burg)">₹${it.total.toFixed(2)}</strong></td>
+  </tr>`).join('');
+  document.getElementById('estViewContent').innerHTML = `
+    <div style="background:var(--cream2);border-radius:10px;padding:.8rem 1rem;margin-bottom:.9rem;">
+      <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--muted);">
+        <span>Est No: <strong style="color:var(--burg)">${est.id}</strong></span>
+        <span>${d.toLocaleDateString('en-IN')}</span>
+      </div>
+      <div style="font-size:1rem;font-weight:700;color:var(--text);margin-top:.3rem;">Customer: ${x(est.customer)}</div>
+    </div>
+    <div style="overflow-x:auto;margin-bottom:.9rem;">
+      <table class="dtbl">
+        <thead><tr><th>#</th><th>Item</th><th>Type</th><th>Qty</th><th>Rate</th><th>Total</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    <div style="background:var(--cream2);border-radius:10px;padding:.8rem 1rem;">
+      <div style="display:flex;justify-content:space-between;font-size:.9rem;color:var(--muted);margin-bottom:.3rem;"><span>Subtotal</span><span>₹${est.sub.toFixed(2)}</span></div>
+      ${est.gst>0?`<div style="display:flex;justify-content:space-between;font-size:.9rem;color:var(--muted);margin-bottom:.3rem;"><span>GST (${est.gst_percent}%)</span><span>₹${est.gst.toFixed(2)}</span></div>`:''}
+      <div style="display:flex;justify-content:space-between;font-size:1.1rem;font-weight:800;color:var(--burg);border-top:1px solid var(--border);padding-top:.5rem;"><span>Total</span><span>₹${est.total.toFixed(2)}</span></div>
+    </div>`;
+  document.getElementById('estimateViewModal').classList.remove('hide');
+}
+
+function editEstimate(id){
+  const est = estimates.find(e=>e.id===id);
+  if(!est) return;
+  estItems = [...est.items];
+  document.getElementById('estEditId').value = id;
+  document.getElementById('estModalTitle').textContent = 'Edit Estimate';
+  document.getElementById('estCust').value = est.customer;
+  document.getElementById('estGstChk').checked = est.gst > 0;
+  document.getElementById('estGstPct').value = est.gst_percent || 5;
+  const sel = document.getElementById('estProdSel');
+  sel.innerHTML = '<option value="">-- Select --</option>';
+  prods.forEach(p => sel.innerHTML += `<option value="${p.id}">${x(p.name)} — ₹${p.price}</option>`);
+  renderEstItems(); recalcEst();
+  document.getElementById('estimateModal').classList.remove('hide');
+}
+
+function deleteEstimate(id){
+  if(!confirm('Delete this estimate?')) return;
+  estimates = estimates.filter(e=>e.id!==id);
+  localStorage.setItem('grb_estimates', JSON.stringify(estimates));
+  renderEstimatesTable();
+  toast('Estimate deleted.');
+}
+
+function printEstimate(id){
+  const est = estimates.find(e=>e.id===id);
+  if(!est) return;
+  const bW = parseFloat(document.getElementById('billW').value)||14.8;
+  const bH = parseFloat(document.getElementById('billH').value)||21;
+  const d  = new Date(est.date);
+  const ds = d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  const ts = d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  const cname = est.customer || '';
+  const cust = custs.find(c=>c.name===cname);
+  const addr = cust?cust.address||'':'';
+  const rows = est.items.map((it,i) => `<tr>
+    <td style="text-align:center;">${i+1}</td>
+    <td><div style="font-weight:700">${it.name}</div><div style="font-size:8.5px;color:#888">${it.type||''}</div></td>
+    <td style="text-align:center;">${it.qty}</td>
+    <td style="text-align:right;font-family:var(--font-num);">${it.price.toFixed(2)}</td>
+    <td style="text-align:right;font-weight:700;font-family:var(--font-num);color:#780116;">${it.total.toFixed(2)}</td>
+  </tr>`).join('');
+  openBillPrintWindow(est.id, cname, addr, ds, ts, rows, est.sub, est.gst, est.total, est.gst > 0, est.gst_percent, bW, bH, 'ESTIMATE');
+  closeMod('estimateViewModal');
+}
+
+
+function pg(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.bnb').forEach(b=>b.classList.remove('on'));
+  const pageEl=document.getElementById('page-'+name);
+  if(pageEl) pageEl.classList.add('on');
+  if(document.getElementById('nb-'+name)) document.getElementById('nb-'+name).classList.add('on');
+  if(document.getElementById('bnb-'+name)) document.getElementById('bnb-'+name).classList.add('on');
+  const t={billing:'Billing',customers:'Customers',products:'Products',
+    reports:'Reports & Analytics',gallery:'Gallery','gallery-view':'Gallery',
+    profile:'My Profile'};
+  document.getElementById('ptitle').textContent=t[name]||name;
+  if(name==='products') renderProds();
+  if(name==='customers') renderCusts();
+  if(name==='reports') renderReports();
+  if(name==='gallery') renderGallery();
+  if(name==='profile') loadProfile();
+}
+
+// ── PRODUCTS ──
+function openProdMod(id=null){
+  document.getElementById('pEditId').value=id||'';
+  document.getElementById('pModTitle').textContent=id?'Edit Product':'Add Product';
+  if(id){const p=prods.find(x=>x.id===id);document.getElementById('pName').value=p.name;document.getElementById('pType').value=p.type;document.getElementById('pPrice').value=p.price;}
+  else{document.getElementById('pName').value='';document.getElementById('pType').value='Piece';document.getElementById('pPrice').value='';}
+  document.getElementById('prodMod').classList.remove('hide');
+  setTimeout(()=>document.getElementById('pName').focus(),300);
+}
+async function saveProd(){
+  const name=document.getElementById('pName').value.trim();
+  const type=document.getElementById('pType').value;
+  const price=parseFloat(document.getElementById('pPrice').value);
+  if(!name||isNaN(price)||price<0){toast('Fill all required fields correctly.','error');return;}
+  const eid=document.getElementById('pEditId').value;
+  const btn=document.querySelector('#prodMod .bprim');
+  btn.textContent='Saving...';btn.disabled=true;
+  let result;
+  if(eid) result=await api('PUT','/products/'+eid,{name,type,price});
+  else result=await api('POST','/products',{name,type,price});
+  btn.textContent='Save Product';btn.disabled=false;
+  if(result||!isOnline){
+    if(!result && !isOnline){
+      if(eid){
+        const idx = prods.findIndex(p => p.id === eid);
+        if(idx !== -1) prods[idx] = { ...prods[idx], name, type, price };
+      } else {
+        const tempId = 'TEMP-' + Date.now();
+        prods.push({ id: tempId, name, type, price, created_at: new Date().toISOString() });
+      }
+      localStorage.setItem('grb_prods', JSON.stringify(prods));
+    }
+    await loadFromBackend();
+    renderProds();fillDrop();closeMod('prodMod');
+    toast(eid?'Product updated ✓':'Product added ✓');
+  }
+}
+async function delProd(id){
+  if(!confirm('Delete this product?'))return;
+  const result = await api('DELETE','/products/'+id);
+  if(!result && !isOnline){
+    prods = prods.filter(p => p.id !== id);
+    localStorage.setItem('grb_prods', JSON.stringify(prods));
+    toast('Product deleted offline');
+  }
+  await loadFromBackend();renderProds();fillDrop();
+}
+function renderProds(){
+  const b=document.getElementById('pBody'),e=document.getElementById('pEmpty');
+  b.innerHTML='';
+  if(!prods.length){e.style.display='';return;}e.style.display='none';
+  prods.forEach((p,i)=>{b.innerHTML+=`<tr>
+    <td>${i+1}</td>
+    <td><strong>${x(p.name)}</strong></td>
+    <td><span class="pill">${x(p.type)}</span></td>
+    <td><strong>₹${parseFloat(p.price).toFixed(2)}</strong></td>
+    <td><button class="bedit" id="btn-edit-prod-${p.id}" onclick="openProdMod('${p.id}')">✏ Edit</button><button class="bdel" id="btn-delete-prod-${p.id}" onclick="delProd('${p.id}')">🗑</button></td>
+  </tr>`;});
+}
+function srchProdTbl(q){document.querySelectorAll('#pBody tr').forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q.toLowerCase())?'':'none';});}
+function fillDrop(){
+  const s=document.getElementById('pSel'),v=s.value;
+  s.innerHTML='<option value="">-- Select Product --</option>';
+  prods.forEach(p=>{s.innerHTML+=`<option value="${p.id}">${x(p.name)} (${p.type}) — ₹${p.price}</option>`;});
+  if(v)s.value=v;
+}
+function onProd(){const p=prods.find(z=>z.id===document.getElementById('pSel').value);document.getElementById('bPrice').value=p?p.price:'';}
+
+// ── CUSTOMERS ──
+function openCustMod(id=null){
+  document.getElementById('cEditId').value=id||'';
+  document.getElementById('cModTitle').textContent=id?'Edit Customer':'Add Customer';
+  if(id){const c=custs.find(z=>z.id===id);document.getElementById('cName').value=c.name;document.getElementById('cPhone').value=c.phone;document.getElementById('cEmail').value=c.email||'';document.getElementById('cAddr').value=c.address||'';document.getElementById('cNotes').value=c.notes||'';}
+  else{['cName','cPhone','cEmail','cAddr','cNotes'].forEach(f=>document.getElementById(f).value='');}
+  document.getElementById('custMod').classList.remove('hide');
+  setTimeout(()=>document.getElementById('cName').focus(),300);
+}
+async function saveCust(){
+  const name=document.getElementById('cName').value.trim();
+  const phone=document.getElementById('cPhone').value.trim();
+  const email=document.getElementById('cEmail').value.trim();
+  const address=document.getElementById('cAddr').value.trim();
+  const notes=document.getElementById('cNotes').value.trim();
+  if(!name||!phone){toast('Name and Phone are required.','error');return;}
+  if(!/^[0-9+\-\s]{7,15}$/.test(phone)){toast('Enter a valid phone number.','error');return;}
+  const eid=document.getElementById('cEditId').value;
+  const dup=custs.find(c=>c.phone===phone&&c.id!==eid);
+  if(dup){toast('A customer with this phone already exists.','error');return;}
+  const btn=document.querySelector('#custMod .bprim');
+  btn.textContent='Saving...';btn.disabled=true;
+  let result;
+  if(eid) result=await api('PUT','/customers/'+eid,{name,phone,email,address,notes});
+  else result=await api('POST','/customers',{name,phone,email,address,notes});
+  btn.textContent='Save Customer';btn.disabled=false;
+  if(result||!isOnline){
+    if(!result && !isOnline){
+      const payload = { name, phone, email, address, notes };
+      if(eid){
+        const idx = custs.findIndex(c => c.id === eid);
+        if(idx !== -1) custs[idx] = { ...custs[idx], ...payload };
+      } else {
+        const tempId = 'TEMP-' + Date.now();
+        custs.push({ id: tempId, ...payload, created_at: new Date().toISOString() });
+      }
+      localStorage.setItem('grb_custs', JSON.stringify(custs));
+    }
+    await loadFromBackend();renderCusts();closeMod('custMod');
+    toast(eid?'Customer updated ✓':'Customer added ✓');
+  }
+}
+async function delCust(id){
+  if(!confirm('Delete this customer?'))return;
+  const result = await api('DELETE','/customers/'+id);
+  if(!result && !isOnline){
+    custs = custs.filter(c => c.id !== id);
+    localStorage.setItem('grb_custs', JSON.stringify(custs));
+    toast('Customer deleted offline');
+  }
+  await loadFromBackend();renderCusts();
+}
+function renderCusts(){
+  const b=document.getElementById('cBody'),e=document.getElementById('cEmpty');
+  b.innerHTML='';
+  if(!custs.length){e.style.display='';return;}e.style.display='none';
+  custs.forEach((c,i)=>{b.innerHTML+=`<tr>
+    <td>${i+1}</td>
+    <td><strong>${x(c.name)}</strong></td>
+    <td>${x(c.phone)}</td>
+    <td style="font-size:.82rem">${x(c.email)||'—'}</td>
+    <td style="font-size:.82rem">${x(c.address)||'—'}</td>
+    <td style="font-size:.78rem;color:#7A4050;max-width:120px">${x(c.notes)||'—'}</td>
+    <td><button class="bedit" id="btn-edit-cust-${c.id}" onclick="openCustMod('${c.id}')">✏ Edit</button><button class="bdel" id="btn-delete-cust-${c.id}" onclick="delCust('${c.id}')">🗑</button></td>
+  </tr>`;});
+}
+function srchCustTbl(q){document.querySelectorAll('#cBody tr').forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q.toLowerCase())?'':'none';});}
+function srchCust(v){
+  const box=document.getElementById('sugg');
+  if(!v.trim()){box.classList.add('hide');return;}
+  const m=custs.filter(c=>c.name.toLowerCase().includes(v.toLowerCase())||c.phone.includes(v));
+  if(!m.length){box.classList.add('hide');return;}
+  box.innerHTML=m.map(c=>`<div class="si" onclick="selCust('${c.id}')"><strong>${x(c.name)}</strong> · ${x(c.phone)}</div>`).join('');
+  box.classList.remove('hide');
+}
+function selCust(id){
+  const c=custs.find(z=>z.id===id);
+  const el=document.getElementById('bCust');
+  el.value=c.name;el.dataset.cid=id;
+  document.getElementById('sugg').classList.add('hide');
+}
+function openPicker(){
+  document.getElementById('pkSearch').value='';filterPk('');
+  document.getElementById('pkMod').classList.remove('hide');
+}
+function filterPk(q){
+  const list=document.getElementById('pkList');
+  const m=custs.filter(c=>!q||c.name.toLowerCase().includes(q.toLowerCase())||c.phone.includes(q));
+  if(!m.length){list.innerHTML='<div style="padding:1rem;text-align:center;color:#7A4050;font-size:.85rem">No customers found</div>';return;}
+  list.innerHTML=m.map(c=>`<div class="pki" onclick="pickCust('${c.id}')"><div class="pkn">${x(c.name)}</div><div class="pkd">${x(c.phone)}${c.address?' · '+x(c.address.substring(0,35)):''}</div></div>`).join('');
+}
+function pickCust(id){selCust(id);closeMod('pkMod');}
+
+// ── BILLING ──
+function addItem(){
+  const pid=document.getElementById('pSel').value;
+  const qty=parseInt(document.getElementById('bQty').value);
+  const price=parseFloat(document.getElementById('bPrice').value);
+  if(!pid){alert('Please select a product.');return;}
+  if(!qty||qty<1){alert('Enter a valid quantity.');return;}
+  if(!price||price<=0){alert('Enter a valid price.');return;}
+  const prod=prods.find(p=>p.id===pid);
+  curBill.push({pid,name:prod.name,type:prod.type,qty,price,total:price*qty});
+  renderBill();recalc();
+  document.getElementById('pSel').value='';
+  document.getElementById('bQty').value=1;
+  document.getElementById('bPrice').value='';
+}
+function rmItem(i){curBill.splice(i,1);renderBill();recalc();}
+function renderBill(){
+  const b=document.getElementById('bBody'),e=document.getElementById('bEmpty');
+  b.innerHTML='';
+  if(!curBill.length){e.style.display='';return;}e.style.display='none';
+  curBill.forEach((it,i)=>{b.innerHTML+=`<tr>
+    <td>${i+1}</td>
+    <td><strong>${x(it.name)}</strong></td>
+    <td><span class="pill">${x(it.type)}</span></td>
+    <td>${it.qty}</td>
+    <td>₹${it.price.toFixed(2)}</td>
+    <td><strong style="color:var(--burg)">₹${it.total.toFixed(2)}</strong></td>
+    <td><button class="bdel" id="btn-remove-bill-item-${i}" onclick="rmItem(${i})">✕</button></td>
+  </tr>`;});
+}
+function toggleGst(){
+  const on=document.getElementById('gstChk').checked;
+  document.getElementById('gstPctWrap').classList.toggle('hide',!on);
+  document.getElementById('gstBadge').classList.toggle('hide',!on);
+  recalc();
+}
+function recalc(){
+  const sub=curBill.reduce((s,i)=>s+i.total,0);
+  const on=document.getElementById('gstChk').checked;
+  const pct=on?Math.max(0,parseFloat(document.getElementById('gstPct').value)||0):0;
+  const gst=on?sub*(pct/100):0;
+  document.getElementById('sub').textContent='₹'+sub.toFixed(2);
+  document.getElementById('gstAmt').textContent='₹'+gst.toFixed(2);
+  document.getElementById('gtotal').textContent='₹'+(sub+gst).toFixed(2);
+  document.getElementById('gstLine').classList.toggle('hide',!on);
+  if(on){document.getElementById('gstLabel').textContent='GST ('+pct+'%)';document.getElementById('gstBadge').textContent=pct+'% GST';}
+}
+function clearBill(force = false){
+  if(!force && curBill.length && !confirm('Clear the current bill?'))return;
+  curBill=[];
+  document.getElementById('bCust').value='';
+  document.getElementById('bCust').dataset.cid='';
+  document.getElementById('gstChk').checked=false;
+  document.getElementById('gstPct').value=5;
+  document.getElementById('gstPctWrap').classList.add('hide');
+  document.getElementById('gstBadge').classList.add('hide');
+  renderBill();recalc();
+}
+// ── FORMAT PHONE ──
+function formatPhone(phone){
+  return phone.replace(/\D/g,'').replace(/^91/,'').replace(/^0/,'').slice(0,10);
+}
+
+
+async function emailBill(){
+  const cname=document.getElementById('bCust').value.trim();
+  const cid=document.getElementById('bCust').dataset.cid;
+  if(!cname){toast('Please enter a customer name first.','error');return;}
+  if(!curBill.length){toast('Please add items to bill first.','error');return;}
+  const cust=custs.find(c=>c.id===cid);
+  const defaultEmail=cust?cust.email||'':'';
+  const toEmail=prompt('Send bill to email address:', defaultEmail);
+  if(!toEmail) return;
+  if(!toEmail.includes('@')){toast('Please enter a valid email.','error');return;}
+  toast('Saving and sending bill...','warn');
+  // Save bill inline
+  const sub=curBill.reduce((s,i)=>s+i.total,0);
+  const gstOn=document.getElementById('gstChk').checked;
+  const gstPct=gstOn?Math.max(0,parseFloat(document.getElementById('gstPct').value)||0):0;
+  const gst=gstOn?sub*(gstPct/100):0;
+  const grand=sub+gst;
+  const billPayload={
+    customer_name:cname,customer_id:cid||null,gst_percent:gstPct,
+    items:curBill.map(it=>({product_id:it.pid||null,product_name:it.name,type:it.type,quantity:it.qty,price:it.price}))
+  };
+  const tempId = 'TEMP-' + Date.now();
+  let saved=await api('POST','/bills',billPayload, tempId);
+  if(!saved){
+    if(isOnline){toast('Failed to save bill.','error');return;}
+    // Offline mode
+    saved = { id: tempId, created_at: new Date().toISOString(), pdf_url: null };
+  }
+  bills.unshift({
+    id:saved.id,date:saved.created_at,customer:cname,
+    items:curBill.length,gst,total:grand,
+    gst_percent:gstPct,subtotal:sub,
+    bill_items:curBill.map(it=>({product_name:it.name,type:it.type,quantity:it.qty,price:it.price,total:it.total})),
+    pdf_url:saved.pdf_url
+  });
+  localStorage.setItem('grb_bills',JSON.stringify(bills.slice(0,150)));
+  todaySummary();clearBill(true);
+  
+  if(isOnline){
+    const sent=await api('POST','/email/send-bill',{bill_id:saved.id, to_email:toEmail});
+    if(sent) toast('Bill emailed to '+toEmail+' ✓');
+  } else {
+    offlineQueue.push({method:'POST',path:'/email/send-bill',body:{bill_id:saved.id, to_email:toEmail}});
+    localStorage.setItem('grb_offline_queue',JSON.stringify(offlineQueue));
+    toast('Bill saved offline & email queued ✓','success');
+  }
+}
+
+async function printBill(){
+  const cname=document.getElementById('bCust').value.trim();
+  if(!cname){alert('Please enter a customer name.');return;}
+  if(!curBill.length){alert('Please add at least one item.');return;}
+  const sub=curBill.reduce((s,i)=>s+i.total,0);
+  const gstOn=document.getElementById('gstChk').checked;
+  const gstPct=gstOn?Math.max(0,parseFloat(document.getElementById('gstPct').value)||0):0;
+  const gst=gstOn?sub*(gstPct/100):0;
+  const grand=sub+gst;
+  const cid=document.getElementById('bCust').dataset.cid;
+  const cust=custs.find(c=>c.id===cid);
+  const addr=cust?cust.address:'';
+  const now=new Date();
+  const ds=now.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  const ts=now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  const bW=parseFloat(document.getElementById('billW').value)||14.8;
+  const bH=parseFloat(document.getElementById('billH').value)||21;
+
+  // Save to backend first to get sequential bill number
+  const billPayload={
+    customer_name:cname,customer_id:cid||null,gst_percent:gstPct,
+    items:curBill.map(it=>({product_id:it.pid||null,product_name:it.name,type:it.type,quantity:it.qty,price:it.price}))
+  };
+  const tempId = 'TEMP-' + Date.now();
+  let saved=await api('POST','/bills',billPayload, tempId);
+  if(!saved){
+    if(isOnline){toast('Failed to save bill. Check connection.','error');return;}
+    // Offline mode
+    saved = { id: tempId, created_at: new Date().toISOString(), pdf_url: null };
+  }
+  const bno=saved.id;
+
+  const rows=curBill.map((it,i)=>`<tr>
+    <td style="text-align:center;">${i+1}</td>
+    <td><div style="font-weight:700">${it.name}</div><div style="font-size:8.5px;color:#888">${it.type}</div></td>
+    <td style="text-align:center;">${it.qty}</td>
+    <td style="text-align:right;font-family:var(--font-num);">${it.price.toFixed(2)}</td>
+    <td style="text-align:right;font-weight:700;font-family:var(--font-num);color:#780116;">${it.total.toFixed(2)}</td>
+  </tr>`).join('');
+  openBillPrintWindow(bno,cname,addr,ds,ts,rows,sub,gst,grand,gstOn,gstPct,bW,bH);
+
+  // Bill already saved — just update local state
+  bills.unshift({
+    id:saved.id,date:saved.created_at,customer:cname,
+    items:curBill.length,gst,total:grand,
+    gst_percent:gstPct,subtotal:sub,
+    bill_items:curBill.map(it=>({product_name:it.name,type:it.type,quantity:it.qty,price:it.price,total:it.total})),
+    pdf_url:saved.pdf_url
+  });
+  localStorage.setItem('grb_bills',JSON.stringify(bills.slice(0,150)));
+  toast('Bill '+saved.id+(saved.id.startsWith('TEMP')?' saved offline ✓':' saved ✓'));
+  todaySummary();clearBill(true);
+}
+
+// ── TODAY SUMMARY ──
+function todaySummary(){
+  const today = new Date().toLocaleDateString('en-IN');
+  const tb = bills.filter(b => b.date && new Date(b.date).toLocaleDateString('en-IN') === today);
+  
+  const elBills = document.getElementById('sBills');
+  const elSales = document.getElementById('sSales');
+  const elGst = document.getElementById('sGst');
+  const div = document.getElementById('rBills');
+  
+  if (elBills) elBills.textContent = tb.length;
+  if (elSales) elSales.textContent = '₹' + tb.reduce((s, b) => s + (parseFloat(b.total) || 0), 0).toFixed(0);
+  if (elGst) elGst.textContent = '₹' + tb.reduce((s, b) => s + (parseFloat(b.gst) || 0), 0).toFixed(0);
+  
+  if (div) {
+    const rec = [...tb].slice(0, 5);
+    if (!rec.length) {
+      div.innerHTML = '<div class="nodata">No bills yet today</div>';
+      return;
+    }
+    div.innerHTML = rec.map(b => {
+      const t = new Date(b.date);
+      const formattedTotal = (parseFloat(b.total) || 0).toFixed(0);
+      const itemsCount = b.items || (b.bill_items ? b.bill_items.length : 0) || 0;
+      return `<div class="rbi">
+        <span class="rbn">${x(b.customer)}</span><span class="rba">₹${formattedTotal}</span>
+        <br/><span class="rbt">${t.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })} · ${itemsCount} item(s)</span>
+      </div>`;
+    }).join('');
+  }
+}
+
+// ── REPORTS ──
+async function delBill(id){
+  if(!confirm('Delete this bill?'))return;
+  const result = await api('DELETE','/bills/'+id);
+  if(!result && !isOnline){
+    bills = bills.filter(b => b.id !== id);
+    localStorage.setItem('grb_bills',JSON.stringify(bills.slice(0,150)));
+    toast('Bill deleted offline');
+  } else if(result) {
+    bills=bills.filter(b=>b.id!==id);
+    localStorage.setItem('grb_bills',JSON.stringify(bills.slice(0,150)));
+  }
+  todaySummary();renderReports();
+}
+function renderReports(){
+  const today = new Date().toLocaleDateString('en-IN');
+  const tb = bills.filter(b => b.date && new Date(b.date).toLocaleDateString('en-IN') === today);
+  
+  const elDS = document.getElementById('rDS');
+  const elTB = document.getElementById('rTB');
+  const elTR = document.getElementById('rTR');
+  const elGC = document.getElementById('rGC');
+  
+  if (elDS) elDS.textContent = '₹' + tb.reduce((s, b) => s + (parseFloat(b.total) || 0), 0).toFixed(0);
+  if (elTB) elTB.textContent = bills.length;
+  if (elTR) elTR.textContent = '₹' + bills.reduce((s, b) => s + (parseFloat(b.total) || 0), 0).toFixed(0);
+  if (elGC) elGC.textContent = '₹' + bills.reduce((s, b) => s + (parseFloat(b.gst) || 0), 0).toFixed(0);
+  
+  const hb = document.getElementById('hBody');
+  const he = document.getElementById('hEmpty');
+  if (hb) {
+    hb.innerHTML = '';
+    if (!bills.length) {
+      if (he) he.style.display = '';
+      return;
+    }
+    if (he) he.style.display = 'none';
+    bills.forEach(b => {
+      const d = new Date(b.date);
+      const itemCount = b.items || (b.bill_items ? b.bill_items.length : 0) || '—';
+      const parsedGst = parseFloat(b.gst) || 0;
+      const parsedTotal = parseFloat(b.total) || 0;
+      hb.innerHTML += `<tr>
+        <td><code style="font-size:.76rem;background:#fff0e8;color:#780116;padding:.13rem .45rem;border-radius:5px">${b.id}</code></td>
+        <td>${d.toLocaleDateString('en-IN')} ${d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</td>
+        <td><strong>${x(b.customer)}</strong></td>
+        <td style="font-family:var(--font-num)">${itemCount}</td>
+        <td style="font-family:var(--font-num)">${parsedGst > 0 ? '₹' + parsedGst.toFixed(2) : '—'}</td>
+        <td style="font-family:var(--font-num)"><strong style="color:var(--burg)">₹${parsedTotal.toFixed(2)}</strong></td>
+        <td style="white-space:nowrap">
+          <button class="bedit" id="btn-view-report-${b.id}" onclick="viewBillReport('${b.id}')" style="margin-right:.3rem;background:linear-gradient(135deg,#e8f4ff,#d4eaff);color:#1a5f9e;border:1.5px solid #a8cef8;">👁 View</button>
+          ${b.bill_items && b.bill_items.length ? `<button class="bedit" id="btn-print-report-${b.id}" onclick="reprintBill('${b.id}')" style="margin-right:.3rem">🖨 Print</button>` : ''}
+          <button class="bdelbill" id="btn-delete-report-${b.id}" onclick="delBill('${b.id}')">🗑</button>
+        </td>
+      </tr>`;
+    });
+  }
+}
+
+// ── REPRINT BILL (fix #13) ──
+function reprintBill(id){
+  const b=bills.find(x=>x.id===id);
+  if(!b||!b.bill_items||!b.bill_items.length){toast('Bill details not available for reprint.','error');return;}
+  const bW=parseFloat(document.getElementById('billW').value)||14.8;
+  const bH=parseFloat(document.getElementById('billH').value)||21;
+  const d=new Date(b.date);
+  const ds=d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  const ts=d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  const cname=b.customer||b.customer_name||'';
+  const cust=custs.find(c=>c.name===cname);
+  const addr=cust?cust.address||'':'';
+  const rows=b.bill_items.map((it,i)=>`<tr>
+    <td style="padding:5px 8px">${i+1}</td>
+    <td style="padding:5px 8px"><div style="font-weight:700">${it.product_name}</div><div style="font-size:8.5px;color:#888">${it.type||''}</div></td>
+    <td style="padding:5px 8px;text-align:center">${it.quantity}</td>
+    <td style="padding:5px 8px;text-align:right">₹${parseFloat(it.price).toFixed(2)}</td>
+    <td style="padding:5px 8px;text-align:right;font-weight:700;color:#780116">₹${parseFloat(it.total).toFixed(2)}</td>
+  </tr>`).join('');
+  const sub=parseFloat(b.subtotal||b.total||0);
+  const gstAmt=parseFloat(b.gst||b.gst_amount||0);
+  const grand=parseFloat(b.total||0);
+  const gstOn=gstAmt>0;
+  const gstPct=parseFloat(b.gst_percent||0);
+  openBillPrintWindow(b.id,cname,addr,ds,ts,rows,sub,gstAmt,grand,gstOn,gstPct,bW,bH);
+}
+
+
+// ── SUPABASE KEEPALIVE ──
+setInterval(async()=>{
+  if(isOnline) await fetch(API+'/health').catch(()=>{});
+},5*60*1000);
+
+// ── BILL SIZE ──
+function saveBillSize(){
+  const w=document.getElementById('billW').value;
+  const h=document.getElementById('billH').value;
+  localStorage.setItem('grb_bill_w',w);localStorage.setItem('grb_bill_h',h);
+  updatePresetHighlight(parseFloat(w),parseFloat(h));
+}
+function loadBillSize(){
+  const w=localStorage.getItem('grb_bill_w')||'14.8';
+  const h=localStorage.getItem('grb_bill_h')||'21';
+  document.getElementById('billW').value=w;
+  document.getElementById('billH').value=h;
+  updatePresetHighlight(parseFloat(w),parseFloat(h));
+}
+function setPreset(w,h){
+  document.getElementById('billW').value=w;
+  document.getElementById('billH').value=h;
+  saveBillSize();
+}
+function updatePresetHighlight(w,h){
+  [{id:'presetA4',w:21,h:29.7},{id:'presetA5',w:14.8,h:21},{id:'presetR',w:8,h:20}].forEach(p=>{
+    const el=document.getElementById(p.id);
+    if(!el) return;
+    const on=Math.abs(p.w-w)<0.1&&Math.abs(p.h-h)<0.1;
+    el.style.background=on?'linear-gradient(135deg,var(--burg3),var(--burg))':'var(--cream)';
+    el.style.color=on?'#fff':'var(--muted)';
+    el.style.borderColor=on?'var(--burg)':'var(--cream3)';
+  });
+}
+
+// ── GALLERY (Multiple images per category) ──
+
+function openGalleryModal(id=null){
+  galleryNewImgs=[];
+  document.getElementById('galleryEditId').value=id||'';
+  document.getElementById('galleryModalTitle').textContent=id?'Edit Category':'Add Category';
+  document.getElementById('galleryName').value='';
+  document.getElementById('galleryPrice').value='';
+  document.getElementById('galleryFile').value='';
+  document.getElementById('galleryPreviewGrid').innerHTML='';
+  if(id){
+    const item=galleryItems.find(g=>g.id===id);
+    if(item){
+      document.getElementById('galleryName').value=item.name;
+      document.getElementById('galleryPrice').value=item.price;
+    }
+  }
+  document.getElementById('galleryModal').classList.remove('hide');
+}
+
+function previewGalleryImgs(input){
+  const files=Array.from(input.files);
+  const grid=document.getElementById('galleryPreviewGrid');
+  grid.innerHTML='';
+  galleryNewImgs=[];
+  let loaded=0;
+  files.forEach((file,i)=>{
+    if(file.size>3*1024*1024){toast('Image '+file.name+' is over 3MB, skipped.','error');return;}
+    const reader=new FileReader();
+    reader.onload=e=>{
+      galleryNewImgs[i]=e.target.result;
+      grid.innerHTML+=`<div style="position:relative;"><img src="${e.target.result}" style="width:100%;height:80px;object-fit:cover;border-radius:8px;border:1px solid var(--border);"/></div>`;
+      loaded++;
+      if(loaded===files.length) toast(loaded+' image(s) ready','success');
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function saveGalleryItem(){
+  const name=document.getElementById('galleryName').value.trim();
+  const price=parseFloat(document.getElementById('galleryPrice').value)||0;
+  const eid=document.getElementById('galleryEditId').value;
+  if(!name){toast('Category name is required.','error');return;}
+  if(!eid&&!galleryNewImgs.filter(Boolean).length){toast('Please select at least one image.','error');return;}
+  if(eid){
+    const idx=galleryItems.findIndex(g=>g.id===eid);
+    galleryItems[idx].name=name;
+    galleryItems[idx].price=price;
+    if(galleryNewImgs.filter(Boolean).length){
+      galleryItems[idx].images=[...(galleryItems[idx].images||[]),...galleryNewImgs.filter(Boolean)];
+    }
+  } else {
+    galleryItems.push({id:Date.now().toString(),name,price,images:galleryNewImgs.filter(Boolean)});
+  }
+  localStorage.setItem('grb_gallery',JSON.stringify(galleryItems));
+  renderGallery();
+  closeMod('galleryModal');
+  toast(eid?'Category updated ✓':'Category added ✓');
+}
+
+function openAddImagesModal(id){
+  galleryAddNewImgs=[];
+  document.getElementById('galleryAddImgId').value=id;
+  document.getElementById('galleryAddFile').value='';
+  document.getElementById('galleryAddPreview').innerHTML='';
+  document.getElementById('galleryAddImgModal').classList.remove('hide');
+}
+
+function previewAddImgs(input){
+  const files=Array.from(input.files);
+  const grid=document.getElementById('galleryAddPreview');
+  grid.innerHTML='';
+  galleryAddNewImgs=[];
+  files.forEach((file,i)=>{
+    if(file.size>3*1024*1024){toast('Image too large, skipped.','error');return;}
+    const reader=new FileReader();
+    reader.onload=e=>{
+      galleryAddNewImgs[i]=e.target.result;
+      grid.innerHTML+=`<img src="${e.target.result}" style="width:100%;height:80px;object-fit:cover;border-radius:8px;border:1px solid var(--border);"/>`;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function addMoreImages(){
+  const id=document.getElementById('galleryAddImgId').value;
+  const imgs=galleryAddNewImgs.filter(Boolean);
+  if(!imgs.length){toast('Please select images.','error');return;}
+  const idx=galleryItems.findIndex(g=>g.id===id);
+  if(idx<0) return;
+  galleryItems[idx].images=[...(galleryItems[idx].images||[]),...imgs];
+  localStorage.setItem('grb_gallery',JSON.stringify(galleryItems));
+  closeMod('galleryAddImgModal');
+  toast(imgs.length+' image(s) added ✓');
+  // refresh view if open
+  if(!document.getElementById('page-gallery-view').classList.contains('on')) return;
+  viewGalleryCategory(id);
+}
+
+function deleteGalleryItem(id){
+  if(!confirm('Delete this category and all its images?'))return;
+  galleryItems=galleryItems.filter(g=>g.id!==id);
+  localStorage.setItem('grb_gallery',JSON.stringify(galleryItems));
+  renderGallery();
+  toast('Category deleted.');
+}
+
+function deleteGalleryImage(itemId,imgIdx){
+  if(!confirm('Delete this image?'))return;
+  const idx=galleryItems.findIndex(g=>g.id===itemId);
+  if(galleryItems[idx].images) galleryItems[idx].images.splice(imgIdx,1);
+  localStorage.setItem('grb_gallery',JSON.stringify(galleryItems));
+  viewGalleryCategory(itemId);
+  toast('Image deleted.');
+}
+
+function renderGallery(){
+  const grid=document.getElementById('galleryGrid');
+  const empty=document.getElementById('galleryEmpty');
+  grid.innerHTML='';
+  if(!galleryItems.length){empty.style.display='';return;}
+  empty.style.display='none';
+  galleryItems.forEach(item=>{
+    const thumb=item.images&&item.images.length?item.images[0]:'';
+    const count=item.images?item.images.length:0;
+    grid.innerHTML+=`
+      <div onclick="viewGalleryCategory('${item.id}')" style="background:#fff;border-radius:14px;overflow:hidden;border:1px solid var(--border);border-top:3px solid var(--burg);box-shadow:0 4px 16px rgba(120,1,22,0.07);cursor:pointer;transition:transform .2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="height:130px;overflow:hidden;background:var(--cream);position:relative;">
+          ${thumb?`<img src="${thumb}" style="width:100%;height:100%;object-fit:cover;"/>`:`<div style="height:100%;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:2rem;">📷</div>`}
+          ${count>1?`<div style="position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,0.6);color:white;border-radius:10px;padding:.15rem .5rem;font-size:.72rem;font-weight:700;">+${count} pics</div>`:''}
+        </div>
+        <div style="padding:.7rem;">
+          <div style="font-weight:700;font-size:.88rem;color:var(--text);margin-bottom:.2rem;">${x(item.name)}</div>
+          <div style="font-family:var(--font-num);font-weight:800;color:var(--burg);font-size:.9rem;">₹${parseFloat(item.price).toFixed(2)}</div>
+          <div style="display:flex;gap:.4rem;margin-top:.5rem;" onclick="event.stopPropagation()">
+            <button class="bedit" id="btn-edit-gallery-${item.id}" style="flex:1;font-size:.72rem;padding:.28rem;" onclick="openGalleryModal('${item.id}')">✏</button>
+            <button class="bedit" id="btn-add-gallery-img-${item.id}" style="flex:1;font-size:.72rem;padding:.28rem;" onclick="openAddImagesModal('${item.id}')">+📷</button>
+            <button class="bdel" id="btn-delete-gallery-${item.id}" style="flex:none;" onclick="deleteGalleryItem('${item.id}')">🗑</button>
+          </div>
+        </div>
+      </div>`;
+  });
+}
+
+function viewGalleryCategory(id){
+  const item=galleryItems.find(g=>g.id===id);
+  if(!item) return;
+  document.getElementById('galleryViewTitle').textContent=item.name+' — ₹'+parseFloat(item.price).toFixed(2);
+  document.getElementById('galleryViewActions').innerHTML=`
+    <button class="bprim" id="btn-view-gallery-add-more-${id}" style="padding:.5rem 1rem;min-height:40px;font-size:.85rem;" onclick="openAddImagesModal('${id}')">+ Add More Images</button>
+    <button class="bedit" id="btn-view-gallery-edit-${id}" onclick="openGalleryModal('${id}')">✏ Edit Name/Price</button>
+    <button class="bred" id="btn-view-gallery-delete-${id}" style="padding:.5rem 1rem;min-height:40px;font-size:.85rem;" onclick="deleteGalleryItem('${id}');pg('gallery')">🗑 Delete Category</button>
+  `;
+  const grid=document.getElementById('galleryViewGrid');
+  grid.innerHTML='';
+  if(!item.images||!item.images.length){
+    grid.innerHTML='<div style="padding:2rem;color:var(--muted);text-align:center;">No images yet. Add some!</div>';
+  } else {
+    item.images.forEach((img,i)=>{
+      grid.innerHTML+=`
+        <div style="border-radius:12px;overflow:hidden;border:1px solid var(--border);position:relative;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+          <img src="${img}" style="width:100%;height:150px;object-fit:cover;display:block;" onclick="openFullImg('${id}',${i})"/>
+          <button onclick="deleteGalleryImage('${id}',${i})" id="btn-delete-gallery-img-${id}-${i}" style="position:absolute;top:4px;right:4px;background:rgba(120,1,22,0.85);color:white;border:none;border-radius:6px;width:26px;height:26px;cursor:pointer;font-size:.8rem;">✕</button>
+        </div>`;
+    });
+  }
+  pg('gallery-view');
+}
+
+function openFullImg(itemId,idx){
+  const item=galleryItems.find(g=>g.id===itemId);
+  if(!item||!item.images[idx]) return;
+  const w=window.open('','_blank');
+  w.document.write(`<html><body style="margin:0;background:#000;display:flex;align-items:center;justify-content:center;min-height:100vh;"><img src="${item.images[idx]}" style="max-width:100%;max-height:100vh;object-fit:contain;"/></body></html>`);
+  w.document.close();
+}
+
+// ── PROFILE ──
+async function loadProfile(){
+  try{
+    const data=await api('GET','/profile');
+    if(!data) return;
+    document.getElementById('profileName').value=data.name||'';
+    document.getElementById('profilePhone').value=(data.phone||'').replace(/^\+?91/,'').slice(0,10);
+    document.getElementById('profileEmail').value=data.email||'';
+    // Fix role display - show Admin or User (not staff)
+    const roleDisplay = data.role==='admin'?'Admin':'User';
+    document.getElementById('profileRole').value=roleDisplay;
+    if(data.profile_pic){
+      document.getElementById('profilePicImg').src=data.profile_pic;
+      document.getElementById('profilePicImg').style.display='block';
+      document.getElementById('profilePicPlaceholder').style.display='none';
+      // Update topbar profile pic
+      updateTopbarPic(data.profile_pic, data.name);
+    }
+  }catch(e){console.warn('Profile load error:',e);}
+}
+
+function updateTopbarPic(picUrl, name){
+  const img=document.getElementById('topbarPic');
+  const initial=document.getElementById('topbarInitial');
+  if(picUrl){
+    img.src=picUrl;
+    img.style.display='block';
+    initial.style.display='none';
+  } else if(name){
+    initial.textContent=name.charAt(0).toUpperCase();
+    initial.style.display='block';
+    img.style.display='none';
+  }
+}
+
+function handleProfilePic(input){
+  const file=input.files[0];
+  if(!file) return;
+  if(file.size>2*1024*1024){toast('Image must be under 2MB.','error');return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    profilePicData=e.target.result;
+    document.getElementById('profilePicImg').src=profilePicData;
+    document.getElementById('profilePicImg').style.display='block';
+    document.getElementById('profilePicPlaceholder').style.display='none';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function saveProfile(){
+  const name=document.getElementById('profileName').value.trim();
+  const phone=document.getElementById('profilePhone').value.trim();
+  if(!name){toast('Name is required.','error');return;}
+  const btn=document.querySelector('#page-profile .bprim');
+  btn.textContent='Saving...';btn.disabled=true;
+  const result=await api('PUT','/profile',{
+    name,
+    phone:phone?'+91'+phone:null,
+    profile_pic:profilePicData||null
+  });
+  btn.textContent='Save Profile';btn.disabled=false;
+  if(result){
+    const user=JSON.parse(localStorage.getItem('grb_user')||'{}');
+    user.name=result.name;
+    if(profilePicData) user.profile_pic=profilePicData;
+    localStorage.setItem('grb_user',JSON.stringify(user));
+    document.getElementById('uname').textContent=result.name;
+    // Update topbar profile pic immediately
+    updateTopbarPic(profilePicData||result.profile_pic||null, result.name);
+    toast('Profile saved ✓');
+  }
+}
+
+// ── NAVIGATION (updated) ──
+
+// ── UTILS ──
+function closeMod(id){document.getElementById(id).classList.add('hide');}
+function x(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+document.addEventListener('click',e=>{if(!e.target.closest('.fg'))document.getElementById('sugg').classList.add('hide');});
+
+// ── INIT ──
+if(!localStorage.getItem('grb_cleared_v1')){
+  localStorage.removeItem('grb_bills');localStorage.removeItem('grb_prods');
+  localStorage.removeItem('grb_custs');localStorage.removeItem('grb_last_bill_no');
+  localStorage.setItem('grb_cleared_v1','1');
+}
+prods=JSON.parse(localStorage.getItem('grb_prods')||'[]');
+custs=JSON.parse(localStorage.getItem('grb_custs')||'[]');
+bills=JSON.parse(localStorage.getItem('grb_bills')||'[]');
+galleryItems=JSON.parse(localStorage.getItem('grb_gallery')||'[]');
+fillDrop();todaySummary();renderProds();renderCusts();
+loadFromBackend();
+loadBillSize();
+setTimeout(flushQueue,2000);
+// Load user info and profile pic
+const _u=JSON.parse(localStorage.getItem('grb_user')||'{}');
+if(_u.name) document.getElementById('uname').textContent=_u.name;
+if(_u.profile_pic) updateTopbarPic(_u.profile_pic, _u.name);
+else if(_u.name) updateTopbarPic(null, _u.name);
+
+// ── SHARED BILL PRINT HELPERS ──────────────────────
+function getBillHtml(bno, cname, addr, ds, ts, rows, sub, gst, grand, gstOn, gstPct, bW, bH, type = 'INVOICE') {
+  const logoUrl = 'https://i.pinimg.com/1200x/7e/cf/ec/7ecfec130f976641dbbe349abfdbccee.jpg';
+  const typeLabel = type === 'ESTIMATE' ? 'ESTIMATE' : (gstOn ? 'TAX INVOICE' : 'ESTIMATE');
+  
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>${typeLabel} #${bno}</title><style>
+    @page { size: ${bW}cm ${bH}cm; margin: 0; }
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    body {
+      font-family: Georgia, serif;
+      width: ${bW}cm;
+      background: #fff;
+      color: #1A0005;
+      padding: 6mm;
+    }
+    .bill-box {
+      border: 1px solid #780116;
+      padding: 12px 14px;
+      min-height: calc(${bH}cm - 26mm);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .header-section {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 6px;
+    }
+    .logo-img {
+      width: 65px;
+      height: 65px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 1.5px solid #780116;
+    }
+    .brand-info {
+      text-align: left;
+    }
+    .brand-title {
+      font-size: 24px;
+      font-weight: 900;
+      color: #780116;
+      letter-spacing: 0.5px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      margin: 0;
+      line-height: 1.1;
+    }
+    .brand-tagline {
+      font-size: 9px;
+      color: #1A0005;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-top: 4px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+    .header-line {
+      border-top: 1px solid #780116;
+      margin: 8px 0 10px;
+    }
+    .badge-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 8px 0 12px;
+    }
+    .badge-pill {
+      background: #780116 !important;
+      color: #fff !important;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 18px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      border: 1px solid #780116;
+      clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 0;
+      border-top: 1px solid #780116;
+      border-bottom: 1px solid #780116;
+      margin-bottom: 10px;
+      font-family: Georgia, serif;
+    }
+    .meta-divider {
+      color: #780116;
+      opacity: 0.7;
+    }
+    .customer-info {
+      margin: 10px 0;
+      font-family: Georgia, serif;
+      font-size: 13px;
+      line-height: 1.4;
+      color: #1A0005;
+    }
+    .customer-title {
+      font-weight: bold;
+      color: #780116;
+    }
+    .customer-name {
+      font-weight: bold;
+    }
+    .customer-loc {
+      color: #333;
+      margin-top: 1px;
+    }
+    .dashed-line {
+      border-top: 1px dashed #C9A84C;
+      margin: 10px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0;
+      font-size: 12px;
+      font-family: Georgia, serif;
+    }
+    th {
+      background: #FFF9F2;
+      color: #780116;
+      font-weight: bold;
+      font-size: 11px;
+      border: 1px solid #780116;
+      padding: 8px 6px;
+      text-align: center;
+      text-transform: none;
+    }
+    td {
+      border: 1px solid #780116 !important;
+      padding: 8px 6px !important;
+      color: #1A0005 !important;
+      font-family: Georgia, serif !important;
+      font-size: 12px !important;
+    }
+    td:nth-child(1) { text-align: center !important; }
+    td:nth-child(2) { text-align: left !important; }
+    td:nth-child(2) div {
+      font-weight: normal !important;
+      font-size: 12px !important;
+      color: #1A0005 !important;
+      font-family: Georgia, serif !important;
+    }
+    td:nth-child(2) div:last-child {
+      font-size: 9px !important;
+      color: #666 !important;
+      margin-top: 1px;
+    }
+    td:nth-child(3) { text-align: center !important; }
+    td:nth-child(4) { text-align: center !important; font-family: Georgia, serif !important; }
+    td:nth-child(5) { text-align: center !important; font-family: Georgia, serif !important; font-weight: normal !important; color: #1A0005 !important; }
+    
+    .total-container {
+      display: flex;
+      justify-content: flex-end;
+      margin: 8px 0;
+    }
+    .total-block {
+      border-bottom: 1px solid #1A0005;
+      padding-bottom: 3px;
+      display: inline-flex;
+      align-items: center;
+      font-size: 13px;
+      font-family: Georgia, serif;
+      color: #1A0005;
+    }
+    .total-label {
+      font-weight: bold;
+      margin-right: 15px;
+    }
+    .total-colon {
+      margin-right: 15px;
+    }
+    .total-val {
+      font-weight: bold;
+      font-size: 15px;
+    }
+    .footer-section {
+      text-align: center;
+      margin-top: 12px;
+    }
+    .footer-msg {
+      font-size: 13px;
+      font-weight: bold;
+      color: #780116;
+      font-family: Georgia, serif;
+    }
+  </style></head><body>
+  <div class="bw">
+    <div class="bill-box">
+      <div>
+        <div class="header-section">
+          <img class="logo-img" src="${logoUrl}" alt="GRB Logo"/>
+          <div class="brand-info">
+            <h1 class="brand-title">GRB POOJA ITEMS</h1>
+            <p class="brand-tagline">SACRED SUPPLIES • TRUSTED QUALITY</p>
+          </div>
+        </div>
+        <div class="header-line"></div>
+        <div class="badge-row">
+          <span class="badge-pill">${typeLabel}</span>
+        </div>
+        <div class="meta-row">
+          <div style="flex: 1; text-align: center;">Bill No: <span style="font-weight:bold;">${bno}</span></div>
+          <div class="meta-divider">|</div>
+          <div style="flex: 1; text-align: center;">${ds}</div>
+        </div>
+        <div class="customer-info">
+          <div><span class="customer-title">Customer:</span> <span class="customer-name">${x(cname)}</span></div>
+          ${addr ? `<div class="customer-loc">${x(addr)}</div>` : ''}
+        </div>
+        <div class="dashed-line"></div>
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 12%; text-align: center;">Sl. No.</th>
+              <th style="text-align: left; padding-left: 8px;">Item Name</th>
+              <th style="width: 15%; text-align: center;">Quantity</th>
+              <th style="width: 20%; text-align: center;">Price (₹)</th>
+              <th style="width: 20%; text-align: center;">Total (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows}
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="dashed-line"></div>
+        ${gstOn ? `
+        <div style="font-size: 11px; color: #333; display: flex; flex-direction: column; gap: 2px; align-items: flex-end; padding-right: 6px; font-family: Georgia, serif; margin-bottom: 6px;">
+          <div>Subtotal: ₹${sub.toFixed(2)}</div>
+          <div>GST (${gstPct}%): ₹${gst.toFixed(2)}</div>
+        </div>
+        <div class="dashed-line"></div>
+        ` : ''}
+        <div class="total-container">
+          <div class="total-block">
+            <span class="total-label">Total Amount</span>
+            <span class="total-colon">:</span>
+            <span class="total-val">₹${grand.toFixed(2)}</span>
+          </div>
+        </div>
+        <div class="dashed-line"></div>
+        <div class="footer-section">
+          <p class="footer-msg">Thank You – Visit Again</p>
+          <svg width="80" height="12" viewBox="0 0 80 12" fill="none" style="display: block; margin: 6px auto 0;">
+            <path d="M 40 2 L 44 6 L 40 10 L 36 6 Z" fill="#C9A84C"/>
+            <circle cx="30" cy="6" r="2" fill="#C9A84C"/>
+            <circle cx="50" cy="6" r="2" fill="#C9A84C"/>
+            <path d="M 10 6 C 20 6, 25 4, 28 6" stroke="#C9A84C" stroke-width="1"/>
+            <path d="M 70 6 C 60 6, 55 4, 52 6" stroke="#C9A84C" stroke-width="1"/>
+            <circle cx="20" cy="6" r="1" fill="#C9A84C"/>
+            <circle cx="60" cy="6" r="1" fill="#C9A84C"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</body></html>`;
+}
+
+function openBillPrintWindow(bno,cname,addr,ds,ts,rows,sub,gst,grand,gstOn,gstPct,bW,bH,type='INVOICE'){
+  const html=getBillHtml(bno,cname,addr,ds,ts,rows,sub,gst,grand,gstOn,gstPct,bW,bH,type);
+  const w=window.open('','_blank','width=600,height=800');
+  if(!w){toast('Please allow popups for printing.','error');return;}
+  w.document.write(html);w.document.close();w.focus();
+  setTimeout(()=>w.print(),500);
+}
+
+// ── VIEW BILL REPORT ─────────────────────────────────
+let _viewBillId=null;
+
+async function viewBillReport(id){
+  _viewBillId=id;
+  const b=bills.find(z=>z.id===id);
+  if(!b){toast('Bill not found.','error');return;}
+  let items=b.bill_items||[];
+  if(isOnline&&!items.length){
+    try{
+      const fresh=await api('GET','/bills/'+id);
+      if(fresh&&fresh.items) items=fresh.items;
+      else if(fresh&&fresh.bill_items) items=fresh.bill_items;
+    }catch(e){}
+  }
+  const d=new Date(b.date||b.created_at||Date.now());
+  const ds=d.toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
+  const ts=d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  const sub=parseFloat(b.subtotal||b.total||0);
+  const gstAmt=parseFloat(b.gst||b.gst_amount||0);
+  const grand=parseFloat(b.total||0);
+  const gstPct=parseFloat(b.gst_percent||0);
+  const cname=b.customer||b.customer_name||'—';
+  const cust=custs.find(c=>c.name===cname);
+  const addr=cust?cust.address||'':'';
+  const logoUrl = 'https://i.pinimg.com/1200x/7e/cf/ec/7ecfec130f976641dbbe349abfdbccee.jpg';
+  const typeLabel = gstAmt > 0 ? 'TAX INVOICE' : 'ESTIMATE';
+  const itemRows=items.length?items.map((it,i)=>`
+    <tr>
+      <td style="padding:8px 10px;color:var(--muted);font-weight:600;width:28px">${i+1}</td>
+      <td style="padding:8px 10px">
+        <div style="font-weight:700;color:var(--text)">${x(it.product_name||it.name||'')}</div>
+        <div style="font-size:.73rem;color:var(--muted);margin-top:1px">${x(it.type||'')}</div>
+      </td>
+      <td style="padding:8px 10px;text-align:center;font-weight:700;font-family:var(--font-num);width:46px">${it.quantity||it.qty||0}</td>
+      <td style="padding:8px 10px;text-align:right;font-family:var(--font-num)">₹${parseFloat(it.price||0).toFixed(2)}</td>
+      <td style="padding:8px 10px;text-align:right;font-family:var(--font-num);font-weight:800;color:var(--burg)">₹${parseFloat(it.total||0).toFixed(2)}</td>
+    </tr>`).join('')
+  :'<tr><td colspan="5" style="padding:1.5rem;text-align:center;color:var(--muted)">No item details stored for this bill</td></tr>';
+
+  document.getElementById('billViewBody').innerHTML=`
+    <style>
+      .modal-tbody-align td {
+        border: 1px solid #780116 !important;
+        padding: 8px 6px !important;
+        color: #1A0005 !important;
+        font-family: Georgia, serif !important;
+        font-size: 12px !important;
+        background: transparent !important;
+      }
+      .modal-tbody-align td:nth-child(1) { text-align: center !important; font-weight: normal !important; width: auto !important; }
+      .modal-tbody-align td:nth-child(2) { text-align: left !important; }
+      .modal-tbody-align td:nth-child(2) div {
+        font-weight: normal !important;
+        font-size: 12px !important;
+        color: #1A0005 !important;
+        font-family: Georgia, serif !important;
+      }
+      .modal-tbody-align td:nth-child(2) div:last-child {
+        font-size: 9px !important;
+        color: #666 !important;
+        margin-top: 1px;
+      }
+      .modal-tbody-align td:nth-child(3) { text-align: center !important; font-weight: normal !important; width: auto !important; }
+      .modal-tbody-align td:nth-child(4) { text-align: center !important; }
+      .modal-tbody-align td:nth-child(5) { text-align: center !important; font-weight: normal !important; color: #1A0005 !important; }
+    </style>
+    <div style="background:#fff; padding: 20px; border: 1px solid #780116; font-family: Georgia, serif; color: #1A0005; max-width: 580px; margin: 0 auto; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+      <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 6px;">
+        <img src="${logoUrl}" alt="GRB Logo" style="width: 65px; height: 65px; object-fit: cover; border-radius: 50%; border: 1.5px solid #780116;"/>
+        <div style="text-align: left;">
+          <div style="font-size: 24px; font-weight: 900; color: #780116; letter-spacing: 0.5px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.1; margin: 0;">GRB POOJA ITEMS</div>
+          <div style="font-size: 9px; color: #1A0005; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">SACRED SUPPLIES • TRUSTED QUALITY</div>
+        </div>
+      </div>
+      <div style="border-top: 1px solid #780116; margin: 8px 0 10px;"></div>
+      <div style="display: flex; justify-content: center; align-items: center; margin: 8px 0 12px;">
+        <span style="background: #780116; color: #fff; font-size: 11px; font-weight: 800; padding: 4px 18px; letter-spacing: 1.5px; text-transform: uppercase; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);">${typeLabel}</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 500; padding: 8px 0; border-top: 1px solid #780116; border-bottom: 1px solid #780116; margin-bottom: 10px; font-family: Georgia, serif;">
+        <div style="flex: 1; text-align: center;">Bill No: <span style="font-weight:bold;">${b.id||id}</span></div>
+        <div style="color: #780116; opacity: 0.7;">|</div>
+        <div style="flex: 1; text-align: center;">${ds} ${ts}</div>
+      </div>
+      <div style="margin: 10px 0; font-family: Georgia, serif; font-size: 13px; line-height: 1.4; color: #1A0005;">
+        <div><span style="font-weight: bold; color: #780116;">Customer:</span> <span style="font-weight: bold;">${x(cname)}</span></div>
+        ${addr ? `<div style="color: #333; margin-top: 1px;">${x(addr)}</div>` : ''}
+      </div>
+      <div style="border-top: 1px dashed #C9A84C; margin: 10px 0;"></div>
+      <table style="width:100%; border-collapse: collapse; margin: 10px 0; font-size: 12px; font-family: Georgia, serif;">
+        <thead>
+          <tr>
+            <th style="width: 12%; text-align: center; background: #FFF9F2; color: #780116; font-weight: bold; font-size: 11px; border: 1px solid #780116; padding: 8px 6px;">Sl. No.</th>
+            <th style="text-align: left; background: #FFF9F2; color: #780116; font-weight: bold; font-size: 11px; border: 1px solid #780116; padding: 8px 6px; padding-left: 8px;">Item Name</th>
+            <th style="width: 15%; text-align: center; background: #FFF9F2; color: #780116; font-weight: bold; font-size: 11px; border: 1px solid #780116; padding: 8px 6px;">Quantity</th>
+            <th style="width: 20%; text-align: center; background: #FFF9F2; color: #780116; font-weight: bold; font-size: 11px; border: 1px solid #780116; padding: 8px 6px;">Price (₹)</th>
+            <th style="width: 20%; text-align: center; background: #FFF9F2; color: #780116; font-weight: bold; font-size: 11px; border: 1px solid #780116; padding: 8px 6px;">Total (₹)</th>
+          </tr>
+        </thead>
+        <tbody class="modal-tbody-align">
+          ${itemRows}
+        </tbody>
+      </table>
+      <div style="border-top: 1px dashed #C9A84C; margin: 10px 0;"></div>
+      ${gstAmt>0?`
+      <div style="font-size: 11px; color: #333; display: flex; flex-direction: column; gap: 2px; align-items: flex-end; padding-right: 6px; font-family: Georgia, serif; margin-bottom: 6px;">
+        <div>Subtotal: ₹${sub.toFixed(2)}</div>
+        <div>GST (${gstPct}%): ₹${gstAmt.toFixed(2)}</div>
+      </div>
+      <div style="border-top: 1px dashed #C9A84C; margin: 10px 0;"></div>
+      `:''}
+      <div style="display: flex; justify-content: flex-end; margin: 8px 0;">
+        <div style="border-bottom: 1px solid #1A0005; padding-bottom: 3px; display: inline-flex; align-items: center; font-size: 13px; font-family: Georgia, serif; color: #1A0005;">
+          <span style="font-weight: bold; margin-right: 15px;">Total Amount</span>
+          <span style="margin-right: 15px;">:</span>
+          <span style="font-weight: bold; font-size: 15px;">₹${grand.toFixed(2)}</span>
+        </div>
+      </div>
+      <div style="border-top: 1px dashed #C9A84C; margin: 10px 0;"></div>
+      <div style="text-align: center; margin-top: 12px;">
+        <p style="font-size: 13px; font-weight: bold; color: #780116; font-family: Georgia, serif; margin: 0;">Thank You – Visit Again</p>
+        <svg width="80" height="12" viewBox="0 0 80 12" fill="none" style="display: block; margin: 6px auto 0;">
+          <path d="M 40 2 L 44 6 L 40 10 L 36 6 Z" fill="#C9A84C"/>
+          <circle cx="30" cy="6" r="2" fill="#C9A84C"/>
+          <circle cx="50" cy="6" r="2" fill="#C9A84C"/>
+          <path d="M 10 6 C 20 6, 25 4, 28 6" stroke="#C9A84C" stroke-width="1"/>
+          <path d="M 70 6 C 60 6, 55 4, 52 6" stroke="#C9A84C" stroke-width="1"/>
+          <circle cx="20" cy="6" r="1" fill="#C9A84C"/>
+          <circle cx="60" cy="6" r="1" fill="#C9A84C"/>
+        </svg>
+      </div>
+    </div>`;
+  document.getElementById('billViewModal').classList.remove('hide');
+}
+
+function printFromViewModal(){
+  if(!_viewBillId){toast('No bill selected.','error');return;}
+  const b=bills.find(z=>z.id===_viewBillId);
+  if(!b){toast('Bill data not available.','error');return;}
+  const bW=parseFloat(document.getElementById('billW').value)||14.8;
+  const bH=parseFloat(document.getElementById('billH').value)||21;
+  const d=new Date(b.date||b.created_at||Date.now());
+  const ds=d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  const ts=d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  const cname=b.customer||b.customer_name||'';
+  const cust=custs.find(c=>c.name===cname);
+  const addr=cust?cust.address||'':'';
+  const items=b.bill_items||[];
+  const sub=parseFloat(b.subtotal||b.total||0);
+  const gstAmt=parseFloat(b.gst||b.gst_amount||0);
+  const grand=parseFloat(b.total||0);
+  const gstOn=gstAmt>0;
+  const gstPct=parseFloat(b.gst_percent||0);
+  const rows=items.map((it,i)=>`<tr>
+    <td style="text-align:center;">${i+1}</td>
+    <td><div style="font-weight:700">${it.product_name||it.name||''}</div><div style="font-size:8.5px;color:#888">${it.type||''}</div></td>
+    <td style="text-align:center;">${it.quantity||it.qty||0}</td>
+    <td style="text-align:right;font-family:var(--font-num);">${parseFloat(it.price||0).toFixed(2)}</td>
+    <td style="text-align:right;font-weight:700;font-family:var(--font-num);color:#780116;">${parseFloat(it.total||0).toFixed(2)}</td>
+  </tr>`).join('');
+  openBillPrintWindow(b.id,cname,addr,ds,ts,rows,sub,gstAmt,grand,gstOn,gstPct,bW,bH);
+}
+
+async function downloadPdfFile(){
+  if(!_viewBillId){toast('No bill selected.','error');return;}
+  const b=bills.find(z=>z.id===_viewBillId);
+  if(b&&b.pdf_url){
+    window.open(b.pdf_url,'_blank');
+    return;
+  }
+  // Fallback: download dynamically as blob
+  toast('Downloading PDF...','warn');
+  try{
+    const token=localStorage.getItem('grb_token');
+    const res=await fetch(API+'/bills/'+_viewBillId+'/pdf',{
+      headers:{'Authorization':'Bearer '+token}
+    });
+    if(!res.ok)throw new Error('Download failed');
+    const blob=await res.blob();
+    const url=window.URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=`GRB-Bill-${_viewBillId}.pdf`;
+    document.body.appendChild(a);
+    a.click();a.remove();
+    window.URL.revokeObjectURL(url);
+    toast('Downloaded ✓','success');
+  }catch(e){
+    toast('Failed to download PDF: '+e.message,'error');
+  }
+}
+</script>
+
+<!-- BILL VIEW MODAL -->
+<div class="ov hide" id="billViewModal">
+  <div style="background:var(--cream);border-radius:20px;width:100%;max-width:680px;max-height:92vh;display:flex;flex-direction:column;box-shadow:0 0 0 1px rgba(201,168,76,0.3),0 30px 80px rgba(0,0,0,0.45);border-top:4px solid var(--burg);overflow:hidden;">
+    <div style="background:linear-gradient(135deg,var(--burg3),var(--burg));padding:1rem 1.4rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+      <div style="display:flex;align-items:center;gap:.6rem;">
+        <div style="width:32px;height:32px;background:rgba(201,168,76,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;">📄</div>
+        <div style="font-family:'Cinzel Decorative',serif;font-size:.88rem;color:var(--gold2);letter-spacing:.3px;">Bill Report</div>
+      </div>
+      <div style="display:flex;gap:.6rem;">
+        <button onclick="downloadPdfFile()" id="btn-download-pdf-modal" style="padding:.48rem 1.1rem;background:linear-gradient(135deg,#059669,#10b981);color:#fff;border:none;border-radius:9px;font-family:var(--font-ui);font-size:.82rem;font-weight:800;cursor:pointer;transition:all .2s;min-height:38px;box-shadow:0 2px 8px rgba(0,0,0,0.2);">📥 Download PDF</button>
+        <button onclick="printFromViewModal()" id="btn-print-view-modal" style="padding:.48rem 1.1rem;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1A0005;border:none;border-radius:9px;font-family:var(--font-ui);font-size:.82rem;font-weight:800;cursor:pointer;transition:all .2s;min-height:38px;box-shadow:0 2px 8px rgba(0,0,0,0.2);">🖨 Print / PDF</button>
+        <button onclick="closeMod('billViewModal')" id="btn-close-view-modal" style="padding:.48rem 1rem;background:rgba(255,255,255,0.12);color:#fff;border:1px solid rgba(255,255,255,0.25);border-radius:9px;font-family:var(--font-ui);font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;min-height:38px;">✕ Close</button>
+      </div>
+    </div>
+    <div id="billViewBody" style="flex:1;overflow-y:auto;padding:1.4rem;"></div>
+  </div>
+</div>
+
+</body>
+</html>

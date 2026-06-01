@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>GRB Pooja Items — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --burg:#780116;--burg2:#9B0A20;--burg3:#5C0011;--burg4:#3D000B;
+  --gold:#C9A84C;--gold2:#F0CC6A;
+  --cream:#FFFFFF;--cream2:#F1F5F9;--cream3:#E2E8F0;
+  --sb:#2A0008;--sb2:#1A0005;
+  --bg:#F8FAFC;--text:#0F172A;--muted:#475569;
+  --font:'Baloo 2',cursive;
+}
+html,body{min-height:100vh;}
+body{
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--text);
+  display:flex;align-items:center;justify-content:center;
+  padding:1.5rem 1rem;min-height:100vh;
+  position:relative;overflow:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse at 25% 25%,rgba(201,168,76,0.04) 0%,transparent 55%),
+    radial-gradient(ellipse at 75% 75%,rgba(120,1,22,0.05) 0%,transparent 55%);
+  pointer-events:none;
+}
+
+.particle{
+  position:fixed;border-radius:50%;
+  background:rgba(120,1,22,0.06);
+  animation:float linear infinite;pointer-events:none;
+}
+@keyframes float{
+  0%{transform:translateY(100vh) rotate(0deg);opacity:0;}
+  10%{opacity:1;}
+  90%{opacity:1;}
+  100%{transform:translateY(-100px) rotate(360deg);opacity:0;}
+}
+
+.page{
+  width:100%;max-width:420px;
+  position:relative;z-index:1;
+}
+
+.brand-header{
+  background:linear-gradient(135deg,var(--burg4),var(--burg3));
+  border-radius:24px 24px 0 0;
+  padding:1.8rem 2rem 1.6rem;
+  text-align:center;
+  border-top:4px solid var(--burg);
+  position:relative;overflow:hidden;
+  box-shadow:0 0 0 1px rgba(201,168,76,0.15);
+}
+.brand-header::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--burg),var(--gold2),var(--gold),var(--gold2),var(--burg));
+}
+.logo-wrap{
+  width:80px;height:80px;border-radius:50%;
+  border:3px solid var(--gold);
+  margin:0 auto .9rem;overflow:hidden;
+  box-shadow:0 0 0 5px rgba(201,168,76,0.12),0 8px 24px rgba(0,0,0,0.4),0 0 30px rgba(201,168,76,0.15);
+}
+.logo-wrap img{width:100%;height:100%;object-fit:cover;}
+.brand-name{
+  font-family:'Cinzel Decorative',serif;
+  font-size:1.8rem;font-weight:700;
+  color:var(--gold2);
+  text-shadow:0 2px 12px rgba(0,0,0,0.5),0 0 20px rgba(201,168,76,0.25);
+  letter-spacing:3px;
+}
+.brand-sub{
+  font-size:.82rem;font-weight:600;
+  color:rgba(201,168,76,0.65);
+  letter-spacing:1.5px;text-transform:uppercase;
+  margin-top:.3rem;
+}
+
+.login-card{
+  background:var(--cream);
+  border-radius:0 0 24px 24px;
+  padding:1.8rem 2rem 2rem;
+  box-shadow:0 0 0 1px var(--cream3), 0 10px 40px rgba(120,1,22,0.06);
+}
+.login-title{
+  font-family:'Cinzel Decorative',serif;
+  font-size:.95rem;color:var(--burg);
+  margin-bottom:.2rem;
+}
+.login-sub{font-size:.78rem;color:var(--muted);margin-bottom:1.2rem;}
+
+.tabs{display:flex;gap:.4rem;margin-bottom:1.1rem;}
+.tab{
+  flex:1;padding:.6rem;text-align:center;
+  font-family:var(--font);font-size:.87rem;font-weight:700;
+  cursor:pointer;border:2px solid var(--cream3);
+  border-radius:11px;background:#fff;color:var(--muted);transition:all .22s;
+}
+.tab.on{
+  background:linear-gradient(135deg,var(--burg3),var(--burg));
+  color:#fff;border-color:var(--burg);
+  box-shadow:0 4px 14px rgba(120,1,22,0.35);
+}
+.field{margin-bottom:.9rem;}
+.field label{
+  display:block;font-size:.68rem;font-weight:700;
+  color:var(--burg3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:.3rem;
+}
+.field input,.field select{
+  width:100%;padding:.72rem 1rem;border:2px solid var(--cream3);border-radius:11px;
+  font-family:var(--font);font-size:16px;color:var(--text);background:var(--cream);
+  outline:none;transition:all .22s;
+}
+.field input:focus,.field select:focus{
+  border-color:var(--burg);background:#fff;box-shadow:0 0 0 3px rgba(120,1,22,0.08);
+}
+.btn{
+  width:100%;padding:.82rem;margin-top:.3rem;
+  background:linear-gradient(135deg,var(--burg3),var(--burg),var(--burg2));
+  color:#fff;border:none;border-radius:12px;
+  font-family:var(--font);font-size:1rem;font-weight:800;
+  cursor:pointer;transition:all .22s;min-height:50px;
+  box-shadow:0 4px 16px rgba(120,1,22,0.4);
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(120,1,22,0.5);}
+.btn:active{transform:scale(.98);}
+.btn:disabled{opacity:.7;cursor:not-allowed;}
+.msg{padding:.65rem .9rem;border-radius:10px;font-size:.83rem;font-weight:600;margin-bottom:.9rem;display:none;}
+.msg.error{background:#fff0f0;color:#cc2222;border:1px solid #ffcccc;display:block;}
+.msg.success{background:#f0fff4;color:#1a6b1a;border:1px solid #b3e6b3;display:block;}
+.forgot{display:block;text-align:right;color:var(--muted);font-size:.78rem;font-weight:600;text-decoration:none;margin-top:.35rem;}
+.forgot:hover{color:var(--burg);}
+.auth-form{display:none;}.auth-form.on{display:block;}
+</style>
+</head>
+<body>
+
+<div class="particle" style="width:8px;height:8px;left:15%;animation-duration:8s;animation-delay:0s;"></div>
+<div class="particle" style="width:5px;height:5px;left:35%;animation-duration:12s;animation-delay:2s;"></div>
+<div class="particle" style="width:10px;height:10px;left:60%;animation-duration:9s;animation-delay:4s;"></div>
+<div class="particle" style="width:6px;height:6px;left:80%;animation-duration:11s;animation-delay:1s;"></div>
+<div class="particle" style="width:4px;height:4px;left:90%;animation-duration:7s;animation-delay:3s;"></div>
+
+<div class="page">
+  <div class="brand-header">
+    <div class="logo-wrap">
+      <img src="https://i.pinimg.com/1200x/7e/cf/ec/7ecfec130f976641dbbe349abfdbccee.jpg" alt="GRB Logo"/>
+    </div>
+    <div class="brand-name">GRB</div>
+    <div class="brand-sub">Pooja Items</div>
+  </div>
+
+  <div class="login-card">
+    <div class="login-title">Welcome Back</div>
+    <div class="login-sub">Login to GRB Pooja Item</div>
+
+    <div class="tabs">
+      <button class="tab on" id="tab-login" onclick="switchTab('login')">Login</button>
+      <button class="tab" id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
+    </div>
+
+    <div class="auth-form on" id="form-login">
+      <div class="msg" id="login-msg"></div>
+      <div class="field">
+        <label>Email Address</label>
+        <input type="email" id="login-email" placeholder="you@example.com" inputmode="email" autocomplete="off"/>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="login-pass" placeholder="Enter your password" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')"/>
+      </div>
+      <a href="forgot-password.html" id="link-forgot-password" class="forgot">Forgot password?</a>
+      <button class="btn" id="btn-login-submit" onclick="doLogin()" style="margin-top:.8rem">Login to Dashboard</button>
+    </div>
+
+    <div class="auth-form" id="form-signup">
+      <div class="msg" id="signup-msg"></div>
+      <div class="field"><label>Full Name</label><input type="text" id="signup-name" placeholder="Your full name" autocomplete="name"/></div>
+      <div class="field"><label>Email Address</label><input type="email" id="signup-email" placeholder="you@example.com" inputmode="email"/></div>
+      <div class="field"><label>Password</label><input type="password" id="signup-pass" placeholder="Min 6 characters" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')"/></div>
+      <div class="field"><label>Role</label><select id="signup-role"><option value="user">User</option><option value="admin">Admin</option></select></div>
+      <button class="btn" id="btn-signup-submit" onclick="doSignup()">Create Account</button>
+    </div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script>
+if(window.history && window.history.replaceState) window.history.replaceState(null,'',window.location.href);
+if(localStorage.getItem('grb_token')) window.location.replace('dashboard.html');
+
+function switchTab(tab){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('on',(tab==='login'&&i===0)||(tab==='signup'&&i===1)));
+  document.querySelectorAll('.auth-form').forEach(f=>f.classList.remove('on'));
+  document.getElementById('form-'+tab).classList.add('on');
+}
+function showMsg(id,text,type){const el=document.getElementById(id);el.textContent=text;el.className='msg '+type;}
+
+async function doLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  if(!email||!pass){showMsg('login-msg','Please fill in all fields.','error');return;}
+  const btn=document.querySelector('#form-login .btn');
+  btn.textContent='Logging in...';btn.disabled=true;
+  try{
+    const res=await fetch(API_BASE + '/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})});
+    const data=await res.json();
+    if(!res.ok){showMsg('login-msg',data.error,'error');return;}
+    localStorage.setItem('grb_token',data.token);
+    localStorage.setItem('grb_user',JSON.stringify(data.user));
+    showMsg('login-msg','Login successful! Redirecting...','success');
+    setTimeout(()=>window.location.replace('dashboard.html'),800);
+  }catch(e){showMsg('login-msg','Connection error. Please try again.','error');}
+  finally{btn.textContent='Login to Dashboard';btn.disabled=false;}
+}
+
+async function doSignup(){
+  const name=document.getElementById('signup-name').value.trim();
+  const email=document.getElementById('signup-email').value.trim();
+  const pass=document.getElementById('signup-pass').value;
+  const role=document.getElementById('signup-role').value;
+  if(!name||!email||!pass){showMsg('signup-msg','Please fill in all fields.','error');return;}
+  if(pass.length<6){showMsg('signup-msg','Password must be at least 6 characters.','error');return;}
+  const btn=document.querySelector('#form-signup .btn');
+  btn.textContent='Creating account...';btn.disabled=true;
+  try{
+    const res=await fetch(API_BASE + '/api/auth/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,password:pass,role})});
+    const data=await res.json();
+    if(!res.ok){showMsg('signup-msg',data.error,'error');return;}
+    localStorage.setItem('grb_token',data.token);
+    localStorage.setItem('grb_user',JSON.stringify(data.user));
+    showMsg('signup-msg','Account created! Redirecting...','success');
+    setTimeout(()=>window.location.replace('dashboard.html'),800);
+  }catch(e){showMsg('signup-msg','Connection error. Please try again.','error');}
+  finally{btn.textContent='Create Account';btn.disabled=false;}
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'){
+    if(document.getElementById('form-login').classList.contains('on')) doLogin();
+    else doSignup();
+  }
+});
+</script>
+</body>
+</html>
