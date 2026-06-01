@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const { generateBillPDF } = require('./pdfHelper');
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -122,7 +123,14 @@ async function sendBill(toEmail, customerName, bill) {
         </div>
       </body>
       </html>
-    `
+    `,
+    attachments: [
+      {
+        filename: `GRB-Bill-${bill.id}.pdf`,
+        content: await generateBillPDF(bill, bill.items),
+        contentType: 'application/pdf'
+      }
+    ]
   });
 }
 

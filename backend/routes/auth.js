@@ -8,13 +8,18 @@ const router = express.Router();
 // ── POST /api/auth/signup ──────────────────────────
 router.post('/signup', async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({ error: 'Name, email and password are required.' });
     }
     if (password.length < 6) {
       return res.status(400).json({ error: 'Password must be at least 6 characters.' });
+    }
+
+    // Basic email format validation
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ error: 'Please enter a valid email address.' });
     }
 
     // Check duplicate email
@@ -26,11 +31,11 @@ router.post('/signup', async (req, res) => {
     // Hash password
     const hashed = await bcrypt.hash(password, 12);
 
-    // Insert user
+    // SECURITY: Always assign 'user' role. Admin must be set via DB directly.
     const result = await pool.query(
       `INSERT INTO users (name, email, password, role)
        VALUES ($1, $2, $3, $4) RETURNING id, name, email, role, created_at`,
-      [name.trim(), email.toLowerCase().trim(), hashed, role || 'staff']
+      [name.trim(), email.toLowerCase().trim(), hashed, 'user']
     );
 
     const user = result.rows[0];

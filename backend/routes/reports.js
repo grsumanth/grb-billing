@@ -37,6 +37,9 @@ router.get('/summary', async (req, res) => {
 router.get('/daily', async (req, res) => {
   try {
     const days = parseInt(req.query.days) || 30;
+    if (days < 1 || days > 365) {
+      return res.status(400).json({ error: 'Days must be between 1 and 365.' });
+    }
 
     const result = await pool.query(`
       SELECT
@@ -45,10 +48,10 @@ router.get('/daily', async (req, res) => {
         COALESCE(SUM(total),0)      AS revenue,
         COALESCE(SUM(gst_amount),0) AS gst
       FROM bills
-      WHERE created_at >= NOW() - INTERVAL '${days} days'
+      WHERE created_at >= NOW() - MAKE_INTERVAL(days => $1)
       GROUP BY DATE(created_at)
       ORDER BY date ASC
-    `);
+    `, [days]);
 
     res.json(result.rows);
   } catch (err) {

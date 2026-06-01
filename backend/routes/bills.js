@@ -1,5 +1,7 @@
 const express = require('express');
 const pool    = require('../db');
+const { generateBillPDF } = require('../pdfHelper');
+const { uploadPDF } = require('../supabaseHelper');
 
 const router = express.Router();
 
@@ -33,7 +35,7 @@ router.get('/', async (req, res) => {
 });
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-//  GET /api/bills/:id — single bill + items
+//  GET /api/bills/:id — single bill + items (FULL DETAILS - NO TRUNCATION)
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 router.get('/:id', async (req, res) => {
   try {
@@ -45,7 +47,15 @@ router.get('/:id', async (req, res) => {
       [req.params.id]
     );
 
-    res.json({ ...bill.rows[0], items: items.rows });
+    // Return complete bill data with all details - no truncation
+    const fullBillData = { 
+      ...bill.rows[0], 
+      items: items.rows,
+      is_permanent: true,
+      accessed_at: new Date().toISOString()
+    };
+    
+    res.json(fullBillData);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch bill.' });
   }
@@ -96,6 +106,19 @@ router.post('/', async (req, res) => {
     const saved      = await pool.query('SELECT * FROM bills WHERE id = $1', [billId]);
     const savedItems = await pool.query('SELECT * FROM bill_items WHERE bill_id = $1', [billId]);
 
+    // Generate and upload PDF to Supabase Storage
+    let pdfUrl = null;
+    try {
+      const pdfBuffer = await generateBillPDF(saved.rows[0], savedItems.rows);
+      pdfUrl = await uploadPDF(billId, pdfBuffer);
+      if (pdfUrl) {
+        await pool.query('UPDATE bills SET pdf_url = $1 WHERE id = $2', [pdfUrl, billId]);
+        saved.rows[0].pdf_url = pdfUrl;
+      }
+    } catch (pdfErr) {
+      console.error('⚠️ PDF Upload/Generation background error:', pdfErr.message);
+    }
+
     res.status(201).json({ ...saved.rows[0], items: savedItems.rows });
   } catch (err) {
     await client.query('ROLLBACK');
@@ -119,6 +142,38 @@ router.delete('/:id', async (req, res) => {
     res.json({ message: 'Bill deleted successfully.' });
   } catch (err) {
     res.status(500).json({ error: 'Failed to delete bill.' });
+  }
+});
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  GET /api/bills/:id/full — get complete report data for viewing
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+router.get('/:id/full', async (req, res) => {
+  try {
+    const bill = await pool.query('SELECT * FROM bills WHERE id = $1', [req.params.id]);
+    if (!bill.rows.length) return res.status(404).json({ error: 'Bill not found.' });
+
+    const items = await pool.query(
+      'SELECT * FROM bill_items WHERE bill_id = $1 ORDER BY id',
+      [req.params.id]
+    );
+
+    const fullReport = {
+      bill: bill.rows[0],
+      items: items.rows,
+      report_metadata: {
+        generated_at: new Date().toISOString(),
+        report_id: req.params.id,
+        is_permanent: true,
+        total_items: items.rows.length,
+        grand_total: bill.rows[0].total
+      }
+    };
+    
+    res.json(fullReport);
+  } catch (err) {
+    console.error('Error fetching full report:', err.message);
+    res.status(500).json({ error: 'Failed to fetch complete report.' });
   }
 });
 

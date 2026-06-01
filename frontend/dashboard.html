@@ -9,9 +9,9 @@
 :root{
   --burg:#780116;--burg2:#9B0A20;--burg3:#5C0011;--burg4:#3D000B;
   --gold:#C9A84C;--gold2:#F0CC6A;
-  --cream:#FDF6EC;--cream2:#F5E9D0;--cream3:#EDD8B0;
+  --cream:#FFFFFF;--cream2:#F1F5F9;--cream3:#E2E8F0;
   --sb:#2A0008;--sb2:#1A0005;
-  --bg:#FBF3E8;--text:#2A0008;--muted:#7A4050;--border:#EDD8B0;
+  --bg:#F8FAFC;--text:#0F172A;--muted:#475569;--border:#E2E8F0;
   --font-ui:'Helvetica Neue',Helvetica,Arial,sans-serif;
   --font-num:'JetBrains Mono',monospace;
   --sw:230px;
@@ -80,7 +80,7 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);display:f
   border:1px solid var(--border);border-top:3px solid var(--burg);overflow:hidden;}
 .ctitle{font-family:'Cinzel Decorative',serif;font-size:.88rem;font-weight:700;
   padding:1rem 1.4rem;border-bottom:1px solid var(--border);color:var(--burg);
-  background:linear-gradient(135deg,#fff8f0,#fff);display:flex;align-items:center;gap:.5rem;}
+  background:linear-gradient(135deg,#F8FAFC,#fff);display:flex;align-items:center;gap:.5rem;}
 .ctitle::before{content:'';width:4px;height:16px;background:linear-gradient(180deg,var(--gold2),var(--gold));border-radius:4px;}
 
 /* ═══════════════ BILLING LAYOUT ═══════════════ */
@@ -98,11 +98,11 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);display:f
   box-shadow:0 8px 24px rgba(120,1,22,0.12);max-height:160px;overflow-y:auto;}
 .sugg.hide{display:none;}
 .si{padding:.65rem .9rem;cursor:pointer;font-size:.9rem;border-bottom:1px solid var(--cream2);transition:background .15s;}
-.si:hover,.si:active{background:#fff5f0;}
+.si:hover,.si:active{background:var(--cream2);}
 .si:last-child{border-bottom:none;}
 .bsm{padding:.65rem .85rem;border-radius:8px;border:2px solid var(--cream3);
   background:var(--cream);cursor:pointer;font-size:1rem;transition:all .2s;min-width:44px;min-height:44px;}
-.bsm:hover{border-color:var(--burg);background:#fff0e8;}
+.bsm:hover{border-color:var(--burg);background:var(--cream2);}
 .badd{margin:.9rem 1.4rem;padding:.7rem 1.4rem;background:linear-gradient(135deg,var(--burg3),var(--burg));
   color:#fff;border:none;border-radius:10px;font-family:var(--font-ui);font-size:.95rem;
   font-weight:700;cursor:pointer;transition:all .22s;box-shadow:0 4px 14px rgba(120,1,22,0.3);
@@ -112,9 +112,9 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);display:f
 .btbl{width:100%;border-collapse:collapse;font-size:.86rem;}
 .btbl th{text-align:left;padding:.55rem .65rem;color:var(--burg3);font-size:.7rem;font-weight:700;
   text-transform:uppercase;letter-spacing:.6px;border-bottom:2px solid var(--cream3);
-  background:linear-gradient(135deg,#fff8f0,#fff);}
+  background:linear-gradient(135deg,var(--cream2),#fff);}
 .btbl td{padding:.55rem .65rem;border-bottom:1px solid var(--cream2);}
-.btbl tr:hover td{background:#fff8f3;}
+.btbl tr:hover td{background:var(--cream2);}
 .btbl tr:last-child td{border-bottom:none;}
 .bdel{background:#fff0f0;border:none;padding:.35rem .65rem;border-radius:6px;
   cursor:pointer;color:#c00;font-size:.88rem;transition:background .2s;min-width:36px;min-height:36px;}
@@ -124,12 +124,12 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);display:f
 /* GST */
 .gst-r{display:flex;align-items:center;justify-content:space-between;padding:.8rem 1.4rem;
   font-size:.9rem;font-weight:600;color:var(--burg);border-top:1px solid var(--border);
-  background:linear-gradient(135deg,#fff8f0,#fff);gap:.6rem;flex-wrap:wrap;}
+  background:linear-gradient(135deg,var(--cream2),#fff);gap:.6rem;flex-wrap:wrap;}
 .gst-pct-wrap{display:flex;align-items:center;gap:.3rem;}
 .gst-pct-wrap.hide{display:none!important;}
 .tog{position:relative;display:inline-block;width:48px;height:26px;}
 .tog input{opacity:0;width:0;height:0;}
-.sl{position:absolute;cursor:pointer;inset:0;background:#d8c0b0;border-radius:24px;transition:.3s;}
+.sl{position:absolute;cursor:pointer;inset:0;background:#cbd5e1;border-radius:24px;transition:.3s;}
 .sl::before{content:'';position:absolute;width:20px;height:20px;left:3px;bottom:3px;
   background:#fff;border-radius:50%;transition:.3s;}
 input:checked+.sl{background:linear-gradient(135deg,var(--burg),var(--burg2));}
@@ -161,7 +161,7 @@ input:checked+.sl::before{transform:translateX(22px);}
 .bred:hover,.bred:active{background:#fff5f5;border-color:#cc3333;}
 
 /* Summary */
-.sstat{padding:.9rem 1.4rem;border-bottom:1px solid var(--border);background:linear-gradient(135deg,#fff,#fff8f3);}
+.sstat{padding:.9rem 1.4rem;border-bottom:1px solid var(--border);background:linear-gradient(135deg,#fff,var(--bg));}
 .slbl{font-size:.7rem;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);font-weight:700;}
 .sval{font-size:1.7rem;font-weight:800;color:var(--burg);margin-top:.1rem;font-family:var(--font-num);}
 .rtitle{font-size:.73rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;
@@ -180,18 +180,18 @@ input:checked+.sl::before{transform:translateX(22px);}
 .sbar input:focus{border-color:var(--burg);}
 .dtbl{width:100%;border-collapse:collapse;font-size:.87rem;}
 .dtbl th{text-align:left;padding:.7rem 1rem;color:var(--burg3);font-size:.7rem;font-weight:700;
-  text-transform:uppercase;letter-spacing:.6px;background:linear-gradient(135deg,#fff5ee,#fff);
+  text-transform:uppercase;letter-spacing:.6px;background:linear-gradient(135deg,var(--cream2),#fff);
   border-bottom:2px solid var(--cream3);}
 .dtbl td{padding:.7rem 1rem;border-bottom:1px solid var(--cream2);}
 .dtbl tr:last-child td{border-bottom:none;}
-.dtbl tr:hover td,.dtbl tr:active td{background:linear-gradient(135deg,#fff8f3,#fffaf5);}
+.dtbl tr:hover td,.dtbl tr:active td{background:var(--cream2);}
 .dtbl td:nth-child(4),.dtbl td:nth-child(5),.dtbl td:nth-child(6){font-family:var(--font-num);}
 .btbl td:nth-child(4),.btbl td:nth-child(5),.btbl td:nth-child(6){font-family:var(--font-num);}
 input[type=number]{font-family:var(--font-num)!important;font-size:16px!important;}
-.bedit{background:#fff5ee;border:none;padding:.35rem .75rem;border-radius:7px;cursor:pointer;
+.bedit{background:var(--cream2);border:none;padding:.35rem .75rem;border-radius:7px;cursor:pointer;
   color:var(--burg);font-size:.82rem;font-family:var(--font-ui);font-weight:600;
   margin-right:.3rem;transition:background .2s;min-height:36px;}
-.bedit:hover,.bedit:active{background:#ffe8d8;}
+.bedit:hover,.bedit:active{background:var(--cream3);}
 .bdelbill{background:#fff0f0;border:1.5px solid #ffcccc;padding:.32rem .8rem;border-radius:7px;
   cursor:pointer;color:#cc2222;font-size:.78rem;font-family:var(--font-ui);font-weight:600;
   transition:all .2s;white-space:nowrap;min-height:36px;}
@@ -230,9 +230,9 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
 .bout:hover,.bout:active{border-color:var(--burg);color:var(--burg);}
 .pklist{max-height:240px;overflow-y:auto;margin-top:.8rem;border:2px solid var(--border);border-radius:10px;}
 .pki{padding:.75rem 1rem;cursor:pointer;border-bottom:1px solid var(--cream2);font-size:.9rem;transition:background .15s;}
-.pki:last-child{border-bottom:none;}.pki:hover,.pki:active{background:linear-gradient(135deg,#fff5ee,#fff0e8);}
+.pki:last-child{border-bottom:none;}.pki:hover,.pki:active{background:var(--cream2);}
 .pkn{font-weight:700;}.pkd{font-size:.78rem;color:var(--muted);}
-.pill{background:#fff0e8;color:var(--burg);padding:.2rem .55rem;border-radius:6px;font-size:.76rem;font-weight:700;}
+.pill{background:var(--cream2);color:var(--burg);padding:.2rem .55rem;border-radius:6px;font-size:.76rem;font-weight:700;}
 
 /* Bottom nav (mobile only - hidden on desktop) */
 .bot-nav{display:none;}
@@ -344,7 +344,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
     <button class="nb" onclick="pg('reports')" id="nb-reports"><span class="ni">📊</span> Reports</button>
   </nav>
   <div class="sb-foot">
-    <button class="lbtn" onclick="logout()">⬅ Logout</button>
+    <button class="lbtn" id="btn-sidebar-logout" onclick="logout()">⬅ Logout</button>
   </div>
 </aside>
 
@@ -372,7 +372,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
             <label>Customer Name</label>
             <div class="ci-row">
               <input type="text" id="bCust" placeholder="Type name or search..." oninput="srchCust(this.value)" autocomplete="off"/>
-              <button class="bsm" onclick="openPicker()" title="Pick from list">📋</button>
+              <button class="bsm" id="btn-pick-customer" onclick="openPicker()" title="Pick from list">📋</button>
             </div>
             <div class="sugg hide" id="sugg"></div>
           </div>
@@ -387,7 +387,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
           <div class="fg"><label>Price (₹)</label>
             <input type="number" id="bPrice" placeholder="0.00" inputmode="decimal"/>
           </div>        </div>
-        <button class="badd" onclick="addItem()">＋ Add Item to Bill</button>
+        <button class="badd" id="btn-add-item" onclick="addItem()">＋ Add Item to Bill</button>
         <div class="twrap">
           <table class="btbl">
             <thead><tr><th>#</th><th>Product</th><th>Type</th><th>Qty</th><th>Rate</th><th>Total</th><th></th></tr></thead>
@@ -417,12 +417,11 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
         </div>
         <!-- Actions -->
         <div class="arow">
-          <button class="bred" onclick="clearBill()">🗑 Clear</button>
-          <button class="bprim" onclick="printBill()">🖨 Print Bill</button>
+          <button class="bred" id="btn-clear-bill" onclick="clearBill()">🗑 Clear</button>
+          <button class="bprim" id="btn-print-bill" onclick="printBill()">🖨 Print Bill</button>
         </div>
-        <div style="padding:0 1.4rem .5rem;display:grid;grid-template-columns:1fr 1fr;gap:.6rem;">
-          <button onclick="emailBill()" style="padding:.65rem .4rem;background:transparent;border:2px solid var(--burg);color:var(--burg);border-radius:11px;font-family:var(--font-ui);font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;min-height:46px;">📧 Email</button>
-          <button onclick="whatsappBill()" style="padding:.65rem .4rem;background:transparent;border:2px solid #25D366;color:#128C7E;border-radius:11px;font-family:var(--font-ui);font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;min-height:46px;">💬 WhatsApp</button>
+        <div style="padding:0 1.4rem .5rem;">
+          <button onclick="emailBill()" id="btn-email-bill" style="width:100%;padding:.65rem .4rem;background:transparent;border:2px solid var(--burg);color:var(--burg);border-radius:11px;font-family:var(--font-ui);font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;min-height:46px;">📧 Email Bill</button>
         </div>
         <!-- Bill Size -->
         <div style="padding:0 1.4rem 1.1rem;display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:.85rem;">
@@ -463,9 +462,9 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
   <section class="page" id="page-customers">
     <div class="ph">
       <h2>Customers</h2>
-      <button class="bprim" style="flex:none;padding:.55rem 1.2rem;min-height:44px" onclick="openCustMod()">+ Add</button>
+      <button class="bprim" id="btn-customer-add" style="flex:none;padding:.55rem 1.2rem;min-height:44px" onclick="openCustMod()">+ Add</button>
     </div>
-    <div class="sbar"><input type="text" placeholder="🔍 Search customers..." oninput="srchCustTbl(this.value)"/></div>
+    <div class="sbar"><input type="text" id="input-search-customers" placeholder="🔍 Search customers..." oninput="srchCustTbl(this.value)"/></div>
     <div class="card" style="overflow:hidden">
       <div style="overflow-x:auto">
         <table class="dtbl">
@@ -481,9 +480,9 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
   <section class="page" id="page-products">
     <div class="ph">
       <h2>Products</h2>
-      <button class="bprim" style="flex:none;padding:.55rem 1.2rem;min-height:44px" onclick="openProdMod()">+ Add</button>
+      <button class="bprim" id="btn-product-add" style="flex:none;padding:.55rem 1.2rem;min-height:44px" onclick="openProdMod()">+ Add</button>
     </div>
-    <div class="sbar"><input type="text" placeholder="🔍 Search products..." oninput="srchProdTbl(this.value)"/></div>
+    <div class="sbar"><input type="text" id="input-search-products" placeholder="🔍 Search products..." oninput="srchProdTbl(this.value)"/></div>
     <div class="card" style="overflow:hidden">
       <div style="overflow-x:auto">
         <table class="dtbl">
@@ -500,7 +499,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
   <section class="page" id="page-gallery">
     <div class="ph">
       <h2>Gallery</h2>
-      <button class="bprim" style="flex:none;padding:.55rem 1.2rem;min-height:44px" onclick="openGalleryModal()">+ Add Category</button>
+      <button class="bprim" id="btn-gallery-add-category" style="flex:none;padding:.55rem 1.2rem;min-height:44px" onclick="openGalleryModal()">+ Add Category</button>
     </div>
     <!-- Gallery Grid — each card is a category with multiple images -->
     <div id="galleryGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;"></div>
@@ -511,7 +510,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
   <section class="page" id="page-gallery-view">
     <div class="ph">
       <h2 id="galleryViewTitle">Category</h2>
-      <button class="bred" style="flex:none;padding:.5rem 1rem;min-height:44px" onclick="pg('gallery')">← Back</button>
+      <button class="bred" id="btn-gallery-back" style="flex:none;padding:.5rem 1rem;min-height:44px" onclick="pg('gallery')">← Back</button>
     </div>
     <div style="margin-bottom:1rem;display:flex;gap:.6rem;flex-wrap:wrap;" id="galleryViewActions"></div>
     <div id="galleryViewGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.8rem;"></div>
@@ -556,7 +555,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
           <label style="display:block;font-size:.7rem;font-weight:700;color:var(--burg3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:.3rem;">Role</label>
           <input type="text" id="profileRole" readonly style="width:100%;padding:.72rem 1rem;border:2px solid var(--cream3);border-radius:11px;font-family:var(--font-ui);font-size:16px;color:var(--muted);background:var(--cream2);outline:none;cursor:not-allowed;"/>
         </div>
-        <button class="bprim" onclick="saveProfile()" style="width:100%;min-height:50px;">Save Profile</button>
+        <button class="bprim" id="btn-profile-save" onclick="saveProfile()" style="width:100%;min-height:50px;">Save Profile</button>
       </div>
     </div>
   </section>
@@ -626,7 +625,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
       </div>
       <div class="ig2"><label>Qty</label><input type="number" id="estQty" value="1" min="1" inputmode="numeric"/></div>
       <div class="ig2"><label>Price</label><input type="number" id="estPrice" placeholder="0.00" inputmode="decimal"/></div>
-      <button class="bprim" style="padding:.65rem .8rem;flex:none;min-height:44px;margin-top:1.2rem;" onclick="addEstItem()">+</button>
+      <button class="bprim" id="btn-estimate-add-item-trigger" style="padding:.65rem .8rem;flex:none;min-height:44px;margin-top:1.2rem;" onclick="addEstItem()">+</button>
     </div>
     <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:.9rem;">
       <label class="tog"><input type="checkbox" id="estGstChk" onchange="recalcEst()"/><span class="sl"></span></label>
@@ -650,8 +649,8 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
       </div>
     </div>
     <div class="macts">
-      <button class="bprim" style="flex:1;padding:.72rem" onclick="saveEstimate()">Save Estimate</button>
-      <button class="bout" onclick="closeMod('estimateModal')">Cancel</button>
+      <button class="bprim" id="btn-save-estimate" style="flex:1;padding:.72rem" onclick="saveEstimate()">Save Estimate</button>
+      <button class="bout" id="btn-cancel-estimate" onclick="closeMod('estimateModal')">Cancel</button>
     </div>
   </div>
 </div>
@@ -662,8 +661,8 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
     <h3>Estimate Details</h3>
     <div id="estViewContent"></div>
     <div class="macts" style="margin-top:1rem;">
-      <button class="bprim" style="flex:1;padding:.72rem" onclick="printEstimate(currentViewEstId)">🖨 Print</button>
-      <button class="bout" onclick="closeMod('estimateViewModal')">Close</button>
+      <button class="bprim" id="btn-print-estimate-view" style="flex:1;padding:.72rem" onclick="printEstimate(currentViewEstId)">🖨 Print</button>
+      <button class="bout" id="btn-close-estimate-view" onclick="closeMod('estimateViewModal')">Close</button>
     </div>
   </div>
 </div>
@@ -688,8 +687,8 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
       <div id="galleryPreviewGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:.5rem;margin-top:.6rem;"></div>
     </div>
     <div class="macts">
-      <button class="bprim" style="flex:1;padding:.72rem" onclick="saveGalleryItem()">Save Category</button>
-      <button class="bout" onclick="closeMod('galleryModal')">Cancel</button>
+      <button class="bprim" id="btn-save-gallery-category" style="flex:1;padding:.72rem" onclick="saveGalleryItem()">Save Category</button>
+      <button class="bout" id="btn-cancel-gallery-category" onclick="closeMod('galleryModal')">Cancel</button>
     </div>
   </div>
 </div>
@@ -706,8 +705,8 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
       <div id="galleryAddPreview" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:.5rem;margin-top:.6rem;"></div>
     </div>
     <div class="macts">
-      <button class="bprim" style="flex:1;padding:.72rem" onclick="addMoreImages()">Add Images</button>
-      <button class="bout" onclick="closeMod('galleryAddImgModal')">Cancel</button>
+      <button class="bprim" id="btn-save-more-images" style="flex:1;padding:.72rem" onclick="addMoreImages()">Add Images</button>
+      <button class="bout" id="btn-cancel-more-images" onclick="closeMod('galleryAddImgModal')">Cancel</button>
     </div>
   </div>
 </div>
@@ -730,8 +729,8 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
       <div class="ig2 full"><label>Notes</label><textarea id="cNotes" rows="2" placeholder="Internal notes..."></textarea></div>
     </div>
     <div class="macts">
-      <button class="bprim" style="flex:1;padding:.75rem" onclick="saveCust()">Save Customer</button>
-      <button class="bout" onclick="closeMod('custMod')">Cancel</button>
+      <button class="bprim" id="btn-save-customer" style="flex:1;padding:.75rem" onclick="saveCust()">Save Customer</button>
+      <button class="bout" id="btn-cancel-customer" onclick="closeMod('custMod')">Cancel</button>
     </div>
   </div>
 </div>
@@ -747,8 +746,8 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
     </div>
     <div class="ig2" style="margin-bottom:.9rem"><label>Price (₹) *</label><input type="number" id="pPrice" placeholder="0.00" min="0" step="0.01" inputmode="decimal"/></div>
     <div class="macts">
-      <button class="bprim" style="flex:1;padding:.75rem" onclick="saveProd()">Save Product</button>
-      <button class="bout" onclick="closeMod('prodMod')">Cancel</button>
+      <button class="bprim" id="btn-save-product" style="flex:1;padding:.75rem" onclick="saveProd()">Save Product</button>
+      <button class="bout" id="btn-cancel-product" onclick="closeMod('prodMod')">Cancel</button>
     </div>
   </div>
 </div>
@@ -759,12 +758,13 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
     <h3>Select Customer</h3>
     <div class="ig2"><label>Search</label><input type="text" id="pkSearch" placeholder="Type name or phone..." oninput="filterPk(this.value)" autocomplete="off"/></div>
     <div id="pkList" class="pklist"></div>
-    <div class="macts" style="margin-top:.9rem"><button class="bout" onclick="closeMod('pkMod')">Cancel</button></div>
+    <div class="macts" style="margin-top:.9rem"><button class="bout" id="btn-cancel-customer-picker" onclick="closeMod('pkMod')">Cancel</button></div>
   </div>
 </div>
 
+<script src="config.js"></script>
 <script>
-const API = '/api';
+const API = API_BASE + '/api';
 
 // ── STATE VARIABLES ──
 let prods=[], custs=[], bills=[], curBill=[];
@@ -834,8 +834,18 @@ async function flushQueue(){
   if(!isOnline||!offlineQueue.length) return;
   const q=[...offlineQueue]; offlineQueue=[];
   localStorage.setItem('grb_offline_queue',JSON.stringify(offlineQueue));
+  
+  let tempToRealIdMap = {};
   for(const item of q){
-    await api(item.method,item.path,item.body);
+    // Replace any temporary IDs in the request body
+    if(item.body && item.body.bill_id && tempToRealIdMap[item.body.bill_id]){
+      item.body.bill_id = tempToRealIdMap[item.body.bill_id];
+    }
+    const res = await api(item.method, item.path, item.body);
+    // If it was a bill creation, map the temp ID to the newly returned real ID
+    if(item.path === '/bills' && item.method === 'POST' && res && res.id && item.tempId){
+      tempToRealIdMap[item.tempId] = res.id;
+    }
   }
   await loadFromBackend();
   toast('Offline changes synced ✓','success');
@@ -843,9 +853,9 @@ async function flushQueue(){
 window.addEventListener('online',()=>setTimeout(flushQueue,1000));
 
 // ── API HELPER (fix #15 - queue when offline) ──
-async function api(method, path, body=null){
+async function api(method, path, body=null, tempId=null){
   if(!isOnline && method!=='GET'){
-    offlineQueue.push({method,path,body});
+    offlineQueue.push({method,path,body,tempId});
     localStorage.setItem('grb_offline_queue',JSON.stringify(offlineQueue));
     toast('Saved offline — will sync when online','warn');
     return null;
@@ -863,6 +873,22 @@ async function api(method, path, body=null){
     return await res.json();
   }catch(e){
     console.warn('API error:',e.message);
+    const isNetworkError = e instanceof TypeError || e.message === 'Failed to fetch' || e.message.includes('network') || e.message.includes('fetch');
+    if(method!=='GET' && isNetworkError){
+      offlineQueue.push({method,path,body,tempId});
+      localStorage.setItem('grb_offline_queue',JSON.stringify(offlineQueue));
+      toast('Network error — saved offline to sync later','warn');
+      isOnline = false;
+      offlineBanner.style.display = 'block';
+      return null;
+    }
+    // Handle session expiration or authorization failure (401)
+    if(e.message.includes('Access denied') || e.message.includes('expired') || e.message.includes('login') || e.message.includes('401')){
+      localStorage.removeItem('grb_token');
+      localStorage.removeItem('grb_user');
+      window.location.replace('index.html');
+      return null;
+    }
     if(method!=='GET') toast('Error: '+e.message,'error');
     return null;
   }
@@ -892,9 +918,10 @@ async function loadFromBackend(){
         total:parseFloat(bill.total)||0,
         gst_percent:parseFloat(bill.gst_percent)||0,
         subtotal:parseFloat(bill.subtotal)||0,
-        bill_items:bill.items||[]
+        bill_items:bill.items||[],
+        pdf_url:bill.pdf_url
       })));
-      localStorage.setItem('grb_bills',JSON.stringify(bills));
+      localStorage.setItem('grb_bills',JSON.stringify(bills.slice(0,150)));
     }
     fillDrop();todaySummary();
   }catch(e){
@@ -957,7 +984,7 @@ function renderEstItems(){
       <td>${it.qty}</td>
       <td>₹${it.price.toFixed(2)}</td>
       <td><strong style="color:var(--burg)">₹${it.total.toFixed(2)}</strong></td>
-      <td><button class="bdel" onclick="removeEstItem(${i})">✕</button></td>
+      <td><button class="bdel" id="btn-remove-estimate-item-${i}" onclick="removeEstItem(${i})">✕</button></td>
     </tr>`;
   });
 }
@@ -1015,9 +1042,9 @@ function renderEstimatesTable(q=''){
       <td style="font-family:var(--font-num)">${est.items.length}</td>
       <td style="font-family:var(--font-num)"><strong style="color:var(--burg)">₹${est.total.toFixed(2)}</strong></td>
       <td style="white-space:nowrap">
-        <button class="bedit" onclick="viewEstimate('${est.id}')">👁 View</button>
-        <button class="bedit" onclick="editEstimate('${est.id}')">✏ Edit</button>
-        <button class="bdel" onclick="deleteEstimate('${est.id}')">🗑</button>
+        <button class="bedit" id="btn-view-estimate-${est.id}" onclick="viewEstimate('${est.id}')">👁 View</button>
+        <button class="bedit" id="btn-edit-estimate-${est.id}" onclick="editEstimate('${est.id}')">✏ Edit</button>
+        <button class="bdel" id="btn-delete-estimate-${est.id}" onclick="deleteEstimate('${est.id}')">🗑</button>
       </td>
     </tr>`;
   });
@@ -1089,59 +1116,17 @@ function printEstimate(id){
   const d  = new Date(est.date);
   const ds = d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
   const ts = d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  const cname = est.customer || '';
+  const cust = custs.find(c=>c.name===cname);
+  const addr = cust?cust.address||'':'';
   const rows = est.items.map((it,i) => `<tr>
-    <td style="padding:7px 10px">${i+1}</td>
-    <td style="padding:7px 10px">${it.name}</td>
-    <td style="padding:7px 10px">${it.type}</td>
-    <td style="padding:7px 10px;text-align:center">${it.qty}</td>
-    <td style="padding:7px 10px;text-align:right">₹${it.price.toFixed(2)}</td>
-    <td style="padding:7px 10px;text-align:right;font-weight:700">₹${it.total.toFixed(2)}</td>
+    <td style="text-align:center;">${i+1}</td>
+    <td><div style="font-weight:700">${it.name}</div><div style="font-size:8.5px;color:#888">${it.type||''}</div></td>
+    <td style="text-align:center;">${it.qty}</td>
+    <td style="text-align:right;font-family:var(--font-num);">${it.price.toFixed(2)}</td>
+    <td style="text-align:right;font-weight:700;font-family:var(--font-num);color:#780116;">${it.total.toFixed(2)}</td>
   </tr>`).join('');
-  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Estimate ${est.id}</title><style>
-    @page{size:${bW}cm ${bH}cm;margin:8mm;}
-    *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:Helvetica,Arial,sans-serif;width:${bW}cm;padding:8mm;font-size:12px;color:#1A0005;background:#fff;}
-    .hdr{text-align:center;padding-bottom:10px;margin-bottom:10px;border-bottom:3px solid #780116;}
-    .est-badge{display:inline-block;background:#780116;color:#F0CC6A;font-size:11px;font-weight:700;
-      padding:3px 12px;border-radius:20px;letter-spacing:1px;margin-bottom:8px;}
-    .sn{font-size:22px;font-weight:900;color:#780116;letter-spacing:2px;}
-    .ss{font-size:10px;color:#C9A84C;margin-top:3px;letter-spacing:2px;text-transform:uppercase;}
-    .gl{height:2px;background:linear-gradient(90deg,transparent,#C9A84C,transparent);margin:7px 0;}
-    .bm{font-size:11px;color:#555;display:flex;justify-content:space-between;margin-top:5px;}
-    .cb{margin:10px 0;padding:8px 12px;border-left:4px solid #780116;background:#fff8f3;}
-    table{width:100%;border-collapse:collapse;margin:10px 0;font-size:12px;}
-    thead tr{background:#780116;}th{color:#fff;padding:8px 10px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;}
-    td{padding:7px 10px;border-bottom:1px solid #f0e0d0;}tr:nth-child(even) td{background:#fff8f3;}
-    .tt{margin-top:10px;padding:10px 12px;background:#fff8f3;border-radius:6px;border:1px solid #EDD8B0;}
-    .trow{display:flex;justify-content:space-between;padding:4px 0;font-size:12px;color:#555;}
-    .gr{display:flex;justify-content:space-between;padding:8px 0 0;margin-top:6px;border-top:2px solid #780116;}
-    .gr-label{font-size:14px;font-weight:800;color:#780116;}.gr-val{font-size:18px;font-weight:900;color:#780116;}
-    .ft{text-align:center;margin-top:12px;font-size:10px;color:#9B0A20;padding-top:8px;border-top:1px dashed #C9A84C;}
-    .validity{text-align:center;font-size:10px;color:#888;margin-top:6px;font-style:italic;}
-  </style></head><body>
-  <div class="hdr">
-    <div class="est-badge">ESTIMATE</div>
-    <div class="sn">GRB POOJA ITEMS</div>
-    <div class="ss">Sacred Supplies · Trusted Quality</div>
-    <div class="gl"></div>
-    <div class="bm"><span>${ds} ${ts}</span><span>Est No: <strong>#${est.id}</strong></span></div>
-  </div>
-  <div class="cb"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#C9A84C;margin-bottom:3px;">Estimate For</div>
-  <div style="font-size:14px;font-weight:700;">${x(est.customer)}</div></div>
-  <table><thead><tr><th>#</th><th>Item</th><th>Type</th><th style="text-align:center">Qty</th><th style="text-align:right">Rate</th><th style="text-align:right">Total</th></tr></thead>
-  <tbody>${rows}</tbody></table>
-  <div class="tt">
-    <div class="trow"><span>Subtotal</span><span>₹${est.sub.toFixed(2)}</span></div>
-    ${est.gst>0?`<div class="trow"><span>GST (${est.gst_percent}%)</span><span>₹${est.gst.toFixed(2)}</span></div>`:''}
-    <div class="gr"><span class="gr-label">TOTAL ESTIMATE</span><span class="gr-val">₹${est.total.toFixed(2)}</span></div>
-  </div>
-  <div class="validity">This is an estimate only. Final bill may vary.</div>
-  <div class="ft">✦ Thank you · GRB Pooja Items ✦</div>
-  </body></html>`;
-  const w = window.open('','_blank','width=600,height=800');
-  if(!w){ toast('Allow popups for printing.','error'); return; }
-  w.document.write(html); w.document.close(); w.focus();
-  setTimeout(()=>w.print(), 500);
+  openBillPrintWindow(est.id, cname, addr, ds, ts, rows, est.sub, est.gst, est.total, est.gst > 0, est.gst_percent, bW, bH, 'ESTIMATE');
   closeMod('estimateViewModal');
 }
 
@@ -1187,6 +1172,16 @@ async function saveProd(){
   else result=await api('POST','/products',{name,type,price});
   btn.textContent='Save Product';btn.disabled=false;
   if(result||!isOnline){
+    if(!result && !isOnline){
+      if(eid){
+        const idx = prods.findIndex(p => p.id === eid);
+        if(idx !== -1) prods[idx] = { ...prods[idx], name, type, price };
+      } else {
+        const tempId = 'TEMP-' + Date.now();
+        prods.push({ id: tempId, name, type, price, created_at: new Date().toISOString() });
+      }
+      localStorage.setItem('grb_prods', JSON.stringify(prods));
+    }
     await loadFromBackend();
     renderProds();fillDrop();closeMod('prodMod');
     toast(eid?'Product updated ✓':'Product added ✓');
@@ -1194,7 +1189,12 @@ async function saveProd(){
 }
 async function delProd(id){
   if(!confirm('Delete this product?'))return;
-  await api('DELETE','/products/'+id);
+  const result = await api('DELETE','/products/'+id);
+  if(!result && !isOnline){
+    prods = prods.filter(p => p.id !== id);
+    localStorage.setItem('grb_prods', JSON.stringify(prods));
+    toast('Product deleted offline');
+  }
   await loadFromBackend();renderProds();fillDrop();
 }
 function renderProds(){
@@ -1206,7 +1206,7 @@ function renderProds(){
     <td><strong>${x(p.name)}</strong></td>
     <td><span class="pill">${x(p.type)}</span></td>
     <td><strong>₹${parseFloat(p.price).toFixed(2)}</strong></td>
-    <td><button class="bedit" onclick="openProdMod('${p.id}')">✏ Edit</button><button class="bdel" onclick="delProd('${p.id}')">🗑</button></td>
+    <td><button class="bedit" id="btn-edit-prod-${p.id}" onclick="openProdMod('${p.id}')">✏ Edit</button><button class="bdel" id="btn-delete-prod-${p.id}" onclick="delProd('${p.id}')">🗑</button></td>
   </tr>`;});
 }
 function srchProdTbl(q){document.querySelectorAll('#pBody tr').forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q.toLowerCase())?'':'none';});}
@@ -1245,13 +1245,29 @@ async function saveCust(){
   else result=await api('POST','/customers',{name,phone,email,address,notes});
   btn.textContent='Save Customer';btn.disabled=false;
   if(result||!isOnline){
+    if(!result && !isOnline){
+      const payload = { name, phone, email, address, notes };
+      if(eid){
+        const idx = custs.findIndex(c => c.id === eid);
+        if(idx !== -1) custs[idx] = { ...custs[idx], ...payload };
+      } else {
+        const tempId = 'TEMP-' + Date.now();
+        custs.push({ id: tempId, ...payload, created_at: new Date().toISOString() });
+      }
+      localStorage.setItem('grb_custs', JSON.stringify(custs));
+    }
     await loadFromBackend();renderCusts();closeMod('custMod');
     toast(eid?'Customer updated ✓':'Customer added ✓');
   }
 }
 async function delCust(id){
   if(!confirm('Delete this customer?'))return;
-  await api('DELETE','/customers/'+id);
+  const result = await api('DELETE','/customers/'+id);
+  if(!result && !isOnline){
+    custs = custs.filter(c => c.id !== id);
+    localStorage.setItem('grb_custs', JSON.stringify(custs));
+    toast('Customer deleted offline');
+  }
   await loadFromBackend();renderCusts();
 }
 function renderCusts(){
@@ -1265,7 +1281,7 @@ function renderCusts(){
     <td style="font-size:.82rem">${x(c.email)||'—'}</td>
     <td style="font-size:.82rem">${x(c.address)||'—'}</td>
     <td style="font-size:.78rem;color:#7A4050;max-width:120px">${x(c.notes)||'—'}</td>
-    <td><button class="bedit" onclick="openCustMod('${c.id}')">✏ Edit</button><button class="bdel" onclick="delCust('${c.id}')">🗑</button></td>
+    <td><button class="bedit" id="btn-edit-cust-${c.id}" onclick="openCustMod('${c.id}')">✏ Edit</button><button class="bdel" id="btn-delete-cust-${c.id}" onclick="delCust('${c.id}')">🗑</button></td>
   </tr>`;});
 }
 function srchCustTbl(q){document.querySelectorAll('#cBody tr').forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q.toLowerCase())?'':'none';});}
@@ -1322,7 +1338,7 @@ function renderBill(){
     <td>${it.qty}</td>
     <td>₹${it.price.toFixed(2)}</td>
     <td><strong style="color:var(--burg)">₹${it.total.toFixed(2)}</strong></td>
-    <td><button class="bdel" onclick="rmItem(${i})">✕</button></td>
+    <td><button class="bdel" id="btn-remove-bill-item-${i}" onclick="rmItem(${i})">✕</button></td>
   </tr>`;});
 }
 function toggleGst(){
@@ -1342,8 +1358,8 @@ function recalc(){
   document.getElementById('gstLine').classList.toggle('hide',!on);
   if(on){document.getElementById('gstLabel').textContent='GST ('+pct+'%)';document.getElementById('gstBadge').textContent=pct+'% GST';}
 }
-function clearBill(){
-  if(curBill.length&&!confirm('Clear the current bill?'))return;
+function clearBill(force = false){
+  if(!force && curBill.length && !confirm('Clear the current bill?'))return;
   curBill=[];
   document.getElementById('bCust').value='';
   document.getElementById('bCust').dataset.cid='';
@@ -1358,54 +1374,6 @@ function formatPhone(phone){
   return phone.replace(/\D/g,'').replace(/^91/,'').replace(/^0/,'').slice(0,10);
 }
 
-// ── WHATSAPP BILL ──
-async function whatsappBill(){
-  const cname=document.getElementById('bCust').value.trim();
-  const cid=document.getElementById('bCust').dataset.cid;
-  if(!cname){toast('Please enter a customer name first.','error');return;}
-  if(!curBill.length){toast('Please add items to bill first.','error');return;}
-
-  const cust=custs.find(c=>c.id===cid);
-  const defaultPhone=cust?formatPhone(cust.phone||''):'';
-  const phone=prompt('Customer WhatsApp number (10 digits):', defaultPhone);
-  if(!phone) return;
-  const digits=formatPhone(phone);
-  if(digits.length!==10){toast('Please enter a valid 10-digit number.','error');return;}
-
-  // Save bill first
-  const saved=await saveBillForSharing(cname,cid);
-  if(!saved) return;
-
-  toast('Opening WhatsApp...','success');
-  const res=await api('POST','/sms/whatsapp-link',{bill_id:saved.id, phone:digits});
-  if(res&&res.link){
-    window.open(res.link,'_blank');
-  }
-}
-
-// ── SAVE BILL FOR SHARING (used by WhatsApp/Email) ──
-async function saveBillForSharing(cname, cid){
-  const sub=curBill.reduce((s,i)=>s+i.total,0);
-  const gstOn=document.getElementById('gstChk').checked;
-  const gstPct=gstOn?Math.max(0,parseFloat(document.getElementById('gstPct').value)||0):0;
-  const gst=gstOn?sub*(gstPct/100):0;
-  const grand=sub+gst;
-  const billPayload={
-    customer_name:cname,customer_id:cid||null,gst_percent:gstPct,
-    items:curBill.map(it=>({product_id:it.pid||null,product_name:it.name,type:it.type,quantity:it.qty,price:it.price}))
-  };
-  const saved=await api('POST','/bills',billPayload);
-  if(!saved){toast('Failed to save bill.','error');return null;}
-  bills.unshift({
-    id:saved.id,date:saved.created_at,customer:cname,
-    items:curBill.length,gst,total:grand,
-    gst_percent:gstPct,subtotal:sub,
-    bill_items:curBill.map(it=>({product_name:it.name,type:it.type,quantity:it.qty,price:it.price,total:it.total}))
-  });
-  localStorage.setItem('grb_bills',JSON.stringify(bills));
-  todaySummary();clearBill();
-  return saved;
-}
 
 async function emailBill(){
   const cname=document.getElementById('bCust').value.trim();
@@ -1418,10 +1386,41 @@ async function emailBill(){
   if(!toEmail) return;
   if(!toEmail.includes('@')){toast('Please enter a valid email.','error');return;}
   toast('Saving and sending bill...','warn');
-  const saved=await saveBillForSharing(cname,cid);
-  if(!saved) return;
-  const sent=await api('POST','/email/send-bill',{bill_id:saved.id, to_email:toEmail});
-  if(sent) toast('Bill emailed to '+toEmail+' ✓');
+  // Save bill inline
+  const sub=curBill.reduce((s,i)=>s+i.total,0);
+  const gstOn=document.getElementById('gstChk').checked;
+  const gstPct=gstOn?Math.max(0,parseFloat(document.getElementById('gstPct').value)||0):0;
+  const gst=gstOn?sub*(gstPct/100):0;
+  const grand=sub+gst;
+  const billPayload={
+    customer_name:cname,customer_id:cid||null,gst_percent:gstPct,
+    items:curBill.map(it=>({product_id:it.pid||null,product_name:it.name,type:it.type,quantity:it.qty,price:it.price}))
+  };
+  const tempId = 'TEMP-' + Date.now();
+  let saved=await api('POST','/bills',billPayload, tempId);
+  if(!saved){
+    if(isOnline){toast('Failed to save bill.','error');return;}
+    // Offline mode
+    saved = { id: tempId, created_at: new Date().toISOString(), pdf_url: null };
+  }
+  bills.unshift({
+    id:saved.id,date:saved.created_at,customer:cname,
+    items:curBill.length,gst,total:grand,
+    gst_percent:gstPct,subtotal:sub,
+    bill_items:curBill.map(it=>({product_name:it.name,type:it.type,quantity:it.qty,price:it.price,total:it.total})),
+    pdf_url:saved.pdf_url
+  });
+  localStorage.setItem('grb_bills',JSON.stringify(bills.slice(0,150)));
+  todaySummary();clearBill(true);
+  
+  if(isOnline){
+    const sent=await api('POST','/email/send-bill',{bill_id:saved.id, to_email:toEmail});
+    if(sent) toast('Bill emailed to '+toEmail+' ✓');
+  } else {
+    offlineQueue.push({method:'POST',path:'/email/send-bill',body:{bill_id:saved.id, to_email:toEmail}});
+    localStorage.setItem('grb_offline_queue',JSON.stringify(offlineQueue));
+    toast('Bill saved offline & email queued ✓','success');
+  }
 }
 
 async function printBill(){
@@ -1447,140 +1446,126 @@ async function printBill(){
     customer_name:cname,customer_id:cid||null,gst_percent:gstPct,
     items:curBill.map(it=>({product_id:it.pid||null,product_name:it.name,type:it.type,quantity:it.qty,price:it.price}))
   };
-  const saved=await api('POST','/bills',billPayload);
-  if(!saved){toast('Failed to save bill. Check connection.','error');return;}
+  const tempId = 'TEMP-' + Date.now();
+  let saved=await api('POST','/bills',billPayload, tempId);
+  if(!saved){
+    if(isOnline){toast('Failed to save bill. Check connection.','error');return;}
+    // Offline mode
+    saved = { id: tempId, created_at: new Date().toISOString(), pdf_url: null };
+  }
   const bno=saved.id;
 
-  const rows=curBill.map((it,i)=>
-    '<tr>'
-    +'<td style="padding:7px 10px">'+(i+1)+'</td>'
-    +'<td style="padding:7px 10px">'+it.name+'</td>'
-    +'<td style="padding:7px 10px">'+it.type+'</td>'
-    +'<td style="padding:7px 10px;text-align:center">'+it.qty+'</td>'
-    +'<td style="padding:7px 10px;text-align:right">₹'+it.price.toFixed(2)+'</td>'
-    +'<td style="padding:7px 10px;text-align:right;font-weight:700">₹'+it.total.toFixed(2)+'</td>'
-    +'</tr>'
-  ).join('');
-
-  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Bill #${bno}</title><style>
-    @page{size:${bW}cm ${bH}cm;margin:8mm;}
-    *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:${bW}cm;min-height:${bH}cm;padding:8mm;font-size:12px;color:#1A0005;background:#fff;}
-    .hdr{text-align:center;padding-bottom:10px;margin-bottom:10px;border-bottom:3px solid #780116;}
-    .sn{font-size:24px;font-weight:900;color:#780116;letter-spacing:2px;font-family:Georgia,serif;}
-    .ss{font-size:11px;color:#C9A84C;margin-top:4px;letter-spacing:2px;text-transform:uppercase;}
-    .gl{height:2px;background:linear-gradient(90deg,transparent,#C9A84C,transparent);margin:8px 0;}
-    .bm{font-size:11px;color:#555;margin-top:6px;display:flex;justify-content:space-between;}
-    .bm-no{font-weight:700;font-size:14px;color:#780116;}
-    .cb{margin:10px 0;padding:8px 12px;border-left:4px solid #780116;background:#fff8f3;font-size:12px;}
-    .cb-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#C9A84C;margin-bottom:3px;}
-    .cb-name{font-size:14px;font-weight:700;color:#1A0005;}
-    .cb-addr{font-size:11px;color:#555;margin-top:2px;}
-    table{width:100%;border-collapse:collapse;margin:10px 0;font-size:12px;}
-    thead tr{background:#780116;}
-    th{color:#fff;padding:8px 10px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;}
-    td{padding:7px 10px;border-bottom:1px solid #f0e0d0;}
-    tr:nth-child(even) td{background:#fff8f3;}
-    tr:last-child td{border-bottom:2px solid #780116;}
-    .tt{margin-top:10px;padding:10px 12px;background:#fff8f3;border-radius:6px;border:1px solid #EDD8B0;}
-    .trow{display:flex;justify-content:space-between;padding:4px 0;font-size:12px;color:#555;}
-    .gr{display:flex;justify-content:space-between;padding:8px 0 0;margin-top:6px;border-top:2px solid #780116;}
-    .gr-label{font-size:14px;font-weight:800;color:#780116;}
-    .gr-val{font-size:18px;font-weight:900;color:#780116;}
-    .ft{text-align:center;margin-top:14px;font-size:10px;color:#9B0A20;padding-top:10px;border-top:1px dashed #C9A84C;}
-    .ft-big{font-size:13px;font-weight:700;color:#780116;margin-bottom:3px;}
-  </style></head><body>
-  <div class="hdr">
-    <div class="sn">GRB POOJA ITEMS</div>
-    <div class="ss">Sacred Supplies · Trusted Quality</div>
-    <div class="gl"></div>
-    <div class="bm"><span>${ds} ${ts}</span><span>Bill No: <span class="bm-no">#${bno}</span></span></div>
-  </div>
-  <div class="cb">
-    <div class="cb-label">Bill To</div>
-    <div class="cb-name">${cname}</div>
-    ${addr?`<div class="cb-addr">${addr}</div>`:''}
-  </div>
-  <table>
-    <thead><tr><th>#</th><th>Item</th><th>Type</th><th style="text-align:center">Qty</th><th style="text-align:right">Rate</th><th style="text-align:right">Total</th></tr></thead>
-    <tbody>${rows}</tbody>
-  </table>
-  <div class="tt">
-    <div class="trow"><span>Subtotal</span><span>₹${sub.toFixed(2)}</span></div>
-    ${gstOn?`<div class="trow"><span>GST (${gstPct}%)</span><span>₹${gst.toFixed(2)}</span></div>`:''}
-    <div class="gr"><span class="gr-label">TOTAL AMOUNT</span><span class="gr-val">₹${grand.toFixed(2)}</span></div>
-  </div>
-  <div class="ft"><div class="ft-big">✦ Thank you for your purchase ✦</div>Visit us again — GRB Pooja Items</div>
-  </body></html>`;
-
-  const w=window.open('','_blank','width=600,height=800');
-  if(!w){toast('Please allow popups for printing.','error');return;}
-  w.document.write(html);w.document.close();w.focus();
-  setTimeout(()=>w.print(),500);
+  const rows=curBill.map((it,i)=>`<tr>
+    <td style="text-align:center;">${i+1}</td>
+    <td><div style="font-weight:700">${it.name}</div><div style="font-size:8.5px;color:#888">${it.type}</div></td>
+    <td style="text-align:center;">${it.qty}</td>
+    <td style="text-align:right;font-family:var(--font-num);">${it.price.toFixed(2)}</td>
+    <td style="text-align:right;font-weight:700;font-family:var(--font-num);color:#780116;">${it.total.toFixed(2)}</td>
+  </tr>`).join('');
+  openBillPrintWindow(bno,cname,addr,ds,ts,rows,sub,gst,grand,gstOn,gstPct,bW,bH);
 
   // Bill already saved — just update local state
   bills.unshift({
     id:saved.id,date:saved.created_at,customer:cname,
     items:curBill.length,gst,total:grand,
     gst_percent:gstPct,subtotal:sub,
-    bill_items:curBill.map(it=>({product_name:it.name,type:it.type,quantity:it.qty,price:it.price,total:it.total}))
+    bill_items:curBill.map(it=>({product_name:it.name,type:it.type,quantity:it.qty,price:it.price,total:it.total})),
+    pdf_url:saved.pdf_url
   });
-  localStorage.setItem('grb_bills',JSON.stringify(bills));
-  toast('Bill '+saved.id+' saved ✓');
-  todaySummary();clearBill();
+  localStorage.setItem('grb_bills',JSON.stringify(bills.slice(0,150)));
+  toast('Bill '+saved.id+(saved.id.startsWith('TEMP')?' saved offline ✓':' saved ✓'));
+  todaySummary();clearBill(true);
 }
 
 // ── TODAY SUMMARY ──
 function todaySummary(){
-  const today=new Date().toDateString();
-  const tb=bills.filter(b=>new Date(b.date).toDateString()===today);
-  document.getElementById('sBills').textContent=tb.length;
-  document.getElementById('sSales').textContent='₹'+tb.reduce((s,b)=>s+b.total,0).toFixed(0);
-  document.getElementById('sGst').textContent='₹'+tb.reduce((s,b)=>s+b.gst,0).toFixed(0);
-  const div=document.getElementById('rBills');
-  const rec=[...tb].slice(0,5);
-  if(!rec.length){div.innerHTML='<div class="nodata">No bills yet today</div>';return;}
-  div.innerHTML=rec.map(b=>{const t=new Date(b.date);return`<div class="rbi">
-    <span class="rbn">${x(b.customer)}</span><span class="rba">₹${b.total.toFixed(0)}</span>
-    <br/><span class="rbt">${t.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})} · ${b.items} item(s)</span>
-  </div>`;}).join('');
+  const today = new Date().toLocaleDateString('en-IN');
+  const tb = bills.filter(b => b.date && new Date(b.date).toLocaleDateString('en-IN') === today);
+  
+  const elBills = document.getElementById('sBills');
+  const elSales = document.getElementById('sSales');
+  const elGst = document.getElementById('sGst');
+  const div = document.getElementById('rBills');
+  
+  if (elBills) elBills.textContent = tb.length;
+  if (elSales) elSales.textContent = '₹' + tb.reduce((s, b) => s + (parseFloat(b.total) || 0), 0).toFixed(0);
+  if (elGst) elGst.textContent = '₹' + tb.reduce((s, b) => s + (parseFloat(b.gst) || 0), 0).toFixed(0);
+  
+  if (div) {
+    const rec = [...tb].slice(0, 5);
+    if (!rec.length) {
+      div.innerHTML = '<div class="nodata">No bills yet today</div>';
+      return;
+    }
+    div.innerHTML = rec.map(b => {
+      const t = new Date(b.date);
+      const formattedTotal = (parseFloat(b.total) || 0).toFixed(0);
+      const itemsCount = b.items || (b.bill_items ? b.bill_items.length : 0) || 0;
+      return `<div class="rbi">
+        <span class="rbn">${x(b.customer)}</span><span class="rba">₹${formattedTotal}</span>
+        <br/><span class="rbt">${t.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })} · ${itemsCount} item(s)</span>
+      </div>`;
+    }).join('');
+  }
 }
 
 // ── REPORTS ──
 async function delBill(id){
   if(!confirm('Delete this bill?'))return;
-  await api('DELETE','/bills/'+id);
-  bills=bills.filter(b=>b.id!==id);
-  localStorage.setItem('grb_bills',JSON.stringify(bills));
+  const result = await api('DELETE','/bills/'+id);
+  if(!result && !isOnline){
+    bills = bills.filter(b => b.id !== id);
+    localStorage.setItem('grb_bills',JSON.stringify(bills.slice(0,150)));
+    toast('Bill deleted offline');
+  } else if(result) {
+    bills=bills.filter(b=>b.id!==id);
+    localStorage.setItem('grb_bills',JSON.stringify(bills.slice(0,150)));
+  }
   todaySummary();renderReports();
 }
 function renderReports(){
-  const today=new Date().toDateString();
-  const tb=bills.filter(b=>new Date(b.date).toDateString()===today);
-  document.getElementById('rDS').textContent='₹'+tb.reduce((s,b)=>s+b.total,0).toFixed(0);
-  document.getElementById('rTB').textContent=bills.length;
-  document.getElementById('rTR').textContent='₹'+bills.reduce((s,b)=>s+b.total,0).toFixed(0);
-  document.getElementById('rGC').textContent='₹'+bills.reduce((s,b)=>s+b.gst,0).toFixed(0);
-  const hb=document.getElementById('hBody'),he=document.getElementById('hEmpty');
-  hb.innerHTML='';
-  if(!bills.length){he.style.display='';return;}he.style.display='none';
-  bills.forEach(b=>{
-    const d=new Date(b.date);
-    // fix #12: show real item count
-    const itemCount=b.items||(b.bill_items?b.bill_items.length:0)||'—';
-    hb.innerHTML+=`<tr>
-      <td><code style="font-size:.76rem;background:#fff0e8;color:#780116;padding:.13rem .45rem;border-radius:5px">${b.id}</code></td>
-      <td style="white-space:nowrap">${d.toLocaleDateString('en-IN')} ${d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}</td>
-      <td><strong>${x(b.customer)}</strong></td>
-      <td style="font-family:var(--font-num)">${itemCount}</td>
-      <td style="font-family:var(--font-num)">${b.gst>0?'₹'+b.gst.toFixed(2):'—'}</td>
-      <td style="font-family:var(--font-num)"><strong style="color:var(--burg)">₹${b.total.toFixed(2)}</strong></td>
-      <td style="white-space:nowrap">
-        ${b.bill_items&&b.bill_items.length?`<button class="bedit" onclick="reprintBill('${b.id}')" style="margin-right:.3rem">🖨 Print</button>`:''}
-        <button class="bdelbill" onclick="delBill('${b.id}')">🗑</button>
-      </td>
-    </tr>`;
-  });
+  const today = new Date().toLocaleDateString('en-IN');
+  const tb = bills.filter(b => b.date && new Date(b.date).toLocaleDateString('en-IN') === today);
+  
+  const elDS = document.getElementById('rDS');
+  const elTB = document.getElementById('rTB');
+  const elTR = document.getElementById('rTR');
+  const elGC = document.getElementById('rGC');
+  
+  if (elDS) elDS.textContent = '₹' + tb.reduce((s, b) => s + (parseFloat(b.total) || 0), 0).toFixed(0);
+  if (elTB) elTB.textContent = bills.length;
+  if (elTR) elTR.textContent = '₹' + bills.reduce((s, b) => s + (parseFloat(b.total) || 0), 0).toFixed(0);
+  if (elGC) elGC.textContent = '₹' + bills.reduce((s, b) => s + (parseFloat(b.gst) || 0), 0).toFixed(0);
+  
+  const hb = document.getElementById('hBody');
+  const he = document.getElementById('hEmpty');
+  if (hb) {
+    hb.innerHTML = '';
+    if (!bills.length) {
+      if (he) he.style.display = '';
+      return;
+    }
+    if (he) he.style.display = 'none';
+    bills.forEach(b => {
+      const d = new Date(b.date);
+      const itemCount = b.items || (b.bill_items ? b.bill_items.length : 0) || '—';
+      const parsedGst = parseFloat(b.gst) || 0;
+      const parsedTotal = parseFloat(b.total) || 0;
+      hb.innerHTML += `<tr>
+        <td><code style="font-size:.76rem;background:#fff0e8;color:#780116;padding:.13rem .45rem;border-radius:5px">${b.id}</code></td>
+        <td>${d.toLocaleDateString('en-IN')} ${d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</td>
+        <td><strong>${x(b.customer)}</strong></td>
+        <td style="font-family:var(--font-num)">${itemCount}</td>
+        <td style="font-family:var(--font-num)">${parsedGst > 0 ? '₹' + parsedGst.toFixed(2) : '—'}</td>
+        <td style="font-family:var(--font-num)"><strong style="color:var(--burg)">₹${parsedTotal.toFixed(2)}</strong></td>
+        <td style="white-space:nowrap">
+          <button class="bedit" id="btn-view-report-${b.id}" onclick="viewBillReport('${b.id}')" style="margin-right:.3rem;background:linear-gradient(135deg,#e8f4ff,#d4eaff);color:#1a5f9e;border:1.5px solid #a8cef8;">👁 View</button>
+          ${b.bill_items && b.bill_items.length ? `<button class="bedit" id="btn-print-report-${b.id}" onclick="reprintBill('${b.id}')" style="margin-right:.3rem">🖨 Print</button>` : ''}
+          <button class="bdelbill" id="btn-delete-report-${b.id}" onclick="delBill('${b.id}')">🗑</button>
+        </td>
+      </tr>`;
+    });
+  }
 }
 
 // ── REPRINT BILL (fix #13) ──
@@ -1592,55 +1577,24 @@ function reprintBill(id){
   const d=new Date(b.date);
   const ds=d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
   const ts=d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  const cname=b.customer||b.customer_name||'';
+  const cust=custs.find(c=>c.name===cname);
+  const addr=cust?cust.address||'':'';
   const rows=b.bill_items.map((it,i)=>`<tr>
-    <td style="padding:7px 10px">${i+1}</td>
-    <td style="padding:7px 10px">${it.product_name}</td>
-    <td style="padding:7px 10px">${it.type||''}</td>
-    <td style="padding:7px 10px;text-align:center">${it.quantity}</td>
-    <td style="padding:7px 10px;text-align:right">₹${parseFloat(it.price).toFixed(2)}</td>
-    <td style="padding:7px 10px;text-align:right;font-weight:700">₹${parseFloat(it.total).toFixed(2)}</td>
+    <td style="padding:5px 8px">${i+1}</td>
+    <td style="padding:5px 8px"><div style="font-weight:700">${it.product_name}</div><div style="font-size:8.5px;color:#888">${it.type||''}</div></td>
+    <td style="padding:5px 8px;text-align:center">${it.quantity}</td>
+    <td style="padding:5px 8px;text-align:right">₹${parseFloat(it.price).toFixed(2)}</td>
+    <td style="padding:5px 8px;text-align:right;font-weight:700;color:#780116">₹${parseFloat(it.total).toFixed(2)}</td>
   </tr>`).join('');
-  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Bill #${b.id}</title><style>
-    @page{size:${bW}cm ${bH}cm;margin:8mm;}
-    *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:Helvetica Neue,Helvetica,Arial,sans-serif;width:${bW}cm;min-height:${bH}cm;padding:8mm;font-size:12px;color:#1A0005;background:#fff;}
-    .hdr{text-align:center;padding-bottom:10px;margin-bottom:10px;border-bottom:3px solid #780116;}
-    .sn{font-size:24px;font-weight:900;color:#780116;letter-spacing:2px;font-family:Georgia,serif;}
-    .ss{font-size:11px;color:#C9A84C;margin-top:4px;letter-spacing:2px;text-transform:uppercase;}
-    .gl{height:2px;background:linear-gradient(90deg,transparent,#C9A84C,transparent);margin:8px 0;}
-    .bm{font-size:11px;color:#555;margin-top:6px;display:flex;justify-content:space-between;}
-    .bm-no{font-weight:700;font-size:14px;color:#780116;}
-    .cb{margin:10px 0;padding:8px 12px;border-left:4px solid #780116;background:#fff8f3;}
-    .cb-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#C9A84C;margin-bottom:3px;}
-    .cb-name{font-size:14px;font-weight:700;}
-    table{width:100%;border-collapse:collapse;margin:10px 0;font-size:12px;}
-    thead tr{background:#780116;}th{color:#fff;padding:8px 10px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;}
-    td{padding:7px 10px;border-bottom:1px solid #f0e0d0;}tr:nth-child(even) td{background:#fff8f3;}
-    .tt{margin-top:10px;padding:10px 12px;background:#fff8f3;border-radius:6px;border:1px solid #EDD8B0;}
-    .trow{display:flex;justify-content:space-between;padding:4px 0;font-size:12px;color:#555;}
-    .gr{display:flex;justify-content:space-between;padding:8px 0 0;margin-top:6px;border-top:2px solid #780116;}
-    .gr-label{font-size:14px;font-weight:800;color:#780116;}.gr-val{font-size:18px;font-weight:900;color:#780116;}
-    .ft{text-align:center;margin-top:14px;font-size:10px;color:#9B0A20;padding-top:10px;border-top:1px dashed #C9A84C;}
-    .reprint-badge{text-align:center;color:#999;font-size:10px;margin-top:8px;}
-  </style></head><body>
-  <div class="hdr"><div class="sn">GRB POOJA ITEMS</div><div class="ss">Sacred Supplies · Trusted Quality</div>
-  <div class="gl"></div><div class="bm"><span>${ds} ${ts}</span><span>Bill No: <span class="bm-no">#${b.id}</span></span></div></div>
-  <div class="cb"><div class="cb-label">Bill To</div><div class="cb-name">${x(b.customer)}</div></div>
-  <table><thead><tr><th>#</th><th>Item</th><th>Type</th><th style="text-align:center">Qty</th><th style="text-align:right">Rate</th><th style="text-align:right">Total</th></tr></thead>
-  <tbody>${rows}</tbody></table>
-  <div class="tt">
-    <div class="trow"><span>Subtotal</span><span>₹${parseFloat(b.subtotal||b.total).toFixed(2)}</span></div>
-    ${b.gst>0?`<div class="trow"><span>GST (${b.gst_percent||0}%)</span><span>₹${b.gst.toFixed(2)}</span></div>`:''}
-    <div class="gr"><span class="gr-label">TOTAL AMOUNT</span><span class="gr-val">₹${b.total.toFixed(2)}</span></div>
-  </div>
-  <div class="ft">✦ Thank you for your purchase ✦<br/>Visit us again — GRB Pooja Items</div>
-  <div class="reprint-badge">— Reprinted copy —</div>
-  </body></html>`;
-  const w=window.open('','_blank','width=600,height=800');
-  if(!w){toast('Allow popups for printing.','error');return;}
-  w.document.write(html);w.document.close();w.focus();
-  setTimeout(()=>w.print(),500);
+  const sub=parseFloat(b.subtotal||b.total||0);
+  const gstAmt=parseFloat(b.gst||b.gst_amount||0);
+  const grand=parseFloat(b.total||0);
+  const gstOn=gstAmt>0;
+  const gstPct=parseFloat(b.gst_percent||0);
+  openBillPrintWindow(b.id,cname,addr,ds,ts,rows,sub,gstAmt,grand,gstOn,gstPct,bW,bH);
 }
+
 
 // ── SUPABASE KEEPALIVE ──
 setInterval(async()=>{
@@ -1813,9 +1767,9 @@ function renderGallery(){
           <div style="font-weight:700;font-size:.88rem;color:var(--text);margin-bottom:.2rem;">${x(item.name)}</div>
           <div style="font-family:var(--font-num);font-weight:800;color:var(--burg);font-size:.9rem;">₹${parseFloat(item.price).toFixed(2)}</div>
           <div style="display:flex;gap:.4rem;margin-top:.5rem;" onclick="event.stopPropagation()">
-            <button class="bedit" style="flex:1;font-size:.72rem;padding:.28rem;" onclick="openGalleryModal('${item.id}')">✏</button>
-            <button class="bedit" style="flex:1;font-size:.72rem;padding:.28rem;" onclick="openAddImagesModal('${item.id}')">+📷</button>
-            <button class="bdel" style="flex:none;" onclick="deleteGalleryItem('${item.id}')">🗑</button>
+            <button class="bedit" id="btn-edit-gallery-${item.id}" style="flex:1;font-size:.72rem;padding:.28rem;" onclick="openGalleryModal('${item.id}')">✏</button>
+            <button class="bedit" id="btn-add-gallery-img-${item.id}" style="flex:1;font-size:.72rem;padding:.28rem;" onclick="openAddImagesModal('${item.id}')">+📷</button>
+            <button class="bdel" id="btn-delete-gallery-${item.id}" style="flex:none;" onclick="deleteGalleryItem('${item.id}')">🗑</button>
           </div>
         </div>
       </div>`;
@@ -1827,9 +1781,9 @@ function viewGalleryCategory(id){
   if(!item) return;
   document.getElementById('galleryViewTitle').textContent=item.name+' — ₹'+parseFloat(item.price).toFixed(2);
   document.getElementById('galleryViewActions').innerHTML=`
-    <button class="bprim" style="padding:.5rem 1rem;min-height:40px;font-size:.85rem;" onclick="openAddImagesModal('${id}')">+ Add More Images</button>
-    <button class="bedit" onclick="openGalleryModal('${id}')">✏ Edit Name/Price</button>
-    <button class="bred" style="padding:.5rem 1rem;min-height:40px;font-size:.85rem;" onclick="deleteGalleryItem('${id}');pg('gallery')">🗑 Delete Category</button>
+    <button class="bprim" id="btn-view-gallery-add-more-${id}" style="padding:.5rem 1rem;min-height:40px;font-size:.85rem;" onclick="openAddImagesModal('${id}')">+ Add More Images</button>
+    <button class="bedit" id="btn-view-gallery-edit-${id}" onclick="openGalleryModal('${id}')">✏ Edit Name/Price</button>
+    <button class="bred" id="btn-view-gallery-delete-${id}" style="padding:.5rem 1rem;min-height:40px;font-size:.85rem;" onclick="deleteGalleryItem('${id}');pg('gallery')">🗑 Delete Category</button>
   `;
   const grid=document.getElementById('galleryViewGrid');
   grid.innerHTML='';
@@ -1840,7 +1794,7 @@ function viewGalleryCategory(id){
       grid.innerHTML+=`
         <div style="border-radius:12px;overflow:hidden;border:1px solid var(--border);position:relative;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
           <img src="${img}" style="width:100%;height:150px;object-fit:cover;display:block;" onclick="openFullImg('${id}',${i})"/>
-          <button onclick="deleteGalleryImage('${id}',${i})" style="position:absolute;top:4px;right:4px;background:rgba(120,1,22,0.85);color:white;border:none;border-radius:6px;width:26px;height:26px;cursor:pointer;font-size:.8rem;">✕</button>
+          <button onclick="deleteGalleryImage('${id}',${i})" id="btn-delete-gallery-img-${id}-${i}" style="position:absolute;top:4px;right:4px;background:rgba(120,1,22,0.85);color:white;border:none;border-radius:6px;width:26px;height:26px;cursor:pointer;font-size:.8rem;">✕</button>
         </div>`;
     });
   }
@@ -1954,6 +1908,502 @@ const _u=JSON.parse(localStorage.getItem('grb_user')||'{}');
 if(_u.name) document.getElementById('uname').textContent=_u.name;
 if(_u.profile_pic) updateTopbarPic(_u.profile_pic, _u.name);
 else if(_u.name) updateTopbarPic(null, _u.name);
+
+// ── SHARED BILL PRINT HELPERS ──────────────────────
+function getBillHtml(bno, cname, addr, ds, ts, rows, sub, gst, grand, gstOn, gstPct, bW, bH, type = 'INVOICE') {
+  const logoUrl = 'https://i.pinimg.com/1200x/7e/cf/ec/7ecfec130f976641dbbe349abfdbccee.jpg';
+  const typeLabel = type === 'ESTIMATE' ? 'ESTIMATE' : (gstOn ? 'TAX INVOICE' : 'ESTIMATE');
+  
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>${typeLabel} #${bno}</title><style>
+    @page { size: ${bW}cm ${bH}cm; margin: 0; }
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    body {
+      font-family: Georgia, serif;
+      width: ${bW}cm;
+      background: #fff;
+      color: #1A0005;
+      padding: 6mm;
+    }
+    .bill-box {
+      border: 1px solid #780116;
+      padding: 12px 14px;
+      min-height: calc(${bH}cm - 26mm);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .header-section {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 6px;
+    }
+    .logo-img {
+      width: 65px;
+      height: 65px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 1.5px solid #780116;
+    }
+    .brand-info {
+      text-align: left;
+    }
+    .brand-title {
+      font-size: 24px;
+      font-weight: 900;
+      color: #780116;
+      letter-spacing: 0.5px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      margin: 0;
+      line-height: 1.1;
+    }
+    .brand-tagline {
+      font-size: 9px;
+      color: #1A0005;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-top: 4px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+    .header-line {
+      border-top: 1px solid #780116;
+      margin: 8px 0 10px;
+    }
+    .badge-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 8px 0 12px;
+    }
+    .badge-pill {
+      background: #780116 !important;
+      color: #fff !important;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 18px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      border: 1px solid #780116;
+      clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 0;
+      border-top: 1px solid #780116;
+      border-bottom: 1px solid #780116;
+      margin-bottom: 10px;
+      font-family: Georgia, serif;
+    }
+    .meta-divider {
+      color: #780116;
+      opacity: 0.7;
+    }
+    .customer-info {
+      margin: 10px 0;
+      font-family: Georgia, serif;
+      font-size: 13px;
+      line-height: 1.4;
+      color: #1A0005;
+    }
+    .customer-title {
+      font-weight: bold;
+      color: #780116;
+    }
+    .customer-name {
+      font-weight: bold;
+    }
+    .customer-loc {
+      color: #333;
+      margin-top: 1px;
+    }
+    .dashed-line {
+      border-top: 1px dashed #C9A84C;
+      margin: 10px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0;
+      font-size: 12px;
+      font-family: Georgia, serif;
+    }
+    th {
+      background: #FFF9F2;
+      color: #780116;
+      font-weight: bold;
+      font-size: 11px;
+      border: 1px solid #780116;
+      padding: 8px 6px;
+      text-align: center;
+      text-transform: none;
+    }
+    td {
+      border: 1px solid #780116 !important;
+      padding: 8px 6px !important;
+      color: #1A0005 !important;
+      font-family: Georgia, serif !important;
+      font-size: 12px !important;
+    }
+    td:nth-child(1) { text-align: center !important; }
+    td:nth-child(2) { text-align: left !important; }
+    td:nth-child(2) div {
+      font-weight: normal !important;
+      font-size: 12px !important;
+      color: #1A0005 !important;
+      font-family: Georgia, serif !important;
+    }
+    td:nth-child(2) div:last-child {
+      font-size: 9px !important;
+      color: #666 !important;
+      margin-top: 1px;
+    }
+    td:nth-child(3) { text-align: center !important; }
+    td:nth-child(4) { text-align: center !important; font-family: Georgia, serif !important; }
+    td:nth-child(5) { text-align: center !important; font-family: Georgia, serif !important; font-weight: normal !important; color: #1A0005 !important; }
+    
+    .total-container {
+      display: flex;
+      justify-content: flex-end;
+      margin: 8px 0;
+    }
+    .total-block {
+      border-bottom: 1px solid #1A0005;
+      padding-bottom: 3px;
+      display: inline-flex;
+      align-items: center;
+      font-size: 13px;
+      font-family: Georgia, serif;
+      color: #1A0005;
+    }
+    .total-label {
+      font-weight: bold;
+      margin-right: 15px;
+    }
+    .total-colon {
+      margin-right: 15px;
+    }
+    .total-val {
+      font-weight: bold;
+      font-size: 15px;
+    }
+    .footer-section {
+      text-align: center;
+      margin-top: 12px;
+    }
+    .footer-msg {
+      font-size: 13px;
+      font-weight: bold;
+      color: #780116;
+      font-family: Georgia, serif;
+    }
+  </style></head><body>
+  <div class="bw">
+    <div class="bill-box">
+      <div>
+        <div class="header-section">
+          <img class="logo-img" src="${logoUrl}" alt="GRB Logo"/>
+          <div class="brand-info">
+            <h1 class="brand-title">GRB POOJA ITEMS</h1>
+            <p class="brand-tagline">SACRED SUPPLIES • TRUSTED QUALITY</p>
+          </div>
+        </div>
+        <div class="header-line"></div>
+        <div class="badge-row">
+          <span class="badge-pill">${typeLabel}</span>
+        </div>
+        <div class="meta-row">
+          <div style="flex: 1; text-align: center;">Bill No: <span style="font-weight:bold;">${bno}</span></div>
+          <div class="meta-divider">|</div>
+          <div style="flex: 1; text-align: center;">${ds}</div>
+        </div>
+        <div class="customer-info">
+          <div><span class="customer-title">Customer:</span> <span class="customer-name">${x(cname)}</span></div>
+          ${addr ? `<div class="customer-loc">${x(addr)}</div>` : ''}
+        </div>
+        <div class="dashed-line"></div>
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 12%; text-align: center;">Sl. No.</th>
+              <th style="text-align: left; padding-left: 8px;">Item Name</th>
+              <th style="width: 15%; text-align: center;">Quantity</th>
+              <th style="width: 20%; text-align: center;">Price (₹)</th>
+              <th style="width: 20%; text-align: center;">Total (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows}
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="dashed-line"></div>
+        ${gstOn ? `
+        <div style="font-size: 11px; color: #333; display: flex; flex-direction: column; gap: 2px; align-items: flex-end; padding-right: 6px; font-family: Georgia, serif; margin-bottom: 6px;">
+          <div>Subtotal: ₹${sub.toFixed(2)}</div>
+          <div>GST (${gstPct}%): ₹${gst.toFixed(2)}</div>
+        </div>
+        <div class="dashed-line"></div>
+        ` : ''}
+        <div class="total-container">
+          <div class="total-block">
+            <span class="total-label">Total Amount</span>
+            <span class="total-colon">:</span>
+            <span class="total-val">₹${grand.toFixed(2)}</span>
+          </div>
+        </div>
+        <div class="dashed-line"></div>
+        <div class="footer-section">
+          <p class="footer-msg">Thank You – Visit Again</p>
+          <svg width="80" height="12" viewBox="0 0 80 12" fill="none" style="display: block; margin: 6px auto 0;">
+            <path d="M 40 2 L 44 6 L 40 10 L 36 6 Z" fill="#C9A84C"/>
+            <circle cx="30" cy="6" r="2" fill="#C9A84C"/>
+            <circle cx="50" cy="6" r="2" fill="#C9A84C"/>
+            <path d="M 10 6 C 20 6, 25 4, 28 6" stroke="#C9A84C" stroke-width="1"/>
+            <path d="M 70 6 C 60 6, 55 4, 52 6" stroke="#C9A84C" stroke-width="1"/>
+            <circle cx="20" cy="6" r="1" fill="#C9A84C"/>
+            <circle cx="60" cy="6" r="1" fill="#C9A84C"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</body></html>`;
+}
+
+function openBillPrintWindow(bno,cname,addr,ds,ts,rows,sub,gst,grand,gstOn,gstPct,bW,bH,type='INVOICE'){
+  const html=getBillHtml(bno,cname,addr,ds,ts,rows,sub,gst,grand,gstOn,gstPct,bW,bH,type);
+  const w=window.open('','_blank','width=600,height=800');
+  if(!w){toast('Please allow popups for printing.','error');return;}
+  w.document.write(html);w.document.close();w.focus();
+  setTimeout(()=>w.print(),500);
+}
+
+// ── VIEW BILL REPORT ─────────────────────────────────
+let _viewBillId=null;
+
+async function viewBillReport(id){
+  _viewBillId=id;
+  const b=bills.find(z=>z.id===id);
+  if(!b){toast('Bill not found.','error');return;}
+  let items=b.bill_items||[];
+  if(isOnline&&!items.length){
+    try{
+      const fresh=await api('GET','/bills/'+id);
+      if(fresh&&fresh.items) items=fresh.items;
+      else if(fresh&&fresh.bill_items) items=fresh.bill_items;
+    }catch(e){}
+  }
+  const d=new Date(b.date||b.created_at||Date.now());
+  const ds=d.toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
+  const ts=d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  const sub=parseFloat(b.subtotal||b.total||0);
+  const gstAmt=parseFloat(b.gst||b.gst_amount||0);
+  const grand=parseFloat(b.total||0);
+  const gstPct=parseFloat(b.gst_percent||0);
+  const cname=b.customer||b.customer_name||'—';
+  const cust=custs.find(c=>c.name===cname);
+  const addr=cust?cust.address||'':'';
+  const logoUrl = 'https://i.pinimg.com/1200x/7e/cf/ec/7ecfec130f976641dbbe349abfdbccee.jpg';
+  const typeLabel = gstAmt > 0 ? 'TAX INVOICE' : 'ESTIMATE';
+  const itemRows=items.length?items.map((it,i)=>`
+    <tr>
+      <td style="padding:8px 10px;color:var(--muted);font-weight:600;width:28px">${i+1}</td>
+      <td style="padding:8px 10px">
+        <div style="font-weight:700;color:var(--text)">${x(it.product_name||it.name||'')}</div>
+        <div style="font-size:.73rem;color:var(--muted);margin-top:1px">${x(it.type||'')}</div>
+      </td>
+      <td style="padding:8px 10px;text-align:center;font-weight:700;font-family:var(--font-num);width:46px">${it.quantity||it.qty||0}</td>
+      <td style="padding:8px 10px;text-align:right;font-family:var(--font-num)">₹${parseFloat(it.price||0).toFixed(2)}</td>
+      <td style="padding:8px 10px;text-align:right;font-family:var(--font-num);font-weight:800;color:var(--burg)">₹${parseFloat(it.total||0).toFixed(2)}</td>
+    </tr>`).join('')
+  :'<tr><td colspan="5" style="padding:1.5rem;text-align:center;color:var(--muted)">No item details stored for this bill</td></tr>';
+
+  document.getElementById('billViewBody').innerHTML=`
+    <style>
+      .modal-tbody-align td {
+        border: 1px solid #780116 !important;
+        padding: 8px 6px !important;
+        color: #1A0005 !important;
+        font-family: Georgia, serif !important;
+        font-size: 12px !important;
+        background: transparent !important;
+      }
+      .modal-tbody-align td:nth-child(1) { text-align: center !important; font-weight: normal !important; width: auto !important; }
+      .modal-tbody-align td:nth-child(2) { text-align: left !important; }
+      .modal-tbody-align td:nth-child(2) div {
+        font-weight: normal !important;
+        font-size: 12px !important;
+        color: #1A0005 !important;
+        font-family: Georgia, serif !important;
+      }
+      .modal-tbody-align td:nth-child(2) div:last-child {
+        font-size: 9px !important;
+        color: #666 !important;
+        margin-top: 1px;
+      }
+      .modal-tbody-align td:nth-child(3) { text-align: center !important; font-weight: normal !important; width: auto !important; }
+      .modal-tbody-align td:nth-child(4) { text-align: center !important; }
+      .modal-tbody-align td:nth-child(5) { text-align: center !important; font-weight: normal !important; color: #1A0005 !important; }
+    </style>
+    <div style="background:#fff; padding: 20px; border: 1px solid #780116; font-family: Georgia, serif; color: #1A0005; max-width: 580px; margin: 0 auto; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+      <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 6px;">
+        <img src="${logoUrl}" alt="GRB Logo" style="width: 65px; height: 65px; object-fit: cover; border-radius: 50%; border: 1.5px solid #780116;"/>
+        <div style="text-align: left;">
+          <div style="font-size: 24px; font-weight: 900; color: #780116; letter-spacing: 0.5px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.1; margin: 0;">GRB POOJA ITEMS</div>
+          <div style="font-size: 9px; color: #1A0005; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">SACRED SUPPLIES • TRUSTED QUALITY</div>
+        </div>
+      </div>
+      <div style="border-top: 1px solid #780116; margin: 8px 0 10px;"></div>
+      <div style="display: flex; justify-content: center; align-items: center; margin: 8px 0 12px;">
+        <span style="background: #780116; color: #fff; font-size: 11px; font-weight: 800; padding: 4px 18px; letter-spacing: 1.5px; text-transform: uppercase; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);">${typeLabel}</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 500; padding: 8px 0; border-top: 1px solid #780116; border-bottom: 1px solid #780116; margin-bottom: 10px; font-family: Georgia, serif;">
+        <div style="flex: 1; text-align: center;">Bill No: <span style="font-weight:bold;">${b.id||id}</span></div>
+        <div style="color: #780116; opacity: 0.7;">|</div>
+        <div style="flex: 1; text-align: center;">${ds} ${ts}</div>
+      </div>
+      <div style="margin: 10px 0; font-family: Georgia, serif; font-size: 13px; line-height: 1.4; color: #1A0005;">
+        <div><span style="font-weight: bold; color: #780116;">Customer:</span> <span style="font-weight: bold;">${x(cname)}</span></div>
+        ${addr ? `<div style="color: #333; margin-top: 1px;">${x(addr)}</div>` : ''}
+      </div>
+      <div style="border-top: 1px dashed #C9A84C; margin: 10px 0;"></div>
+      <table style="width:100%; border-collapse: collapse; margin: 10px 0; font-size: 12px; font-family: Georgia, serif;">
+        <thead>
+          <tr>
+            <th style="width: 12%; text-align: center; background: #FFF9F2; color: #780116; font-weight: bold; font-size: 11px; border: 1px solid #780116; padding: 8px 6px;">Sl. No.</th>
+            <th style="text-align: left; background: #FFF9F2; color: #780116; font-weight: bold; font-size: 11px; border: 1px solid #780116; padding: 8px 6px; padding-left: 8px;">Item Name</th>
+            <th style="width: 15%; text-align: center; background: #FFF9F2; color: #780116; font-weight: bold; font-size: 11px; border: 1px solid #780116; padding: 8px 6px;">Quantity</th>
+            <th style="width: 20%; text-align: center; background: #FFF9F2; color: #780116; font-weight: bold; font-size: 11px; border: 1px solid #780116; padding: 8px 6px;">Price (₹)</th>
+            <th style="width: 20%; text-align: center; background: #FFF9F2; color: #780116; font-weight: bold; font-size: 11px; border: 1px solid #780116; padding: 8px 6px;">Total (₹)</th>
+          </tr>
+        </thead>
+        <tbody class="modal-tbody-align">
+          ${itemRows}
+        </tbody>
+      </table>
+      <div style="border-top: 1px dashed #C9A84C; margin: 10px 0;"></div>
+      ${gstAmt>0?`
+      <div style="font-size: 11px; color: #333; display: flex; flex-direction: column; gap: 2px; align-items: flex-end; padding-right: 6px; font-family: Georgia, serif; margin-bottom: 6px;">
+        <div>Subtotal: ₹${sub.toFixed(2)}</div>
+        <div>GST (${gstPct}%): ₹${gstAmt.toFixed(2)}</div>
+      </div>
+      <div style="border-top: 1px dashed #C9A84C; margin: 10px 0;"></div>
+      `:''}
+      <div style="display: flex; justify-content: flex-end; margin: 8px 0;">
+        <div style="border-bottom: 1px solid #1A0005; padding-bottom: 3px; display: inline-flex; align-items: center; font-size: 13px; font-family: Georgia, serif; color: #1A0005;">
+          <span style="font-weight: bold; margin-right: 15px;">Total Amount</span>
+          <span style="margin-right: 15px;">:</span>
+          <span style="font-weight: bold; font-size: 15px;">₹${grand.toFixed(2)}</span>
+        </div>
+      </div>
+      <div style="border-top: 1px dashed #C9A84C; margin: 10px 0;"></div>
+      <div style="text-align: center; margin-top: 12px;">
+        <p style="font-size: 13px; font-weight: bold; color: #780116; font-family: Georgia, serif; margin: 0;">Thank You – Visit Again</p>
+        <svg width="80" height="12" viewBox="0 0 80 12" fill="none" style="display: block; margin: 6px auto 0;">
+          <path d="M 40 2 L 44 6 L 40 10 L 36 6 Z" fill="#C9A84C"/>
+          <circle cx="30" cy="6" r="2" fill="#C9A84C"/>
+          <circle cx="50" cy="6" r="2" fill="#C9A84C"/>
+          <path d="M 10 6 C 20 6, 25 4, 28 6" stroke="#C9A84C" stroke-width="1"/>
+          <path d="M 70 6 C 60 6, 55 4, 52 6" stroke="#C9A84C" stroke-width="1"/>
+          <circle cx="20" cy="6" r="1" fill="#C9A84C"/>
+          <circle cx="60" cy="6" r="1" fill="#C9A84C"/>
+        </svg>
+      </div>
+    </div>`;
+  document.getElementById('billViewModal').classList.remove('hide');
+}
+
+function printFromViewModal(){
+  if(!_viewBillId){toast('No bill selected.','error');return;}
+  const b=bills.find(z=>z.id===_viewBillId);
+  if(!b){toast('Bill data not available.','error');return;}
+  const bW=parseFloat(document.getElementById('billW').value)||14.8;
+  const bH=parseFloat(document.getElementById('billH').value)||21;
+  const d=new Date(b.date||b.created_at||Date.now());
+  const ds=d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  const ts=d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  const cname=b.customer||b.customer_name||'';
+  const cust=custs.find(c=>c.name===cname);
+  const addr=cust?cust.address||'':'';
+  const items=b.bill_items||[];
+  const sub=parseFloat(b.subtotal||b.total||0);
+  const gstAmt=parseFloat(b.gst||b.gst_amount||0);
+  const grand=parseFloat(b.total||0);
+  const gstOn=gstAmt>0;
+  const gstPct=parseFloat(b.gst_percent||0);
+  const rows=items.map((it,i)=>`<tr>
+    <td style="text-align:center;">${i+1}</td>
+    <td><div style="font-weight:700">${it.product_name||it.name||''}</div><div style="font-size:8.5px;color:#888">${it.type||''}</div></td>
+    <td style="text-align:center;">${it.quantity||it.qty||0}</td>
+    <td style="text-align:right;font-family:var(--font-num);">${parseFloat(it.price||0).toFixed(2)}</td>
+    <td style="text-align:right;font-weight:700;font-family:var(--font-num);color:#780116;">${parseFloat(it.total||0).toFixed(2)}</td>
+  </tr>`).join('');
+  openBillPrintWindow(b.id,cname,addr,ds,ts,rows,sub,gstAmt,grand,gstOn,gstPct,bW,bH);
+}
+
+async function downloadPdfFile(){
+  if(!_viewBillId){toast('No bill selected.','error');return;}
+  const b=bills.find(z=>z.id===_viewBillId);
+  if(b&&b.pdf_url){
+    window.open(b.pdf_url,'_blank');
+    return;
+  }
+  // Fallback: download dynamically as blob
+  toast('Downloading PDF...','warn');
+  try{
+    const token=localStorage.getItem('grb_token');
+    const res=await fetch(API+'/bills/'+_viewBillId+'/pdf',{
+      headers:{'Authorization':'Bearer '+token}
+    });
+    if(!res.ok)throw new Error('Download failed');
+    const blob=await res.blob();
+    const url=window.URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=`GRB-Bill-${_viewBillId}.pdf`;
+    document.body.appendChild(a);
+    a.click();a.remove();
+    window.URL.revokeObjectURL(url);
+    toast('Downloaded ✓','success');
+  }catch(e){
+    toast('Failed to download PDF: '+e.message,'error');
+  }
+}
 </script>
+
+<!-- BILL VIEW MODAL -->
+<div class="ov hide" id="billViewModal">
+  <div style="background:var(--cream);border-radius:20px;width:100%;max-width:680px;max-height:92vh;display:flex;flex-direction:column;box-shadow:0 0 0 1px rgba(201,168,76,0.3),0 30px 80px rgba(0,0,0,0.45);border-top:4px solid var(--burg);overflow:hidden;">
+    <div style="background:linear-gradient(135deg,var(--burg3),var(--burg));padding:1rem 1.4rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+      <div style="display:flex;align-items:center;gap:.6rem;">
+        <div style="width:32px;height:32px;background:rgba(201,168,76,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;">📄</div>
+        <div style="font-family:'Cinzel Decorative',serif;font-size:.88rem;color:var(--gold2);letter-spacing:.3px;">Bill Report</div>
+      </div>
+      <div style="display:flex;gap:.6rem;">
+        <button onclick="downloadPdfFile()" id="btn-download-pdf-modal" style="padding:.48rem 1.1rem;background:linear-gradient(135deg,#059669,#10b981);color:#fff;border:none;border-radius:9px;font-family:var(--font-ui);font-size:.82rem;font-weight:800;cursor:pointer;transition:all .2s;min-height:38px;box-shadow:0 2px 8px rgba(0,0,0,0.2);">📥 Download PDF</button>
+        <button onclick="printFromViewModal()" id="btn-print-view-modal" style="padding:.48rem 1.1rem;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1A0005;border:none;border-radius:9px;font-family:var(--font-ui);font-size:.82rem;font-weight:800;cursor:pointer;transition:all .2s;min-height:38px;box-shadow:0 2px 8px rgba(0,0,0,0.2);">🖨 Print / PDF</button>
+        <button onclick="closeMod('billViewModal')" id="btn-close-view-modal" style="padding:.48rem 1rem;background:rgba(255,255,255,0.12);color:#fff;border:1px solid rgba(255,255,255,0.25);border-radius:9px;font-family:var(--font-ui);font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;min-height:38px;">✕ Close</button>
+      </div>
+    </div>
+    <div id="billViewBody" style="flex:1;overflow-y:auto;padding:1.4rem;"></div>
+  </div>
+</div>
+
 </body>
 </html>

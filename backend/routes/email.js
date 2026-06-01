@@ -9,6 +9,20 @@ const router = express.Router();
 // In-memory OTP store { email: { otp, expiry } }
 const otpStore = {};
 
+// Periodically clean expired OTPs to prevent memory leak (every 10 minutes)
+const otpCleanupInterval = setInterval(() => {
+  const now = Date.now();
+  for (const email of Object.keys(otpStore)) {
+    if (now > otpStore[email].expiry) {
+      delete otpStore[email];
+    }
+  }
+}, 10 * 60 * 1000);
+
+if (typeof otpCleanupInterval.unref === 'function') {
+  otpCleanupInterval.unref();
+}
+
 // ── POST /api/email/forgot-password ───────────────
 // Send OTP to email
 router.post('/forgot-password', async (req, res) => {
