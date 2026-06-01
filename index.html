@@ -138,6 +138,10 @@ body::before{
 .forgot{display:block;text-align:right;color:var(--muted);font-size:.78rem;font-weight:600;text-decoration:none;margin-top:.35rem;}
 .forgot:hover{color:var(--burg);}
 .auth-form{display:none;}.auth-form.on{display:block;}
+.pass-wrap{position:relative;display:flex;align-items:center;width:100%;}
+.pass-wrap input{padding-right:45px!important;}
+.toggle-pass{position:absolute;right:14px;background:none;border:none;cursor:pointer;font-size:1.15rem;outline:none;user-select:none;color:var(--muted);display:flex;align-items:center;justify-content:center;}
+.toggle-pass:hover{color:var(--burg);}
 </style>
 </head>
 <body>
@@ -174,7 +178,10 @@ body::before{
       </div>
       <div class="field">
         <label>Password</label>
-        <input type="password" id="login-pass" placeholder="Enter your password" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')"/>
+        <div class="pass-wrap">
+          <input type="password" id="login-pass" placeholder="Enter your password" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')"/>
+          <button type="button" class="toggle-pass" onclick="togglePass('login-pass', this)" tabindex="-1">👁️</button>
+        </div>
       </div>
       <a href="forgot-password.html" id="link-forgot-password" class="forgot">Forgot password?</a>
       <button class="btn" id="btn-login-submit" onclick="doLogin()" style="margin-top:.8rem">Login to Dashboard</button>
@@ -184,7 +191,13 @@ body::before{
       <div class="msg" id="signup-msg"></div>
       <div class="field"><label>Full Name</label><input type="text" id="signup-name" placeholder="Your full name" autocomplete="name"/></div>
       <div class="field"><label>Email Address</label><input type="email" id="signup-email" placeholder="you@example.com" inputmode="email"/></div>
-      <div class="field"><label>Password</label><input type="password" id="signup-pass" placeholder="Min 6 characters" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')"/></div>
+      <div class="field">
+        <label>Password</label>
+        <div class="pass-wrap">
+          <input type="password" id="signup-pass" placeholder="Min 6 characters" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')"/>
+          <button type="button" class="toggle-pass" onclick="togglePass('signup-pass', this)" tabindex="-1">👁️</button>
+        </div>
+      </div>
       <div class="field"><label>Role</label><select id="signup-role"><option value="user">User</option><option value="admin">Admin</option></select></div>
       <button class="btn" id="btn-signup-submit" onclick="doSignup()">Create Account</button>
     </div>
@@ -240,6 +253,17 @@ async function doSignup(){
     setTimeout(()=>window.location.replace('dashboard.html'),800);
   }catch(e){showMsg('signup-msg','Connection error. Please try again.','error');}
   finally{btn.textContent='Create Account';btn.disabled=false;}
+}
+
+function togglePass(inputId, btn){
+  const el = document.getElementById(inputId);
+  if(el.type === 'password'){
+    el.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    el.type = 'password';
+    btn.textContent = '👁️';
+  }
 }
 
 document.addEventListener('keydown',e=>{
