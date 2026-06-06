@@ -423,7 +423,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
           <div class="fg">
             <label>Customer Name</label>
             <div class="ci-row">
-              <input type="text" id="bCust" placeholder="Type name or search..." oninput="srchCust(this.value)" autocomplete="off"/>
+              <input type="text" id="bCust" placeholder="Type name or search..." oninput="srchCust(this.value); updatePrevBalanceFromName()" autocomplete="off"/>
               <button class="bsm" id="btn-pick-customer" onclick="openPicker()" title="Pick from list">📋</button>
             </div>
             <div class="sugg hide" id="sugg"></div>
@@ -1396,14 +1396,15 @@ async function selCust(id){
     prevOutstanding = 0;
   }
   
-  // Reset the toggle and value
   const includeChk = document.getElementById('includePrevBalChk');
-  const wrap = document.getElementById('prevBalInputWrap');
   const input = document.getElementById('prevBalInput');
   
-  if (includeChk) includeChk.checked = false;
-  if (wrap) wrap.classList.add('hide');
-  if (input) input.value = '0';
+  if (includeChk && includeChk.checked) {
+    if (input) input.value = prevOutstanding.toFixed(2);
+  } else {
+    prevOutstanding = 0;
+    if (input) input.value = '0';
+  }
   
   recalc();
 }
@@ -1455,21 +1456,59 @@ function toggleGst(){
   document.getElementById('gstBadge').classList.toggle('hide',!on);
   recalc();
 }
-function toggleIncludePrevBal() {
+async function updatePrevBalanceFromName() {
+  const chk = document.getElementById('includePrevBalChk');
+  const input = document.getElementById('prevBalInput');
+  const on = chk && chk.checked;
+  if (!on) {
+    prevOutstanding = 0;
+    if (input) input.value = '0';
+    recalc();
+    return;
+  }
+  
+  const customerName = document.getElementById('bCust').value.trim();
+  if (!customerName) {
+    prevOutstanding = 0;
+    if (input) input.value = '0.00';
+    recalc();
+    return;
+  }
+
+  // Calculate local outstanding balance first
+  const customerNameLower = customerName.toLowerCase();
+  const pendingLocal = bills
+    .filter(b => (b.customer || b.customer_name || '').trim().toLowerCase() === customerNameLower)
+    .reduce((sum, b) => sum + (parseFloat(b.balance_amount) || 0), 0);
+
+  prevOutstanding = pendingLocal;
+  if (input) input.value = prevOutstanding.toFixed(2);
+  recalc();
+
+  // Async server fetch for real-time accuracy
+  if (isOnline) {
+    try {
+      const res = await api('GET', `/bills/customer-outstanding?customer_name=${encodeURIComponent(customerName)}`);
+      if (res && res.outstanding_balance !== undefined) {
+        prevOutstanding = parseFloat(res.outstanding_balance) || 0;
+        if (input && chk.checked) {
+          input.value = prevOutstanding.toFixed(2);
+          recalc();
+        }
+      }
+    } catch (e) {
+      console.warn('Real-time customer balance fetch failed:', e);
+    }
+  }
+}
+
+async function toggleIncludePrevBal() {
   const chk = document.getElementById('includePrevBalChk');
   const wrap = document.getElementById('prevBalInputWrap');
-  const input = document.getElementById('prevBalInput');
   const on = chk && chk.checked;
   
   if (wrap) wrap.classList.toggle('hide', !on);
-  if (input) {
-    if (on) {
-      input.value = prevOutstanding.toFixed(2);
-    } else {
-      input.value = '0';
-    }
-  }
-  recalc();
+  await updatePrevBalanceFromName();
 }
 
 function recalc(){
