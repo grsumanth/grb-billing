@@ -12,7 +12,9 @@ router.get('/summary', async (req, res) => {
       SELECT
         COUNT(*)                    AS bills_today,
         COALESCE(SUM(total),0)      AS sales_today,
-        COALESCE(SUM(gst_amount),0) AS gst_today
+        COALESCE(SUM(gst_amount),0) AS gst_today,
+        COALESCE(SUM(amount_paid),0) AS paid_today,
+        COALESCE(SUM(balance_amount),0) AS outstanding_today
       FROM bills
       WHERE DATE(created_at) = CURRENT_DATE
     `);
@@ -21,13 +23,53 @@ router.get('/summary', async (req, res) => {
       SELECT
         COUNT(*)                    AS total_bills,
         COALESCE(SUM(total),0)      AS total_revenue,
-        COALESCE(SUM(gst_amount),0) AS total_gst
+        COALESCE(SUM(gst_amount),0) AS total_gst,
+        COALESCE(SUM(amount_paid),0) AS total_paid,
+        COALESCE(SUM(balance_amount),0) AS total_outstanding
       FROM bills
     `);
 
     res.json({ today: today.rows[0], allTime: allTime.rows[0] });
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch summary.' });
+  }
+});
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  GET /api/reports/outstanding — bills with balance > 0
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+router.get('/outstanding', async (req, res) => {
+  try {
+    const { customer } = req.query;
+    let query = `
+      SELECT id, customer_name, customer_id, total, amount_paid, 
+             balance_amount, payment_status, created_at
+      FROM bills
+      WHERE balance_amount > 0
+    `;
+    let params = [];
+
+    if (customer) {
+      params.push(`%${customer}%`);
+      query += ` AND customer_name ILIKE $${params.length}`;
+    }
+
+    query += ' ORDER BY created_at DESC';
+
+    const result = await pool.query(query, params);
+
+    // Total outstanding
+    const totalResult = await pool.query(`
+      SELECT COALESCE(SUM(balance_amount), 0) AS total_outstanding
+      FROM bills WHERE balance_amount > 0
+    `);
+
+    res.json({
+      bills: result.rows,
+      total_outstanding: totalResult.rows[0].total_outstanding
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch outstanding bills.' });
   }
 });
 
@@ -46,7 +88,9 @@ router.get('/daily', async (req, res) => {
         DATE(created_at)            AS date,
         COUNT(*)                    AS bill_count,
         COALESCE(SUM(total),0)      AS revenue,
-        COALESCE(SUM(gst_amount),0) AS gst
+        COALESCE(SUM(gst_amount),0) AS gst,
+        COALESCE(SUM(amount_paid),0) AS paid,
+        COALESCE(SUM(balance_amount),0) AS outstanding
       FROM bills
       WHERE created_at >= NOW() - MAKE_INTERVAL(days => $1)
       GROUP BY DATE(created_at)
@@ -91,7 +135,7 @@ router.get('/recent-bills', async (req, res) => {
     const limit = parseInt(req.query.limit) || 5;
 
     const result = await pool.query(`
-      SELECT id, customer_name, total, gst_amount, created_at
+      SELECT id, customer_name, total, gst_amount, amount_paid, balance_amount, payment_status, created_at
       FROM bills
       WHERE DATE(created_at) = CURRENT_DATE
       ORDER BY created_at DESC

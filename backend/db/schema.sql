@@ -65,6 +65,10 @@ CREATE TABLE IF NOT EXISTS bills (
   gst_amount    NUMERIC(10,2) DEFAULT 0,
   subtotal      NUMERIC(10,2) NOT NULL,
   total         NUMERIC(10,2) NOT NULL,
+  amount_paid   NUMERIC(10,2) DEFAULT 0,
+  balance_amount NUMERIC(10,2) DEFAULT 0,
+  payment_status VARCHAR(20)  DEFAULT 'unpaid',
+  show_balance  BOOLEAN       DEFAULT true,
   pdf_url       TEXT,
   created_at    TIMESTAMP DEFAULT NOW()
 );
@@ -81,9 +85,24 @@ CREATE TABLE IF NOT EXISTS bill_items (
   total        NUMERIC(10,2) NOT NULL
 );
 
+-- ── BALANCE HISTORY ──────────────────────────────
+CREATE TABLE IF NOT EXISTS balance_history (
+  id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  bill_id      VARCHAR(20) REFERENCES bills(id) ON DELETE CASCADE,
+  old_balance  NUMERIC(10,2),
+  new_balance  NUMERIC(10,2),
+  old_paid     NUMERIC(10,2),
+  new_paid     NUMERIC(10,2),
+  note         TEXT,
+  changed_at   TIMESTAMP DEFAULT NOW()
+);
+
 -- ── INDEXES ──────────────────────────────────────
 CREATE INDEX IF NOT EXISTS idx_bills_created   ON bills(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bills_payment_status ON bills(payment_status);
+CREATE INDEX IF NOT EXISTS idx_bills_balance    ON bills(balance_amount) WHERE balance_amount > 0;
 CREATE INDEX IF NOT EXISTS idx_bill_items_bill ON bill_items(bill_id);
+CREATE INDEX IF NOT EXISTS idx_balance_history_bill ON balance_history(bill_id);
 CREATE INDEX IF NOT EXISTS idx_customers_name  ON customers(name);
 CREATE INDEX IF NOT EXISTS idx_customers_phone ON customers(phone);
 CREATE INDEX IF NOT EXISTS idx_products_name   ON products(name);
@@ -94,9 +113,11 @@ ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bills ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bill_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE balance_history ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Allow logged-in users to view users" ON users FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Allow logged-in users to view customers" ON customers FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Allow logged-in users to view products" ON products FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Allow logged-in users to view bills" ON bills FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Allow logged-in users to view bill items" ON bill_items FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Allow logged-in users to view balance history" ON balance_history FOR SELECT TO authenticated USING (true);

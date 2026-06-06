@@ -218,4 +218,46 @@ test.describe('GRB Billing API Integration Tests', () => {
     testBillId = res.body.id;
   });
 
+  // 8. Balance Entry & Tracking
+  test('PUT /api/bills/:id/balance should update bill payment status and balance', async () => {
+    const res = await request(app)
+      .put(`/api/bills/${testBillId}/balance`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        amount_paid: 100.00,
+        balance_amount: 194.94,
+        note: 'Partial payment received in cash'
+      })
+      .expect(200);
+
+    assert.strictEqual(parseFloat(res.body.amount_paid), 100.00);
+    assert.strictEqual(parseFloat(res.body.balance_amount), 194.94);
+    assert.strictEqual(res.body.payment_status, 'partial');
+  });
+
+  test('GET /api/bills/:id/balance-history should retrieve log of changes', async () => {
+    const res = await request(app)
+      .get(`/api/bills/${testBillId}/balance-history`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200);
+
+    assert.ok(Array.isArray(res.body));
+    assert.ok(res.body.length > 0);
+    assert.strictEqual(parseFloat(res.body[0].new_balance), 194.94);
+    assert.strictEqual(res.body[0].note, 'Partial payment received in cash');
+  });
+
+  test('GET /api/reports/outstanding should return bills with balance > 0', async () => {
+    const res = await request(app)
+      .get('/api/reports/outstanding')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200);
+
+    assert.ok(res.body.bills);
+    assert.ok(parseFloat(res.body.total_outstanding) >= 194.94);
+    const found = res.body.bills.find(b => b.id === testBillId);
+    assert.ok(found);
+    assert.strictEqual(parseFloat(found.balance_amount), 194.94);
+  });
+
 });

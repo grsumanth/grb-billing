@@ -52,13 +52,61 @@ pool.connect((err, client, release) => {
     }
   } else {
     console.log('✅ Connected to Database successfully');
-    // Ensure pdf_url column exists in bills table
-    client.query('ALTER TABLE bills ADD COLUMN IF NOT EXISTS pdf_url TEXT;', (migrationErr) => {
+    
+    const migrationSql = `
+      ALTER TABLE bills ADD COLUMN IF NOT EXISTS pdf_url TEXT;
+      
+      DO $$
+      BEGIN
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='bills' AND column_name='amount_paid') THEN
+          ALTER TABLE bills ADD COLUMN amount_paid NUMERIC(10,2) DEFAULT 0;
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='bills' AND column_name='balance_amount') THEN
+          ALTER TABLE bills ADD COLUMN balance_amount NUMERIC(10,2) DEFAULT 0;
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='bills' AND column_name='payment_status') THEN
+          ALTER TABLE bills ADD COLUMN payment_status VARCHAR(20) DEFAULT 'unpaid';
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='bills' AND column_name='show_balance') THEN
+          ALTER TABLE bills ADD COLUMN show_balance BOOLEAN DEFAULT true;
+        END IF;
+      END $$;
+
+      CREATE TABLE IF NOT EXISTS balance_history (
+        id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        bill_id      VARCHAR(20) REFERENCES bills(id) ON DELETE CASCADE,
+        old_balance  NUMERIC(10,2),
+        new_balance  NUMERIC(10,2),
+        old_paid     NUMERIC(10,2),
+        new_paid     NUMERIC(10,2),
+        note         TEXT,
+        changed_at   TIMESTAMP DEFAULT NOW()
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_bills_payment_status ON bills(payment_status);
+      CREATE INDEX IF NOT EXISTS idx_bills_balance ON bills(balance_amount) WHERE balance_amount > 0;
+      CREATE INDEX IF NOT EXISTS idx_balance_history_bill ON balance_history(bill_id);
+
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM pg_policies 
+          WHERE tablename = 'balance_history' 
+            AND policyname = 'Allow logged-in users to view balance history'
+        ) THEN
+          ALTER TABLE balance_history ENABLE ROW LEVEL SECURITY;
+          CREATE POLICY "Allow logged-in users to view balance history" 
+            ON balance_history FOR SELECT TO authenticated USING (true);
+        END IF;
+      END $$;
+    `;
+
+    client.query(migrationSql, (migrationErr) => {
       release();
       if (migrationErr) {
-        console.error('❌ Migration failed (pdf_url column):', migrationErr.message);
+        console.error('❌ Migration failed (balance columns & tables):', migrationErr.message);
       } else {
-        console.log('✅ Migration: pdf_url column ensured on bills table');
+        console.log('✅ Migration: Balance tracking columns, tables, and indexes ensured.');
       }
     });
   }

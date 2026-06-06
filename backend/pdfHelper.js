@@ -103,7 +103,32 @@ async function generateBillPDF(bill, items) {
     doc.fillColor(burgundy).fontSize(14).font('Helvetica-Bold')
       .text('TOTAL AMOUNT', 30, y, { width: W - 60 })
       .text('Rs.' + parseFloat(bill.total).toFixed(2), 30, y, { align: 'right', width: W - 60 });
-    y += 30;
+    y += 24;
+
+    // ── Balance Section (only if show_balance is true) ──
+    const showBalance = bill.show_balance !== false;
+    const amountPaid = parseFloat(bill.amount_paid) || 0;
+    const balanceAmount = parseFloat(bill.balance_amount) || 0;
+
+    if (showBalance && (amountPaid > 0 || balanceAmount > 0)) {
+      doc.moveTo(30, y).lineTo(W - 30, y).strokeColor(gold).lineWidth(0.8).stroke();
+      y += 10;
+
+      doc.fillColor('#555').fontSize(10).font('Helvetica')
+        .text('Amount Paid:', 30, y, { width: W - 60 })
+        .text('Rs.' + amountPaid.toFixed(2), 30, y, { align: 'right', width: W - 60 });
+      y += 18;
+
+      if (balanceAmount > 0) {
+        doc.fillColor('#cc2222').font('Helvetica-Bold')
+          .text('Balance Due:', 30, y, { width: W - 60 })
+          .text('Rs.' + balanceAmount.toFixed(2), 30, y, { align: 'right', width: W - 60 });
+      } else {
+        doc.fillColor('#1a6b1a').font('Helvetica-Bold')
+          .text('PAID IN FULL', 30, y, { width: W - 60, align: 'center' });
+      }
+      y += 22;
+    }
 
     // ── Footer ──
     doc.moveTo(0, y).lineTo(W, y).strokeColor(gold).lineWidth(0.8).stroke();
