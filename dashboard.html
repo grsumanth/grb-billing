@@ -13,7 +13,7 @@
   --sb:#2A0008;--sb2:#1A0005;
   --bg:#F8FAFC;--text:#0F172A;--muted:#475569;--border:#E2E8F0;
   --font-ui:'Helvetica Neue',Helvetica,Arial,sans-serif;
-  --font-num:'JetBrains Mono',monospace;
+  --font-num:'Times New Roman', Times, serif;
   --sw:230px;
   --bot-nav:64px;
 }
@@ -2414,7 +2414,7 @@ function getBillHtml(bno, cname, addr, ds, ts, rows, sub, gst, grand, gstOn, gst
       font-family: Georgia, serif !important;
       font-size: 12px !important;
     }
-    td:nth-child(1) { text-align: center !important; }
+    td:nth-child(1) { text-align: center !important; font-family: 'Times New Roman', Times, serif !important; }
     td:nth-child(2) { text-align: left !important; }
     td:nth-child(2) div {
       font-weight: normal !important;
@@ -2427,10 +2427,13 @@ function getBillHtml(bno, cname, addr, ds, ts, rows, sub, gst, grand, gstOn, gst
       color: #666 !important;
       margin-top: 1px;
     }
-    td:nth-child(3) { text-align: center !important; }
-    td:nth-child(4) { text-align: center !important; font-family: Georgia, serif !important; }
-    td:nth-child(5) { text-align: center !important; font-family: Georgia, serif !important; font-weight: normal !important; color: #1A0005 !important; }
+    td:nth-child(3) { text-align: center !important; font-family: 'Times New Roman', Times, serif !important; }
+    td:nth-child(4) { text-align: right !important; font-family: 'Times New Roman', Times, serif !important; }
+    td:nth-child(5) { text-align: right !important; font-family: 'Times New Roman', Times, serif !important; font-weight: bold !important; color: #780116 !important; }
     
+    .num {
+      font-family: 'Times New Roman', Times, serif !important;
+    }
     .total-container {
       display: flex;
       justify-content: flex-end;
@@ -2482,9 +2485,9 @@ function getBillHtml(bno, cname, addr, ds, ts, rows, sub, gst, grand, gstOn, gst
           <span class="badge-pill">${typeLabel}</span>
         </div>
         <div class="meta-row">
-          <div style="flex: 1; text-align: center;">Bill No: <span style="font-weight:bold;">${bno}</span></div>
+          <div style="flex: 1; text-align: center;">Bill No: <span class="num" style="font-weight:bold;">${bno}</span></div>
           <div class="meta-divider">|</div>
-          <div style="flex: 1; text-align: center;">${ds}</div>
+          <div style="flex: 1; text-align: center;" class="num">${ds}</div>
         </div>
         <div class="customer-info">
           <div><span class="customer-title">Customer:</span> <span class="customer-name">${x(cname)}</span></div>
@@ -2510,15 +2513,15 @@ function getBillHtml(bno, cname, addr, ds, ts, rows, sub, gst, grand, gstOn, gst
         <div class="dashed-line"></div>
         ${gstOn ? `
         <div style="font-size: 11px; color: #333; display: flex; flex-direction: column; gap: 2px; align-items: flex-end; padding-right: 6px; font-family: Georgia, serif; margin-bottom: 6px;">
-          <div>Subtotal: ₹${sub.toFixed(2)}</div>
-          <div>GST (${gstPct}%): ₹${gst.toFixed(2)}</div>
+          <div>Subtotal: <span class="num">₹${sub.toFixed(2)}</span></div>
+          <div>GST (<span class="num">${gstPct}%</span>): <span class="num">₹${gst.toFixed(2)}</span></div>
         </div>
         <div class="dashed-line"></div>
         ` : ''}
         ${showBalance ? `
         <div style="font-size: 11px; color: #333; display: flex; flex-direction: column; gap: 2px; align-items: flex-end; padding-right: 6px; font-family: Georgia, serif; margin-bottom: 6px;">
-          <div>Current Bill Amount: ₹${(grand - parseFloat(previousBalance)).toFixed(2)}</div>
-          <div>Previous Balance: ₹${parseFloat(previousBalance).toFixed(2)}</div>
+          <div>Current Bill Amount: <span class="num">₹${(grand - parseFloat(previousBalance)).toFixed(2)}</span></div>
+          <div>Previous Balance: <span class="num">₹${parseFloat(previousBalance).toFixed(2)}</span></div>
         </div>
         <div class="dashed-line"></div>
         ` : ''}
@@ -2526,14 +2529,14 @@ function getBillHtml(bno, cname, addr, ds, ts, rows, sub, gst, grand, gstOn, gst
           <div class="total-block">
             <span class="total-label">Total Amount Due</span>
             <span class="total-colon">:</span>
-            <span class="total-val">₹${(showBalance ? grand : (sub + gst)).toFixed(2)}</span>
+            <span class="total-val num">₹${(showBalance ? grand : (sub + gst)).toFixed(2)}</span>
           </div>
         </div>
         ${showBalance && parseFloat(amountPaid) > 0 ? `
         <div class="dashed-line"></div>
         <div style="font-size: 11px; color: #333; display: flex; flex-direction: column; gap: 3px; align-items: flex-end; padding-right: 6px; font-family: Georgia, serif; margin-bottom: 6px;">
-          <div>Amount Received: ₹${parseFloat(amountPaid).toFixed(2)}</div>
-          <div style="color: #cc2222; font-weight: bold;">Remaining Balance: ₹${parseFloat(balanceAmount).toFixed(2)}</div>
+          <div>Amount Received: <span class="num">₹${parseFloat(amountPaid).toFixed(2)}</span></div>
+          <div style="color: #cc2222; font-weight: bold;">Remaining Balance: <span class="num">₹${parseFloat(balanceAmount).toFixed(2)}</span></div>
         </div>
         ` : ''}
         <div class="dashed-line"></div>
@@ -2597,8 +2600,8 @@ async function viewBillReport(id){
                 const amtDisp = isCarry ? 'Carried Forward' : `Received: ₹${rec.toFixed(2)}`;
                 return `
                   <tr>
-                    <td style="padding: 2px 0; color: #555;">${hd.toLocaleDateString('en-IN')} ${hd.toLocaleTimeString('en-IN', {hour: '2-digit', minute:'2-digit'})}</td>
-                    <td style="padding: 2px 0; text-align: right; font-weight: bold;">${amtDisp} (Bal: ₹${(parseFloat(h.new_balance) || 0).toFixed(2)})</td>
+                    <td style="padding: 2px 0; color: #555;" class="num">${hd.toLocaleDateString('en-IN')} ${hd.toLocaleTimeString('en-IN', {hour: '2-digit', minute:'2-digit'})}</td>
+                    <td style="padding: 2px 0; text-align: right; font-weight: bold;" class="num">${amtDisp} (Bal: ₹${(parseFloat(h.new_balance) || 0).toFixed(2)})</td>
                   </tr>
                   ${h.note && !isCarry ? `<tr><td colspan="2" style="color: #666; font-style: italic; padding-bottom: 4px; padding-left: 8px;">— ${x(h.note)}</td></tr>` : ''}
                 `;
@@ -2647,7 +2650,7 @@ async function viewBillReport(id){
         font-size: 12px !important;
         background: transparent !important;
       }
-      .modal-tbody-align td:nth-child(1) { text-align: center !important; font-weight: normal !important; width: auto !important; }
+      .modal-tbody-align td:nth-child(1) { text-align: center !important; font-weight: normal !important; width: auto !important; font-family: 'Times New Roman', Times, serif !important; }
       .modal-tbody-align td:nth-child(2) { text-align: left !important; }
       .modal-tbody-align td:nth-child(2) div {
         font-weight: normal !important;
@@ -2660,9 +2663,12 @@ async function viewBillReport(id){
         color: #666 !important;
         margin-top: 1px;
       }
-      .modal-tbody-align td:nth-child(3) { text-align: center !important; font-weight: normal !important; width: auto !important; }
-      .modal-tbody-align td:nth-child(4) { text-align: center !important; }
-      .modal-tbody-align td:nth-child(5) { text-align: center !important; font-weight: normal !important; color: #1A0005 !important; }
+      .modal-tbody-align td:nth-child(3) { text-align: center !important; font-weight: normal !important; width: auto !important; font-family: 'Times New Roman', Times, serif !important; }
+      .modal-tbody-align td:nth-child(4) { text-align: right !important; font-family: 'Times New Roman', Times, serif !important; }
+      .modal-tbody-align td:nth-child(5) { text-align: right !important; font-family: 'Times New Roman', Times, serif !important; font-weight: bold !important; color: #780116 !important; }
+      .num {
+        font-family: 'Times New Roman', Times, serif !important;
+      }
     </style>
     <div style="background:#fff; padding: 20px; border: 1px solid #780116; font-family: Georgia, serif; color: #1A0005; max-width: 580px; margin: 0 auto; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
       <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 6px;">
@@ -2677,9 +2683,9 @@ async function viewBillReport(id){
         <span style="background: #780116; color: #fff; font-size: 11px; font-weight: 800; padding: 4px 18px; letter-spacing: 1.5px; text-transform: uppercase; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);">${typeLabel}</span>
       </div>
       <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 500; padding: 8px 0; border-top: 1px solid #780116; border-bottom: 1px solid #780116; margin-bottom: 10px; font-family: Georgia, serif;">
-        <div style="flex: 1; text-align: center;">Bill No: <span style="font-weight:bold;">${b.id||id}</span></div>
+        <div style="flex: 1; text-align: center;">Bill No: <span style="font-weight:bold;" class="num">${b.id||id}</span></div>
         <div style="color: #780116; opacity: 0.7;">|</div>
-        <div style="flex: 1; text-align: center;">${ds} ${ts}</div>
+        <div style="flex: 1; text-align: center;" class="num">${ds} ${ts}</div>
       </div>
       <div style="margin: 10px 0; font-family: Georgia, serif; font-size: 13px; line-height: 1.4; color: #1A0005;">
         <div><span style="font-weight: bold; color: #780116;">Customer:</span> <span style="font-weight: bold;">${x(cname)}</span></div>
@@ -2703,15 +2709,15 @@ async function viewBillReport(id){
       <div style="border-top: 1px dashed #C9A84C; margin: 10px 0;"></div>
       ${gstAmt>0?`
       <div style="font-size: 11px; color: #333; display: flex; flex-direction: column; gap: 2px; align-items: flex-end; padding-right: 6px; font-family: Georgia, serif; margin-bottom: 6px;">
-        <div>Subtotal: ₹${sub.toFixed(2)}</div>
-        <div>GST (${gstPct}%): ₹${gstAmt.toFixed(2)}</div>
+        <div>Subtotal: <span class="num">₹${sub.toFixed(2)}</span></div>
+        <div>GST (<span class="num">${gstPct}%</span>): <span class="num">₹${gstAmt.toFixed(2)}</span></div>
       </div>
       <div style="border-top: 1px dashed #C9A84C; margin: 10px 0;"></div>
       `:''}
       ${b.show_balance !== false ? `
       <div style="font-size: 11px; color: #333; display: flex; flex-direction: column; gap: 2px; align-items: flex-end; padding-right: 6px; font-family: Georgia, serif; margin-bottom: 6px;">
-        <div>Current Bill Amount: ₹${(grand - parseFloat(b.previous_balance || 0)).toFixed(2)}</div>
-        <div>Previous Balance: ₹${parseFloat(b.previous_balance || 0).toFixed(2)}</div>
+        <div>Current Bill Amount: <span class="num">₹${(grand - parseFloat(b.previous_balance || 0)).toFixed(2)}</span></div>
+        <div>Previous Balance: <span class="num">₹${parseFloat(b.previous_balance || 0).toFixed(2)}</span></div>
       </div>
       <div style="border-top: 1px dashed #C9A84C; margin: 10px 0;"></div>
       ` : ''}
@@ -2719,14 +2725,14 @@ async function viewBillReport(id){
         <div style="border-bottom: 1px solid #1A0005; padding-bottom: 3px; display: inline-flex; align-items: center; font-size: 13px; font-family: Georgia, serif; color: #1A0005;">
           <span style="font-weight: bold; margin-right: 15px;">Total Amount Due</span>
           <span style="margin-right: 15px;">:</span>
-          <span style="font-weight: bold; font-size: 15px;">₹${(b.show_balance !== false ? grand : (sub + gstAmt)).toFixed(2)}</span>
+          <span style="font-weight: bold; font-size: 15px;" class="num">₹${(b.show_balance !== false ? grand : (sub + gstAmt)).toFixed(2)}</span>
         </div>
       </div>
       ${parseFloat(b.amount_paid) > 0 ? `
       <div style="border-top: 1px dashed #C9A84C; margin: 10px 0;"></div>
       <div style="font-size: 11px; color: #333; display: flex; flex-direction: column; gap: 3px; align-items: flex-end; padding-right: 6px; font-family: Georgia, serif; margin-bottom: 6px;">
-        <div>Amount Received: ₹${(parseFloat(b.amount_paid) || 0).toFixed(2)}</div>
-        <div style="color: #cc2222; font-weight: bold;">Remaining Balance: ₹${(parseFloat(b.balance_amount) || 0).toFixed(2)}</div>
+        <div>Amount Received: <span class="num">₹${(parseFloat(b.amount_paid) || 0).toFixed(2)}</span></div>
+        <div style="color: #cc2222; font-weight: bold;">Remaining Balance: <span class="num">₹${(parseFloat(b.balance_amount) || 0).toFixed(2)}</span></div>
       </div>
       ` : ''}
       ${historyHtml}
