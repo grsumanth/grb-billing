@@ -466,13 +466,15 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;">
             <div style="display:flex;align-items:center;gap:.5rem;">
               <span style="font-size:1rem;">⚠️</span>
-              <span style="font-size:.78rem;font-weight:700;color:#cc2222;text-transform:uppercase;letter-spacing:.8px;">Previous Balance</span>
+              <span style="font-size:.82rem;font-weight:700;color:#cc2222;text-transform:uppercase;letter-spacing:.8px;">Include Previous Balance</span>
             </div>
-            <span id="prevBalVal" style="font-family:var(--font-num);font-weight:800;color:#cc2222;font-size:1.05rem;">₹0.00</span>
+            <label class="tog"><input type="checkbox" id="includePrevBalChk" onchange="toggleIncludePrevBal()"/><span class="sl"></span></label>
           </div>
-          <div style="display:flex;align-items:center;gap:.7rem;">
-            <label class="tog"><input type="checkbox" id="showBalChk" checked onchange="recalc()"/><span class="sl"></span></label>
-            <span style="font-size:.82rem;font-weight:600;color:var(--burg);">Show Balance in Invoice</span>
+          <div id="prevBalInputWrap" style="display:none;margin-top:.7rem;">
+            <div class="fg" style="margin-bottom:0;">
+              <label style="font-size:.75rem;font-weight:700;color:#cc2222;">Previous Balance (₹)</label>
+              <input type="number" id="prevBalInput" value="0" min="0" step="0.01" inputmode="decimal" oninput="recalc()" style="color:#cc2222;font-weight:700;"/>
+            </div>
           </div>
         </div>
         <!-- Totals -->
@@ -1403,12 +1405,18 @@ async function selCust(id){
     prevOutstanding = 0;
   }
   
-  // Display it
+  // Reset the toggle and value
   const prevSection = document.getElementById('prevBalSection');
-  const prevVal = document.getElementById('prevBalVal');
-  if (prevSection && prevVal) {
+  const includeChk = document.getElementById('includePrevBalChk');
+  const wrap = document.getElementById('prevBalInputWrap');
+  const input = document.getElementById('prevBalInput');
+  
+  if (includeChk) includeChk.checked = false;
+  if (wrap) wrap.style.display = 'none';
+  if (input) input.value = '0';
+  
+  if (prevSection) {
     if (prevOutstanding > 0) {
-      prevVal.textContent = '₹' + prevOutstanding.toFixed(2);
       prevSection.style.display = 'block';
     } else {
       prevSection.style.display = 'none';
@@ -1464,6 +1472,21 @@ function toggleGst(){
   document.getElementById('gstBadge').classList.toggle('hide',!on);
   recalc();
 }
+function toggleIncludePrevBal() {
+  const chk = document.getElementById('includePrevBalChk');
+  const wrap = document.getElementById('prevBalInputWrap');
+  const input = document.getElementById('prevBalInput');
+  
+  if (chk && chk.checked) {
+    if (wrap) wrap.style.display = 'block';
+    if (input) input.value = prevOutstanding.toFixed(2);
+  } else {
+    if (wrap) wrap.style.display = 'none';
+    if (input) input.value = '0';
+  }
+  recalc();
+}
+
 function recalc(){
   const sub=curBill.reduce((s,i)=>s+i.total,0);
   const on=document.getElementById('gstChk').checked;
@@ -1471,9 +1494,10 @@ function recalc(){
   const gst=on?sub*(pct/100):0;
   const itemsTotal=sub+gst;
   
-  const showBal=document.getElementById('showBalChk')?.checked;
-  const carryBal=showBal?prevOutstanding:0;
-  const grand=itemsTotal+carryBal;
+  const includeChk = document.getElementById('includePrevBalChk');
+  const isIncluded = includeChk && includeChk.checked;
+  const inputVal = isIncluded ? (parseFloat(document.getElementById('prevBalInput')?.value) || 0) : 0;
+  const grand=itemsTotal+inputVal;
   
   document.getElementById('sub').textContent='₹'+sub.toFixed(2);
   document.getElementById('gstAmt').textContent='₹'+gst.toFixed(2);
@@ -1483,8 +1507,8 @@ function recalc(){
   
   const prevBalRow = document.getElementById('prevBalRow');
   const prevBalDisp = document.getElementById('prevBalDisp');
-  if (showBal && prevOutstanding > 0) {
-    prevBalDisp.textContent = '₹' + prevOutstanding.toFixed(2);
+  if (isIncluded && inputVal > 0) {
+    prevBalDisp.textContent = '₹' + inputVal.toFixed(2);
     prevBalRow.style.display = 'flex';
   } else {
     prevBalRow.style.display = 'none';
@@ -1505,8 +1529,12 @@ function clearBill(force = false){
   prevOutstanding = 0;
   const prevSection = document.getElementById('prevBalSection');
   if (prevSection) prevSection.style.display = 'none';
-  const showBalChk = document.getElementById('showBalChk');
-  if (showBalChk) showBalChk.checked = true;
+  const includeChk = document.getElementById('includePrevBalChk');
+  if (includeChk) includeChk.checked = false;
+  const wrap = document.getElementById('prevBalInputWrap');
+  if (wrap) wrap.style.display = 'none';
+  const input = document.getElementById('prevBalInput');
+  if (input) input.value = '0';
   
   renderBill();recalc();
 }
@@ -1534,15 +1562,18 @@ async function emailBill(){
   const gst=gstOn?sub*(gstPct/100):0;
   const grand=sub+gst;
   
-  // Paid and balance fields
-  const paid=0;
-  const showBal=document.getElementById('showBalChk')?.checked !== false;
-  const balance=itemsTotal + (showBal ? prevOutstanding : 0);
+  // Previous balance field
+  const includeChk = document.getElementById('includePrevBalChk');
+  const isIncluded = includeChk && includeChk.checked;
+  const prevVal = isIncluded ? (parseFloat(document.getElementById('prevBalInput')?.value) || 0) : 0;
+  const showBal = isIncluded;
+  const itemsTotal = sub + gst;
+  const grand = itemsTotal + prevVal;
   
   const billPayload={
     customer_name:cname,customer_id:cid||null,gst_percent:gstPct,
-    amount_paid:paid,balance_amount:balance,show_balance:showBal,
-    previous_balance:prevOutstanding,
+    amount_paid:0,balance_amount:grand,show_balance:showBal,
+    previous_balance:prevVal,
     items:curBill.map(it=>({product_id:it.pid||null,product_name:it.name,type:it.type,quantity:it.qty,price:it.price}))
   };
   const tempId = 'TEMP-' + Date.now();
@@ -1557,8 +1588,8 @@ async function emailBill(){
     id:saved.id,date:saved.created_at,customer:cname,
     items:curBill.length,gst,total:grand,
     gst_percent:gstPct,subtotal:sub,
-    amount_paid:paid,balance_amount:balance,show_balance:showBal,
-    payment_status:saved.payment_status || (balance <= 0 && paid > 0 ? 'paid' : (balance > 0 && paid > 0 ? 'partial' : 'unpaid')),
+    amount_paid:0,balance_amount:grand,show_balance:showBal,
+    payment_status:saved.payment_status || 'unpaid',
     bill_items:curBill.map(it=>({product_name:it.name,type:it.type,quantity:it.qty,price:it.price,total:it.total})),
     pdf_url:saved.pdf_url
   });
@@ -1593,15 +1624,18 @@ async function printBill(){
   const bW=parseFloat(document.getElementById('billW').value)||14.8;
   const bH=parseFloat(document.getElementById('billH').value)||21;
 
-  // Paid and balance fields
-  const paid=0;
-  const showBal=document.getElementById('showBalChk')?.checked !== false;
-  const balance=grand;
+  // Previous balance field
+  const includeChk = document.getElementById('includePrevBalChk');
+  const isIncluded = includeChk && includeChk.checked;
+  const prevVal = isIncluded ? (parseFloat(document.getElementById('prevBalInput')?.value) || 0) : 0;
+  const showBal = isIncluded;
+  const itemsTotal = sub + gst;
+  const grand = itemsTotal + prevVal;
 
   const billPayload={
     customer_name:cname,customer_id:cid||null,gst_percent:gstPct,
-    amount_paid:paid,balance_amount:balance,show_balance:showBal,
-    previous_balance:prevOutstanding,
+    amount_paid:0,balance_amount:grand,show_balance:showBal,
+    previous_balance:prevVal,
     items:curBill.map(it=>({product_id:it.pid||null,product_name:it.name,type:it.type,quantity:it.qty,price:it.price}))
   };
   const tempId = 'TEMP-' + Date.now();
@@ -1620,14 +1654,14 @@ async function printBill(){
     <td style="text-align:right;font-family:var(--font-num);">${it.price.toFixed(2)}</td>
     <td style="text-align:right;font-weight:700;font-family:var(--font-num);color:#780116;">${it.total.toFixed(2)}</td>
   </tr>`).join('');
-  openBillPrintWindow(bno,cname,addr,ds,ts,rows,sub,gst,grand,gstOn,gstPct,bW,bH,'INVOICE',showBal,prevOutstanding);
+  openBillPrintWindow(bno,cname,addr,ds,ts,rows,sub,gst,grand,gstOn,gstPct,bW,bH,'INVOICE',showBal,prevVal,0,grand);
 
   bills.unshift({
     id:saved.id,date:saved.created_at,customer:cname,
     items:curBill.length,gst,total:grand,
     gst_percent:gstPct,subtotal:sub,
-    amount_paid:paid,balance_amount:balance,show_balance:showBal,
-    payment_status:saved.payment_status || (balance <= 0 && paid > 0 ? 'paid' : (balance > 0 && paid > 0 ? 'partial' : 'unpaid')),
+    amount_paid:0,balance_amount:grand,show_balance:showBal,
+    payment_status:saved.payment_status || 'unpaid',
     bill_items:curBill.map(it=>({product_name:it.name,type:it.type,quantity:it.qty,price:it.price,total:it.total})),
     pdf_url:saved.pdf_url
   });

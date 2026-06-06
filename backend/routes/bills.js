@@ -107,7 +107,7 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   const client = await pool.connect();
   try {
-    const { customer_name, customer_id, items, gst_percent, amount_paid, balance_amount, show_balance } = req.body;
+    const { customer_name, customer_id, items, gst_percent, show_balance, previous_balance } = req.body;
 
     if (!customer_name) {
       return res.status(400).json({ error: 'Customer name is required.' });
@@ -118,28 +118,16 @@ router.post('/', async (req, res) => {
 
     await client.query('BEGIN');
 
-    // 1. Fetch previous outstanding bills to compute previous balance
-    const outstandingRes = await client.query(
-      `SELECT id, balance_amount, amount_paid FROM bills
-       WHERE (customer_id = $1 OR (customer_id IS NULL AND customer_name = $2))
-         AND balance_amount > 0`,
-      [customer_id || null, customer_name]
-    );
-
-    let previousBalance = 0;
-    const prevBills = outstandingRes.rows;
-    for (const row of prevBills) {
-      previousBalance += parseFloat(row.balance_amount) || 0;
-    }
-
     const subtotal  = items.reduce((s, i) => s + (i.price * i.quantity), 0);
     const gstPct    = parseFloat(gst_percent) || 0;
     const gstAmount = subtotal * (gstPct / 100);
     const itemsTotal = subtotal + gstAmount;
-    const finalTotal = itemsTotal + previousBalance;
+
+    const reqPrevBalance = parseFloat(previous_balance) || 0;
+    const finalTotal = itemsTotal + reqPrevBalance;
 
     // Balance fields
-    const paid    = 0; // Amount paid is always 0 on bill creation now
+    const paid    = 0;
     const balance = finalTotal;
     const showBal = show_balance !== false; // default true
     const status  = 'unpaid';
@@ -148,24 +136,57 @@ router.post('/', async (req, res) => {
     const seqResult = await client.query(`SELECT nextval('bill_number_seq') AS num`);
     const billId    = String(seqResult.rows[0].num);
 
-    // 2. Clear old bills and write logs to balance_history
-    for (const row of prevBills) {
-      await client.query(
-        `UPDATE bills SET balance_amount = 0, payment_status = 'paid' WHERE id = $1`,
-        [row.id]
+    // 2. Clear/deduct old bills and write logs to balance_history if prev balance is selected
+    if (reqPrevBalance > 0) {
+      const outstandingRes = await client.query(
+        `SELECT id, balance_amount, amount_paid FROM bills
+         WHERE (customer_id = $1 OR (customer_id IS NULL AND customer_name = $2))
+           AND balance_amount > 0
+         ORDER BY created_at ASC`,
+        [customer_id || null, customer_name]
       );
-      await client.query(
-        `INSERT INTO balance_history (bill_id, old_balance, new_balance, old_paid, new_paid, note)
-         VALUES ($1, $2, 0, $3, $3, $4)`,
-        [row.id, parseFloat(row.balance_amount) || 0, parseFloat(row.amount_paid) || 0, `Carried forward to Bill #${billId}`]
-      );
+
+      let remainingRollover = reqPrevBalance;
+      for (const row of outstandingRes.rows) {
+        if (remainingRollover <= 0) break;
+
+        const oldBal = parseFloat(row.balance_amount) || 0;
+        const oldPaid = parseFloat(row.amount_paid) || 0;
+
+        if (oldBal <= remainingRollover) {
+          // Clear this bill completely
+          await client.query(
+            `UPDATE bills SET balance_amount = 0, payment_status = 'paid' WHERE id = $1`,
+            [row.id]
+          );
+          await client.query(
+            `INSERT INTO balance_history (bill_id, old_balance, new_balance, old_paid, new_paid, note)
+             VALUES ($1, $2, 0, $3, $3, $4)`,
+            [row.id, oldBal, oldPaid, `Carried forward to Bill #${billId}`]
+          );
+          remainingRollover -= oldBal;
+        } else {
+          // Deduct partially from this bill
+          const newBal = oldBal - remainingRollover;
+          await client.query(
+            `UPDATE bills SET balance_amount = $1, payment_status = 'partial' WHERE id = $2`,
+            [newBal, row.id]
+          );
+          await client.query(
+            `INSERT INTO balance_history (bill_id, old_balance, new_balance, old_paid, new_paid, note)
+             VALUES ($1, $2, $3, $4, $4, $5)`,
+            [row.id, oldBal, newBal, oldPaid, `Partially carried forward to Bill #${billId}`]
+          );
+          remainingRollover = 0;
+        }
+      }
     }
 
     // 3. Insert new bill
     await client.query(
       `INSERT INTO bills (id, customer_name, customer_id, gst_percent, gst_amount, subtotal, total, amount_paid, balance_amount, payment_status, show_balance, previous_balance)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
-      [billId, customer_name, customer_id || null, gstPct, gstAmount, subtotal, finalTotal, paid, balance, status, showBal, previousBalance]
+      [billId, customer_name, customer_id || null, gstPct, gstAmount, subtotal, finalTotal, paid, balance, status, showBal, reqPrevBalance]
     );
 
     for (const item of items) {

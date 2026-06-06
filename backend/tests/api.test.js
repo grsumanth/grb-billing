@@ -276,6 +276,7 @@ test.describe('GRB Billing API Integration Tests', () => {
         customer_name: 'John Test Customer',
         customer_id: testCustomerId,
         gst_percent: 0,
+        previous_balance: 194.94,
         items: [
           {
             product_id: testProductId,
