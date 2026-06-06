@@ -655,13 +655,13 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
       </div>
       <div class="tbl-wrap">
         <table class="dtbl">
-          <thead><tr><th>Bill No</th><th>Date &amp; Time</th><th>Customer</th><th>Total</th><th>Amount Paid</th><th>Balance Due</th><th>Status</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Bill No</th><th>Date &amp; Time</th><th>Customer</th><th>Total Due</th><th>Amount Received</th><th>Remaining Balance</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody id="obBody"></tbody>
         </table>
       </div>
       <div class="empty" id="obEmpty">No outstanding balances recorded</div>
       <div style="padding:1rem 1.4rem;background:#fff5f5;border-top:1px solid #ffebe6;display:flex;justify-content:space-between;align-items:center;font-weight:700;color:#cc2222;">
-        <span>Total Outstanding Balance</span>
+        <span>Total Remaining Balance</span>
         <span id="obTotalSum" style="font-family:var(--font-num);font-size:1.1rem;">₹0.00</span>
       </div>
     </div>
@@ -1797,7 +1797,7 @@ function renderOutstandingTable(filter = '') {
       <td>${badge}</td>
       <td style="white-space:nowrap">
         <button class="bedit" id="btn-view-outstanding-${b.id}" onclick="viewBillReport('${b.id}')" style="margin-right:.3rem;background:linear-gradient(135deg,#e8f4ff,#d4eaff);color:#1a5f9e;border:1.5px solid #a8cef8;">👁 View</button>
-        <button class="bedit" id="btn-pay-outstanding-${b.id}" onclick="openEditBalanceModal('${b.id}')" style="background:linear-gradient(135deg,#fff2e8,#ffd8bf);color:#d4380d;border:1.5px solid #ffbb96;">💰 Pay</button>
+        <button class="bedit" id="btn-pay-outstanding-${b.id}" onclick="openEditBalanceModal('${b.id}')" style="background:linear-gradient(135deg,#fff2e8,#ffd8bf);color:#d4380d;border:1.5px solid #ffbb96;">💰 Receive</button>
       </td>
     </tr>`;
   });
@@ -1810,33 +1810,55 @@ function filterOutstanding(val) {
 }
 
 // ── BALANCE EDIT MODAL FUNCTIONS ──
+let _prevPaid = 0;
+let _currentBal = 0;
+
 function openEditBalanceModal(id) {
   const b = bills.find(x => x.id === id);
   if (!b) return;
+  _prevPaid = parseFloat(b.amount_paid) || 0;
+  _currentBal = parseFloat(b.balance_amount) || 0;
+
   document.getElementById('editBalId').value = id;
   document.getElementById('editBalBillNo').textContent = '#' + b.id;
   document.getElementById('editBalCust').innerHTML = `Customer: <strong>${x(b.customer)}</strong>`;
-  document.getElementById('editBalTotal').textContent = `Grand Total: ₹${(parseFloat(b.total) || 0).toFixed(2)}`;
-  document.getElementById('editBalPaid').value = (parseFloat(b.amount_paid) || 0).toFixed(2);
-  document.getElementById('editBalDue').value = (parseFloat(b.balance_amount) || 0).toFixed(2);
+  document.getElementById('editBalTotal').textContent = `Total Amount Due: ₹${(parseFloat(b.total) || 0).toFixed(2)}`;
+  
+  // Display previously received for context
+  let prevPaidEl = document.getElementById('editBalPrevPaid');
+  if (!prevPaidEl) {
+    const paidContainer = document.getElementById('editBalPaid').parentNode;
+    prevPaidEl = document.createElement('div');
+    prevPaidEl.id = 'editBalPrevPaid';
+    prevPaidEl.style = 'font-size:.82rem;color:var(--muted);margin-bottom:.5rem;';
+    paidContainer.parentNode.insertBefore(prevPaidEl, paidContainer);
+  }
+  prevPaidEl.innerHTML = `Previously Received: <strong>₹${_prevPaid.toFixed(2)}</strong>`;
+  
+  document.getElementById('editBalPaid').value = '';
+  document.getElementById('editBalDue').value = _currentBal.toFixed(2);
   document.getElementById('editBalNote').value = '';
+  
+  // Rename modal text
+  const header = document.querySelector('#balanceEditModal h3');
+  if (header) header.textContent = 'Receive Payment';
+  const saveBtn = document.getElementById('btn-save-balance');
+  if (saveBtn) saveBtn.textContent = 'Receive Payment';
+
   document.getElementById('balanceEditModal').classList.remove('hide');
 }
 
 function onEditBalPaidChange() {
-  const id = document.getElementById('editBalId').value;
-  const b = bills.find(x => x.id === id);
-  if (!b) return;
-  const total = parseFloat(b.total) || 0;
-  const paid = parseFloat(document.getElementById('editBalPaid').value) || 0;
-  const suggestedBal = Math.max(0, total - paid);
-  document.getElementById('editBalDue').value = suggestedBal.toFixed(2);
+  const enteredReceived = parseFloat(document.getElementById('editBalPaid').value) || 0;
+  const newRemaining = Math.max(0, _currentBal - enteredReceived);
+  document.getElementById('editBalDue').value = newRemaining.toFixed(2);
 }
 
 async function saveUpdatedBalance() {
   const id = document.getElementById('editBalId').value;
-  const paid = parseFloat(document.getElementById('editBalPaid').value) || 0;
-  const balance = parseFloat(document.getElementById('editBalDue').value) || 0;
+  const enteredReceived = parseFloat(document.getElementById('editBalPaid').value) || 0;
+  const cumulativePaid = _prevPaid + enteredReceived;
+  const remainingBalance = parseFloat(document.getElementById('editBalDue').value) || 0;
   const note = document.getElementById('editBalNote').value.trim();
   
   const btn = document.getElementById('btn-save-balance');
@@ -1844,21 +1866,21 @@ async function saveUpdatedBalance() {
   btn.disabled = true;
   
   const result = await api('PUT', '/bills/' + id + '/balance', {
-    amount_paid: paid,
-    balance_amount: balance,
+    amount_paid: cumulativePaid,
+    balance_amount: remainingBalance,
     note: note
   });
   
-  btn.textContent = 'Update Balance';
+  btn.textContent = 'Receive Payment';
   btn.disabled = false;
   
   if (result || !isOnline) {
     if (!result && !isOnline) {
       const idx = bills.findIndex(x => x.id === id);
       if (idx !== -1) {
-        bills[idx].amount_paid = paid;
-        bills[idx].balance_amount = balance;
-        bills[idx].payment_status = balance <= 0 && paid > 0 ? 'paid' : (balance > 0 && paid > 0 ? 'partial' : 'unpaid');
+        bills[idx].amount_paid = cumulativePaid;
+        bills[idx].balance_amount = remainingBalance;
+        bills[idx].payment_status = remainingBalance <= 0 && cumulativePaid > 0 ? 'paid' : (remainingBalance > 0 && cumulativePaid > 0 ? 'partial' : 'unpaid');
         localStorage.setItem('grb_bills', JSON.stringify(bills.slice(0, 150)));
       }
     } else if (result) {
@@ -1871,7 +1893,7 @@ async function saveUpdatedBalance() {
       }
     }
     closeMod('balanceEditModal');
-    toast('Balance updated successfully ✓');
+    toast('Payment received successfully ✓');
     todaySummary();
     renderReports();
   }
@@ -1903,7 +1925,7 @@ function reprintBill(id){
   const gstPct=parseFloat(b.gst_percent||0);
   const showBal = b.show_balance !== false;
   const prevBalance = parseFloat(b.previous_balance) || 0;
-  openBillPrintWindow(b.id,cname,addr,ds,ts,rows,sub,gstAmt,grand,gstOn,gstPct,bW,bH,'INVOICE',showBal,prevBalance);
+  openBillPrintWindow(b.id,cname,addr,ds,ts,rows,sub,gstAmt,grand,gstOn,gstPct,bW,bH,'INVOICE',showBal,prevBalance,parseFloat(b.amount_paid)||0,parseFloat(b.balance_amount)||0);
 }
 
 
@@ -2221,7 +2243,7 @@ if(_u.profile_pic) updateTopbarPic(_u.profile_pic, _u.name);
 else if(_u.name) updateTopbarPic(null, _u.name);
 
 // ── SHARED BILL PRINT HELPERS ──────────────────────
-function getBillHtml(bno, cname, addr, ds, ts, rows, sub, gst, grand, gstOn, gstPct, bW, bH, type = 'INVOICE', showBalance = true, previousBalance = 0) {
+function getBillHtml(bno, cname, addr, ds, ts, rows, sub, gst, grand, gstOn, gstPct, bW, bH, type = 'INVOICE', showBalance = true, previousBalance = 0, amountPaid = 0, balanceAmount = 0) {
   const logoUrl = 'https://i.pinimg.com/1200x/7e/cf/ec/7ecfec130f976641dbbe349abfdbccee.jpg';
   const typeLabel = type === 'ESTIMATE' ? 'ESTIMATE' : (gstOn ? 'TAX INVOICE' : 'ESTIMATE');
   
@@ -2471,20 +2493,27 @@ function getBillHtml(bno, cname, addr, ds, ts, rows, sub, gst, grand, gstOn, gst
         </div>
         <div class="dashed-line"></div>
         ` : ''}
-        ${showBalance && parseFloat(previousBalance) > 0 ? `
+        ${showBalance ? `
         <div style="font-size: 11px; color: #333; display: flex; flex-direction: column; gap: 2px; align-items: flex-end; padding-right: 6px; font-family: Georgia, serif; margin-bottom: 6px;">
-          <div>Items Total: ₹${(grand - parseFloat(previousBalance)).toFixed(2)}</div>
+          <div>Current Bill Amount: ₹${(grand - parseFloat(previousBalance)).toFixed(2)}</div>
           <div>Previous Balance: ₹${parseFloat(previousBalance).toFixed(2)}</div>
         </div>
         <div class="dashed-line"></div>
         ` : ''}
         <div class="total-container">
           <div class="total-block">
-            <span class="total-label">Total Amount</span>
+            <span class="total-label">Total Amount Due</span>
             <span class="total-colon">:</span>
             <span class="total-val">₹${(showBalance ? grand : (sub + gst)).toFixed(2)}</span>
           </div>
         </div>
+        ${showBalance && parseFloat(amountPaid) > 0 ? `
+        <div class="dashed-line"></div>
+        <div style="font-size: 11px; color: #333; display: flex; flex-direction: column; gap: 3px; align-items: flex-end; padding-right: 6px; font-family: Georgia, serif; margin-bottom: 6px;">
+          <div>Amount Received: ₹${parseFloat(amountPaid).toFixed(2)}</div>
+          <div style="color: #cc2222; font-weight: bold;">Remaining Balance: ₹${parseFloat(balanceAmount).toFixed(2)}</div>
+        </div>
+        ` : ''}
         <div class="dashed-line"></div>
         <div class="footer-section">
           <p class="footer-msg">Thank You – Visit Again</p>
@@ -2504,8 +2533,8 @@ function getBillHtml(bno, cname, addr, ds, ts, rows, sub, gst, grand, gstOn, gst
 </body></html>`;
 }
 
-function openBillPrintWindow(bno,cname,addr,ds,ts,rows,sub,gst,grand,gstOn,gstPct,bW,bH,type='INVOICE',showBalance=true,previousBalance=0){
-  const html=getBillHtml(bno,cname,addr,ds,ts,rows,sub,gst,grand,gstOn,gstPct,bW,bH,type,showBalance,previousBalance);
+function openBillPrintWindow(bno,cname,addr,ds,ts,rows,sub,gst,grand,gstOn,gstPct,bW,bH,type='INVOICE',showBalance=true,previousBalance=0,amountPaid=0,balanceAmount=0){
+  const html=getBillHtml(bno,cname,addr,ds,ts,rows,sub,gst,grand,gstOn,gstPct,bW,bH,type,showBalance,previousBalance,amountPaid,balanceAmount);
   const w=window.open('','_blank','width=600,height=800');
   if(!w){toast('Please allow popups for printing.','error');return;}
   w.document.write(html);w.document.close();w.focus();
@@ -2527,6 +2556,40 @@ async function viewBillReport(id){
       else if(fresh&&fresh.bill_items) items=fresh.bill_items;
     }catch(e){}
   }
+  
+  // Fetch balance history log
+  let historyHtml = '';
+  if (isOnline) {
+    try {
+      const history = await api('GET', '/bills/' + id + '/balance-history');
+      if (history && history.length > 0) {
+        historyHtml = `
+          <div style="border-top: 1px dashed #C9A84C; margin: 10px 0;"></div>
+          <div style="font-size: 11px; font-family: Georgia, serif; color: #1A0005;">
+            <div style="font-weight: bold; margin-bottom: 4px; color: #780116;">Payment History:</div>
+            <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+              ${history.map(h => {
+                const hd = new Date(h.changed_at);
+                const rec = (parseFloat(h.new_paid) - parseFloat(h.old_paid)) || 0;
+                const isCarry = h.note && h.note.includes('Carried forward');
+                const amtDisp = isCarry ? 'Carried Forward' : `Received: ₹${rec.toFixed(2)}`;
+                return `
+                  <tr>
+                    <td style="padding: 2px 0; color: #555;">${hd.toLocaleDateString('en-IN')} ${hd.toLocaleTimeString('en-IN', {hour: '2-digit', minute:'2-digit'})}</td>
+                    <td style="padding: 2px 0; text-align: right; font-weight: bold;">${amtDisp} (Bal: ₹${(parseFloat(h.new_balance) || 0).toFixed(2)})</td>
+                  </tr>
+                  ${h.note && !isCarry ? `<tr><td colspan="2" style="color: #666; font-style: italic; padding-bottom: 4px; padding-left: 8px;">— ${x(h.note)}</td></tr>` : ''}
+                `;
+              }).join('')}
+            </table>
+          </div>
+        `;
+      }
+    } catch(e) {
+      console.warn('History load fail:', e);
+    }
+  }
+
   const d=new Date(b.date||b.created_at||Date.now());
   const ds=d.toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
   const ts=d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
@@ -2623,30 +2686,31 @@ async function viewBillReport(id){
       </div>
       <div style="border-top: 1px dashed #C9A84C; margin: 10px 0;"></div>
       `:''}
-      ${b.show_balance !== false && parseFloat(b.previous_balance) > 0 ? `
+      ${b.show_balance !== false ? `
       <div style="font-size: 11px; color: #333; display: flex; flex-direction: column; gap: 2px; align-items: flex-end; padding-right: 6px; font-family: Georgia, serif; margin-bottom: 6px;">
-        <div>Items Total: ₹${(grand - parseFloat(b.previous_balance)).toFixed(2)}</div>
-        <div>Previous Balance: ₹${parseFloat(b.previous_balance).toFixed(2)}</div>
+        <div>Current Bill Amount: ₹${(grand - parseFloat(b.previous_balance || 0)).toFixed(2)}</div>
+        <div>Previous Balance: ₹${parseFloat(b.previous_balance || 0).toFixed(2)}</div>
       </div>
       <div style="border-top: 1px dashed #C9A84C; margin: 10px 0;"></div>
       ` : ''}
       <div style="display: flex; justify-content: flex-end; margin: 8px 0;">
         <div style="border-bottom: 1px solid #1A0005; padding-bottom: 3px; display: inline-flex; align-items: center; font-size: 13px; font-family: Georgia, serif; color: #1A0005;">
-          <span style="font-weight: bold; margin-right: 15px;">Total Amount</span>
+          <span style="font-weight: bold; margin-right: 15px;">Total Amount Due</span>
           <span style="margin-right: 15px;">:</span>
           <span style="font-weight: bold; font-size: 15px;">₹${(b.show_balance !== false ? grand : (sub + gstAmt)).toFixed(2)}</span>
         </div>
       </div>
-      ${parseFloat(b.balance_amount) < parseFloat(b.total) ? `
+      ${parseFloat(b.amount_paid) > 0 ? `
       <div style="border-top: 1px dashed #C9A84C; margin: 10px 0;"></div>
       <div style="font-size: 11px; color: #333; display: flex; flex-direction: column; gap: 3px; align-items: flex-end; padding-right: 6px; font-family: Georgia, serif; margin-bottom: 6px;">
-        <div>Amount Paid: ₹${(parseFloat(b.amount_paid) || 0).toFixed(2)}</div>
+        <div>Amount Received: ₹${(parseFloat(b.amount_paid) || 0).toFixed(2)}</div>
         <div style="color: #cc2222; font-weight: bold;">Remaining Balance: ₹${(parseFloat(b.balance_amount) || 0).toFixed(2)}</div>
       </div>
       ` : ''}
+      ${historyHtml}
       <div style="border-top: 1px dashed #C9A84C; margin: 10px 0;"></div>
       <div style="display:flex; justify-content:center; gap: 10px; margin-bottom: 8px;">
-        <button onclick="closeMod('billViewModal'); openEditBalanceModal('${b.id}')" style="padding: 6px 14px; background: linear-gradient(135deg,#fff2e8,#ffd8bf); color: #d4380d; border: 1.5px solid #ffbb96; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">💰 Update Balance</button>
+        <button onclick="closeMod('billViewModal'); openEditBalanceModal('${b.id}')" style="padding: 6px 14px; background: linear-gradient(135deg,#fff2e8,#ffd8bf); color: #d4380d; border: 1.5px solid #ffbb96; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">💰 Receive Payment</button>
       </div>
       <div style="border-top: 1px dashed #C9A84C; margin: 10px 0;"></div>
       <div style="text-align: center; margin-top: 12px;">
@@ -2692,7 +2756,7 @@ function printFromViewModal(){
   </tr>`).join('');
   const showBal = b.show_balance !== false;
   const prevBalance = parseFloat(b.previous_balance) || 0;
-  openBillPrintWindow(b.id,cname,addr,ds,ts,rows,sub,gstAmt,grand,gstOn,gstPct,bW,bH,'INVOICE',showBal,prevBalance);
+  openBillPrintWindow(b.id,cname,addr,ds,ts,rows,sub,gstAmt,grand,gstOn,gstPct,bW,bH,'INVOICE',showBal,prevBalance,parseFloat(b.amount_paid)||0,parseFloat(b.balance_amount)||0);
 }
 
 async function downloadPdfFile(){
@@ -2728,29 +2792,29 @@ async function downloadPdfFile(){
 <!-- BALANCE EDIT MODAL -->
 <div class="ov hide" id="balanceEditModal">
   <div class="mb">
-    <h3>Update Bill Balance</h3>
+    <h3>Receive Payment</h3>
     <input type="hidden" id="editBalId"/>
     <div style="background:var(--cream2);border-radius:10px;padding:.8rem 1rem;margin-bottom:.9rem;">
       <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--muted);">
         <span>Bill No: <strong id="editBalBillNo" style="color:var(--burg)"></strong></span>
       </div>
       <div style="font-size:1rem;font-weight:700;color:var(--text);margin-top:.3rem;" id="editBalCust">Customer: </div>
-      <div style="font-size:1.15rem;font-weight:800;color:var(--burg);margin-top:.3rem;" id="editBalTotal">Grand Total: ₹0.00</div>
+      <div style="font-size:1.15rem;font-weight:800;color:var(--burg);margin-top:.3rem;" id="editBalTotal">Total Amount Due: ₹0.00</div>
     </div>
     <div class="ig2 full" style="margin-bottom:.9rem">
-      <label>Amount Paid (₹)</label>
+      <label>Amount Received (₹)</label>
       <input type="number" id="editBalPaid" placeholder="0.00" min="0" step="0.01" inputmode="decimal" oninput="onEditBalPaidChange()"/>
     </div>
     <div class="ig2 full" style="margin-bottom:.9rem">
-      <label>Balance Due (₹) (Manual Entry)</label>
-      <input type="number" id="editBalDue" placeholder="0.00" min="0" step="0.01" inputmode="decimal"/>
+      <label>Remaining Balance (₹)</label>
+      <input type="number" id="editBalDue" placeholder="0.00" min="0" step="0.01" inputmode="decimal" readonly style="background-color:#f8f9fa;color:var(--burg);font-weight:700;"/>
     </div>
     <div class="ig2 full" style="margin-bottom:.9rem">
       <label>Update Note / Comment</label>
       <textarea id="editBalNote" rows="2" placeholder="e.g. Received partial payment in cash..."></textarea>
     </div>
     <div class="macts">
-      <button class="bprim" id="btn-save-balance" style="flex:1;padding:.72rem" onclick="saveUpdatedBalance()">Update Balance</button>
+      <button class="bprim" id="btn-save-balance" style="flex:1;padding:.72rem" onclick="saveUpdatedBalance()">Receive Payment</button>
       <button class="bout" id="btn-cancel-balance" onclick="closeMod('balanceEditModal')">Cancel</button>
     </div>
   </div>
