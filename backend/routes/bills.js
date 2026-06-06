@@ -35,7 +35,7 @@ router.get('/customer-outstanding', async (req, res) => {
       query += ` AND customer_id = $${params.length}`;
     } else {
       params.push(customer_name);
-      query += ` AND customer_name = $${params.length}`;
+      query += ` AND customer_name ILIKE $${params.length}`;
     }
     
     const result = await pool.query(query, params);
@@ -212,7 +212,7 @@ router.put('/:id/balance', async (req, res) => {
         );
       } else {
         outstandingRes = await client.query(
-          `SELECT * FROM bills WHERE customer_name = $1 AND customer_id IS NULL AND balance_amount > 0 ORDER BY created_at ASC`,
+          `SELECT * FROM bills WHERE customer_name ILIKE $1 AND customer_id IS NULL AND balance_amount > 0 ORDER BY created_at ASC`,
           [oldBill.customer_name]
         );
       }
