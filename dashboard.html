@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
 <title>GRB Pooja Items</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
 <style>
@@ -18,7 +18,10 @@
   --bot-nav:64px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:var(--font-ui);background:var(--bg);color:var(--text);display:flex;min-height:100vh;}
+html{overflow-x:hidden;width:100%;overscroll-behavior:none;-webkit-text-size-adjust:100%;}
+body{font-family:var(--font-ui);background:var(--bg);color:var(--text);display:flex;min-height:100vh;
+  overflow-x:hidden;width:100%;max-width:100vw;overscroll-behavior:none;position:relative;
+  touch-action:pan-y;}
 
 /* ═══════════════ SIDEBAR (desktop) ═══════════════ */
 .sb{
@@ -54,7 +57,8 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);display:f
 .lbtn:hover{border-color:var(--gold);color:var(--gold2);background:rgba(201,168,76,0.07);}
 
 /* ═══════════════ MAIN ═══════════════ */
-.main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+.main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-height:100vh;
+  overflow-x:hidden;max-width:100%;min-width:0;}
 
 /* ═══════════════ TOPBAR ═══════════════ */
 .topbar{
@@ -69,7 +73,7 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);display:f
   border-radius:20px;font-size:.8rem;font-weight:700;border:1px solid rgba(201,168,76,0.35);}
 
 /* ═══════════════ PAGES ═══════════════ */
-.page{display:none;padding:1.5rem;animation:pgIn .25s ease;}
+.page{display:none;padding:1.5rem;animation:pgIn .25s ease;overflow-x:hidden;max-width:100%;min-width:0;}
 .page.on{display:block;}
 @keyframes pgIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 .ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;gap:.8rem;}
@@ -84,7 +88,7 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);display:f
 .ctitle::before{content:'';width:4px;height:16px;background:linear-gradient(180deg,var(--gold2),var(--gold));border-radius:4px;}
 
 /* ═══════════════ BILLING LAYOUT ═══════════════ */
-.bl{display:grid;grid-template-columns:1fr 280px;gap:1.4rem;align-items:start;}
+.bl{display:grid;grid-template-columns:1fr 280px;gap:1.4rem;align-items:start;max-width:100%;min-width:0;}
 .fr{padding:.9rem 1.4rem 0;display:grid;grid-template-columns:1fr;gap:.9rem;}
 .fr.t3{grid-template-columns:2fr 1fr 1.2fr;}
 .fg label{display:block;font-size:.72rem;font-weight:700;color:var(--burg3);
@@ -108,7 +112,7 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);display:f
   font-weight:700;cursor:pointer;transition:all .22s;box-shadow:0 4px 14px rgba(120,1,22,0.3);
   width:calc(100% - 2.8rem);}
 .badd:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(120,1,22,0.4);}
-.twrap{overflow-x:auto;padding:0 1.4rem;}
+.twrap{overflow-x:auto;padding:0 1.4rem;max-width:100%;-webkit-overflow-scrolling:touch;}
 .btbl{width:100%;border-collapse:collapse;font-size:.86rem;}
 .btbl th{text-align:left;padding:.55rem .65rem;color:var(--burg3);font-size:.7rem;font-weight:700;
   text-transform:uppercase;letter-spacing:.6px;border-bottom:2px solid var(--cream3);
@@ -248,18 +252,22 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
 
 /* ═══════════════ MOBILE (≤640px) ═══════════════ */
 @media(max-width:640px){
+  /* Prevent ALL horizontal scrolling and touch panning */
+  html,body{overflow-x:hidden!important;width:100%!important;max-width:100vw!important;
+    overscroll-behavior:none;touch-action:pan-y;}
+
   /* Hide sidebar, show bottom nav */
   .sb{display:none;}
-  .main{margin-left:0;padding-bottom:var(--bot-nav);}
+  .main{margin-left:0;padding-bottom:var(--bot-nav);overflow-x:hidden;width:100%;max-width:100vw;}
 
   /* Topbar smaller */
   .topbar{padding:.7rem 1rem;}
   .tb-title{font-size:.9rem;}
   .ubadge{font-size:.75rem;padding:.28rem .7rem;}
 
-  /* Pages */
-  .page{padding:1rem;}
-  .ph{margin-bottom:1rem;}
+  /* Pages — lock to viewport width */
+  .page{padding:1rem;overflow-x:hidden;width:100%;max-width:100%;}
+  .ph{margin-bottom:1rem;flex-wrap:wrap;}
   .ph h2{font-size:.9rem;}
 
   /* Billing full width stacked */
@@ -275,16 +283,33 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
   .rval{font-size:1.4rem;}
   .rcard h3{font-size:.68rem;}
 
+  /* Card overflow containment */
+  .card{overflow:hidden;max-width:100%;}
+
   /* Modal full width from bottom */
   .ov{align-items:flex-end;padding:0;}
   .mb{border-radius:20px 20px 0 0;max-width:100%;width:100%;max-height:88vh;
-    padding:1.4rem 1.2rem 2rem;}
+    padding:1.4rem 1.2rem 2rem;overflow-x:hidden;}
+  .mb.wide{max-width:100%;}
+
+  /* Modal grid → single column on small phones */
+  .mgrid{grid-template-columns:1fr;}
+
+  /* Estimate modal 4-col grid → stacked on mobile */
+  .mb .est-add-row{grid-template-columns:1fr 1fr!important;}
 
   /* Tables scroll */
-  .twrap{padding:0 1rem;}
-  .dtbl{font-size:.82rem;}
-  .dtbl th{padding:.6rem .7rem;font-size:.67rem;}
-  .dtbl td{padding:.6rem .7rem;}
+  .twrap{padding:0 .6rem;max-width:100%;}
+  .dtbl{font-size:.78rem;table-layout:auto;}
+  .dtbl th{padding:.5rem .4rem;font-size:.64rem;white-space:nowrap;}
+  .dtbl td{padding:.5rem .4rem;word-break:break-word;}
+  .btbl{font-size:.78rem;}
+  .btbl th{padding:.45rem .4rem;font-size:.64rem;}
+  .btbl td{padding:.45rem .4rem;}
+
+  /* Bill size controls — wrap properly */
+  .bill-size-row{flex-wrap:wrap!important;gap:.5rem!important;}
+  .bill-size-row input[type=number]{width:56px!important;}
 
   /* Bottom navigation bar */
   .bot-nav{
@@ -293,6 +318,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
     border-top:2px solid rgba(201,168,76,0.2);
     box-shadow:0 -4px 20px rgba(0,0,0,0.3);
     height:var(--bot-nav);
+    touch-action:none;
   }
   .bot-nav::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
     background:linear-gradient(90deg,transparent,var(--gold2),var(--gold),var(--gold2),transparent);}
@@ -314,10 +340,24 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
   .fg input,.fg select{font-size:1rem;padding:.7rem .9rem;}
   .sbar input{font-size:1rem;}
 
+  /* Totals section */
+  .totals{padding:0 .8rem .5rem;}
+  .arow{padding:.9rem .8rem 1.2rem;}
+
+  /* GST row */
+  .gst-r{padding:.8rem .8rem;}
+
+  /* Action buttons inside bill form */
+  .badd{width:calc(100% - 1.6rem);margin:.9rem .8rem;}
+
   /* Summary stats row on mobile */
-  .mobile-stats{display:flex;gap:.6rem;overflow-x:auto;padding-bottom:.3rem;}
+  .mobile-stats{display:flex;gap:.6rem;overflow-x:auto;padding-bottom:.3rem;
+    -webkit-overflow-scrolling:touch;}
   .mobile-stats .sstat{flex:0 0 auto;width:140px;border-radius:12px;border:1px solid var(--border);
     border-top:3px solid var(--burg);}
+
+  /* All overflow containers */
+  [style*="overflow-x:auto"]{-webkit-overflow-scrolling:touch;max-width:100%;}
 }
 
 @media print{
@@ -425,7 +465,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
           <button onclick="emailBill()" id="btn-email-bill" style="width:100%;padding:.65rem .4rem;background:transparent;border:2px solid var(--burg);color:var(--burg);border-radius:11px;font-family:var(--font-ui);font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;min-height:46px;">📧 Email Bill</button>
         </div>
         <!-- Bill Size -->
-        <div style="padding:0 1.4rem 1.1rem;display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:.85rem;">
+        <div class="bill-size-row" style="padding:0 1.4rem 1.1rem;display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:.85rem;">
           <span style="font-size:.72rem;font-weight:700;color:var(--burg3);text-transform:uppercase;letter-spacing:.8px;">Bill Size</span>
           <button onclick="setPreset(21,29.7)" id="presetA4" style="padding:.32rem .7rem;border-radius:7px;border:2px solid var(--cream3);background:var(--cream);font-family:inherit;font-size:.78rem;font-weight:700;color:var(--muted);cursor:pointer;transition:all .2s;min-height:36px;">A4</button>
           <button onclick="setPreset(14.8,21)" id="presetA5" style="padding:.32rem .7rem;border-radius:7px;border:2px solid var(--cream3);background:var(--cream);font-family:inherit;font-size:.78rem;font-weight:700;color:var(--muted);cursor:pointer;transition:all .2s;min-height:36px;">A5</button>
@@ -620,7 +660,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
         <tbody id="estItemsBody"></tbody>
       </table>
     </div>
-    <div style="display:grid;grid-template-columns:2fr 1fr 1.2fr auto;gap:.5rem;margin-bottom:.9rem;align-items:end;">
+    <div class="est-add-row" style="display:grid;grid-template-columns:2fr 1fr 1.2fr auto;gap:.5rem;margin-bottom:.9rem;align-items:end;">
       <div class="ig2"><label>Product</label>
         <select id="estProdSel" onchange="onEstProd()"><option value="">-- Select --</option></select>
       </div>
@@ -1144,12 +1184,31 @@ function pg(name){
     reports:'Reports & Analytics',gallery:'Gallery','gallery-view':'Gallery',
     profile:'My Profile'};
   document.getElementById('ptitle').textContent=t[name]||name;
+  // Scroll to top on page switch (fixes mobile page appearing mid-scroll)
+  window.scrollTo(0,0);
   if(name==='products') renderProds();
   if(name==='customers') renderCusts();
   if(name==='reports') renderReports();
   if(name==='gallery') renderGallery();
   if(name==='profile') loadProfile();
 }
+
+// ── PREVENT HORIZONTAL SWIPE/SCROLL ON MOBILE ──
+(function(){
+  let startX=0;
+  document.addEventListener('touchstart',function(e){startX=e.touches[0].clientX;},{passive:true});
+  document.addEventListener('touchmove',function(e){
+    const dx=Math.abs(e.touches[0].clientX-startX);
+    const dy=Math.abs(e.touches[0].clientY-(e.touches[0]?.clientY||0));
+    // Only block if swiping mostly horizontally on the body/main (not inside scrollable tables)
+    const t=e.target;
+    const inScrollable=t.closest('.twrap')||t.closest('[style*="overflow-x"]')||t.closest('.mobile-stats')||t.closest('.sugg')||t.closest('.pklist');
+    if(!inScrollable && dx>10 && document.documentElement.scrollLeft>0){
+      document.documentElement.scrollLeft=0;
+      document.body.scrollLeft=0;
+    }
+  },{passive:true});
+})();
 
 // ── PRODUCTS ──
 function openProdMod(id=null){
@@ -2405,6 +2464,30 @@ async function downloadPdfFile(){
     <div id="billViewBody" style="flex:1;overflow-y:auto;padding:1.4rem;"></div>
   </div>
 </div>
+
+<script>
+// Prevent pinch-to-zoom and multi-touch gestures on mobile
+document.addEventListener('touchstart', function(e){
+  if(e.touches.length > 1) e.preventDefault();
+}, {passive: false});
+
+document.addEventListener('touchmove', function(e){
+  if(e.touches.length > 1) e.preventDefault();
+}, {passive: false});
+
+// Prevent double-tap zoom
+let lastTap = 0;
+document.addEventListener('touchend', function(e){
+  const now = Date.now();
+  if(now - lastTap < 300) e.preventDefault();
+  lastTap = now;
+}, {passive: false});
+
+// Prevent gesture events (Safari)
+document.addEventListener('gesturestart', function(e){ e.preventDefault(); }, {passive: false});
+document.addEventListener('gesturechange', function(e){ e.preventDefault(); }, {passive: false});
+document.addEventListener('gestureend', function(e){ e.preventDefault(); }, {passive: false});
+</script>
 
 </body>
 </html>
