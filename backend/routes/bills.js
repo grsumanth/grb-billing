@@ -136,14 +136,22 @@ router.post('/', async (req, res) => {
     const seqResult = await client.query(`SELECT nextval('bill_number_seq') AS num`);
     const billId    = String(seqResult.rows[0].num);
 
+    // 1. Insert new bill first (to allow foreign key references for carried_to_bill_id)
+    await client.query(
+      `INSERT INTO bills (id, customer_name, customer_id, gst_percent, gst_amount, subtotal, total, amount_paid, balance_amount, payment_status, show_balance, previous_balance)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+      [billId, customer_name, customer_id || null, gstPct, gstAmount, subtotal, finalTotal, paid, balance, status, showBal, reqPrevBalance]
+    );
+
     // 2. Clear/deduct old bills and write logs to balance_history if prev balance is selected
     if (reqPrevBalance > 0) {
       const outstandingRes = await client.query(
         `SELECT id, balance_amount, amount_paid FROM bills
          WHERE (customer_id = $1 OR (customer_id IS NULL AND customer_name = $2))
            AND balance_amount > 0
+           AND id <> $3
          ORDER BY created_at ASC`,
-        [customer_id || null, customer_name]
+        [customer_id || null, customer_name, billId]
       );
 
       let remainingRollover = reqPrevBalance;
@@ -154,10 +162,10 @@ router.post('/', async (req, res) => {
         const oldPaid = parseFloat(row.amount_paid) || 0;
 
         if (oldBal <= remainingRollover) {
-          // Clear this bill completely
+          // Clear this bill's active balance (set to 0) and link to the new bill
           await client.query(
-            `UPDATE bills SET balance_amount = 0, payment_status = 'paid' WHERE id = $1`,
-            [row.id]
+            `UPDATE bills SET balance_amount = 0, payment_status = 'carried_forward', carried_to_bill_id = $1 WHERE id = $2`,
+            [billId, row.id]
           );
           await client.query(
             `INSERT INTO balance_history (bill_id, old_balance, new_balance, old_paid, new_paid, note)
@@ -181,13 +189,6 @@ router.post('/', async (req, res) => {
         }
       }
     }
-
-    // 3. Insert new bill
-    await client.query(
-      `INSERT INTO bills (id, customer_name, customer_id, gst_percent, gst_amount, subtotal, total, amount_paid, balance_amount, payment_status, show_balance, previous_balance)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
-      [billId, customer_name, customer_id || null, gstPct, gstAmount, subtotal, finalTotal, paid, balance, status, showBal, reqPrevBalance]
-    );
 
     for (const item of items) {
       await client.query(
@@ -257,6 +258,41 @@ router.put('/:id/balance', async (req, res) => {
        VALUES ($1, $2, $3, $4, $5, $6)`,
       [billId, parseFloat(oldBill.balance_amount) || 0, newBal, parseFloat(oldBill.amount_paid) || 0, newPaid, note || null]
     );
+
+    // ── Carry-forward settlement logic ──
+    const prevBal = parseFloat(oldBill.previous_balance) || 0;
+    const carriedBills = await client.query(
+      `SELECT id, amount_paid, payment_status FROM bills WHERE carried_to_bill_id = $1`,
+      [billId]
+    );
+    
+    if (carriedBills.rows.length > 0) {
+      const isCleared = (newBal === 0) || (newPaid >= prevBal);
+      
+      for (const row of carriedBills.rows) {
+        if (isCleared && row.payment_status !== 'paid') {
+          await client.query(
+            `UPDATE bills SET payment_status = 'paid' WHERE id = $1`,
+            [row.id]
+          );
+          await client.query(
+            `INSERT INTO balance_history (bill_id, old_balance, new_balance, old_paid, new_paid, note)
+             VALUES ($1, 0, 0, $2, $2, $3)`,
+            [row.id, parseFloat(row.amount_paid) || 0, `Cleared via payment of carried forward Bill #${billId}`]
+          );
+        } else if (!isCleared && row.payment_status === 'paid') {
+          await client.query(
+            `UPDATE bills SET payment_status = 'carried_forward' WHERE id = $1`,
+            [row.id]
+          );
+          await client.query(
+            `INSERT INTO balance_history (bill_id, old_balance, new_balance, old_paid, new_paid, note)
+             VALUES ($1, 0, 0, $2, $2, $3)`,
+            [row.id, parseFloat(row.amount_paid) || 0, `Reverted to carried_forward due to payment adjustment on Bill #${billId}`]
+          );
+        }
+      }
+    }
 
     await client.query('COMMIT');
 

@@ -44,7 +44,7 @@ async function generateBillPDF(bill, items) {
     const dateStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' });
     const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata' });
 
-    doc.fillColor('white').fontSize(9).font('Helvetica')
+    doc.fillColor('white').fontSize(9).font('Times-Roman')
       .text(`${dateStr}  ${timeStr}`, 30, 70)
       .text(`Bill No: #${bill.id}`, 30, 70, { align: 'right', width: W - 60 });
 
@@ -70,13 +70,13 @@ async function generateBillPDF(bill, items) {
     let y = 195;
     items.forEach((item, i) => {
       if (i % 2 === 0) doc.rect(0, y - 6, W, 20).fill('#FFF8F3');
-      doc.fillColor('#1A0005').fontSize(9).font('Helvetica');
+      doc.fillColor('#1A0005').fontSize(9).font('Times-Roman');
       doc.text(String(i + 1), 10, y);
       doc.text(item.product_name || item.name || '', 30, y, { width: W * 0.48, ellipsis: true });
       doc.text(item.type || '', W * 0.52, y, { width: W * 0.12 });
       doc.text(String(item.quantity || item.qty || 0), W * 0.65, y, { width: 40, align: 'center' });
       doc.text('Rs.' + parseFloat(item.price || 0).toFixed(2), W * 0.76, y, { width: 45, align: 'right' });
-      doc.fillColor(burgundy).font('Helvetica-Bold')
+      doc.fillColor(burgundy).font('Times-Bold')
         .text('Rs.' + parseFloat(item.total || 0).toFixed(2), W * 0.87, y, { width: W * 0.13 - 10, align: 'right' });
       y += 20;
     });
@@ -86,7 +86,7 @@ async function generateBillPDF(bill, items) {
     y += 14;
 
     // ── Totals ──
-    doc.fillColor('#555').fontSize(10).font('Helvetica')
+    doc.fillColor('#555').fontSize(10).font('Times-Roman')
       .text('Subtotal:', 30, y, { width: W - 60 })
       .text('Rs.' + parseFloat(bill.subtotal).toFixed(2), 30, y, { align: 'right', width: W - 60 });
     y += 18;
@@ -103,7 +103,7 @@ async function generateBillPDF(bill, items) {
     const showBalance = bill.show_balance !== false;
 
     if (showBalance && prevBalance > 0) {
-      doc.fillColor('#555').fontSize(10).font('Helvetica')
+      doc.fillColor('#555').fontSize(10).font('Times-Roman')
         .text('Items Total:', 30, y, { width: W - 60 })
         .text('Rs.' + itemsTotal.toFixed(2), 30, y, { align: 'right', width: W - 60 });
       y += 18;
@@ -115,7 +115,7 @@ async function generateBillPDF(bill, items) {
     doc.moveTo(30, y).lineTo(W - 30, y).strokeColor(burgundy).lineWidth(1.5).stroke();
     y += 8;
     const displayTotal = showBalance ? parseFloat(bill.total) : itemsTotal;
-    doc.fillColor(burgundy).fontSize(14).font('Helvetica-Bold')
+    doc.fillColor(burgundy).fontSize(14).font('Times-Bold')
       .text('TOTAL AMOUNT', 30, y, { width: W - 60 })
       .text('Rs.' + displayTotal.toFixed(2), 30, y, { align: 'right', width: W - 60 });
     y += 24;

@@ -16,6 +16,20 @@ const testPhone = `+1${Math.floor(1000000000 + Math.random() * 9000000000)}`;
 
 test.describe('GRB Billing API Integration Tests', () => {
 
+  test.before(async () => {
+    console.log('🧹 Preparing database for tests...');
+    try {
+      await pool.query('DELETE FROM balance_history');
+      await pool.query('DELETE FROM bill_items');
+      await pool.query('DELETE FROM bills');
+      await pool.query('DELETE FROM products');
+      await pool.query('DELETE FROM customers');
+      await pool.query('DELETE FROM users');
+    } catch (err) {
+      console.warn('Stale database cleanup failed:', err.message);
+    }
+  });
+
   test.after(async () => {
     console.log('🧹 Cleaning up database test records...');
     try {
@@ -260,7 +274,7 @@ test.describe('GRB Billing API Integration Tests', () => {
     assert.strictEqual(parseFloat(found.balance_amount), 194.94);
   });
 
-  test('POST /api/bills should carry forward outstanding balance and mark old bills paid', async () => {
+  test('POST /api/bills should carry forward outstanding balance and mark old bills paid when settled', async () => {
     // 1. Verify endpoint reports outstanding balance for customer
     const oRes = await request(app)
       .get(`/api/bills/customer-outstanding?customer_id=${testCustomerId}`)
@@ -297,14 +311,33 @@ test.describe('GRB Billing API Integration Tests', () => {
     assert.strictEqual(parseFloat(res.body.balance_amount), 294.94);
     assert.strictEqual(res.body.payment_status, 'unpaid');
 
-    // 3. Verify old bill is now cleared/paid
+    // 3. Verify old bill is now cleared/carried_forward
     const oldBillRes = await pool.query('SELECT balance_amount, payment_status FROM bills WHERE id = $1', [testBillId]);
     assert.strictEqual(parseFloat(oldBillRes.rows[0].balance_amount), 0);
-    assert.strictEqual(oldBillRes.rows[0].payment_status, 'paid');
+    assert.strictEqual(oldBillRes.rows[0].payment_status, 'carried_forward');
 
     // 4. Verify history log
     const histRes = await pool.query('SELECT note FROM balance_history WHERE bill_id = $1 ORDER BY changed_at DESC LIMIT 1', [testBillId]);
     assert.ok(histRes.rows[0].note.includes('Carried forward'));
+
+    // 5. Pay the new bill fully
+    await request(app)
+      .put(`/api/bills/${res.body.id}/balance`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        amount_paid: 294.94,
+        balance_amount: 0,
+        note: 'Full settlement'
+      })
+      .expect(200);
+
+    // 6. Verify old bill is now automatically paid/cleared
+    const oldBillAfterRes = await pool.query('SELECT payment_status FROM bills WHERE id = $1', [testBillId]);
+    assert.strictEqual(oldBillAfterRes.rows[0].payment_status, 'paid');
+
+    // 7. Verify new bill is paid
+    const newBillRes = await pool.query('SELECT payment_status FROM bills WHERE id = $1', [res.body.id]);
+    assert.strictEqual(newBillRes.rows[0].payment_status, 'paid');
 
     // Clean up second bill too
     await pool.query('DELETE FROM bill_items WHERE bill_id = $1', [res.body.id]);
