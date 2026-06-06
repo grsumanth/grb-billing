@@ -188,8 +188,9 @@ input:checked+.sl::before{transform:translateX(22px);}
 .dtbl td{padding:.7rem 1rem;border-bottom:1px solid var(--cream2);}
 .dtbl tr:last-child td{border-bottom:none;}
 .dtbl tr:hover td,.dtbl tr:active td{background:var(--cream2);}
-.dtbl td:nth-child(4),.dtbl td:nth-child(5),.dtbl td:nth-child(6){font-family:var(--font-num);}
-.btbl td:nth-child(4),.btbl td:nth-child(5),.btbl td:nth-child(6){font-family:var(--font-num);}
+.dtbl td:nth-child(4),.dtbl td:nth-child(5),.dtbl td:nth-child(6){font-family:var(--font-num);white-space:nowrap;}
+.btbl td:nth-child(4),.btbl td:nth-child(5),.btbl td:nth-child(6){font-family:var(--font-num);white-space:nowrap;}
+.nw{white-space:nowrap;}
 input[type=number]{font-family:var(--font-num)!important;font-size:16px!important;}
 .bedit{background:var(--cream2);border:none;padding:.35rem .75rem;border-radius:7px;cursor:pointer;
   color:var(--burg);font-size:.82rem;font-family:var(--font-ui);font-weight:600;
@@ -311,9 +312,11 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
   .dtbl{font-size:.78rem;table-layout:auto;}
   .dtbl th{padding:.5rem .4rem;font-size:.64rem;white-space:nowrap;}
   .dtbl td{padding:.5rem .4rem;word-break:break-word;}
+  .dtbl td:nth-child(4),.dtbl td:nth-child(5),.dtbl td:nth-child(6),.nw{white-space:nowrap!important;word-break:keep-all!important;}
   .btbl{font-size:.78rem;}
   .btbl th{padding:.45rem .4rem;font-size:.64rem;}
   .btbl td{padding:.45rem .4rem;}
+  .btbl td:nth-child(4),.btbl td:nth-child(5),.btbl td:nth-child(6){white-space:nowrap!important;word-break:keep-all!important;}
 
   /* Bill size controls — wrap properly */
   .bill-size-row{flex-wrap:wrap!important;gap:.5rem!important;}
@@ -1740,7 +1743,7 @@ function renderReports(){
           
       hb.innerHTML += `<tr>
         <td><code style="font-size:.76rem;background:#fff0e8;color:#780116;padding:.13rem .45rem;border-radius:5px">${b.id}</code></td>
-        <td>${d.toLocaleDateString('en-IN')} ${d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</td>
+        <td class="nw">${d.toLocaleDateString('en-IN')} ${d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</td>
         <td><strong>${x(b.customer)}</strong></td>
         <td style="font-family:var(--font-num)">${itemCount}</td>
         <td style="font-family:var(--font-num)">${parsedGst > 0 ? '₹' + parsedGst.toFixed(2) : '—'}</td>
@@ -1803,7 +1806,7 @@ function renderOutstandingTable(filter = '') {
         
     obBody.innerHTML += `<tr>
       <td><code style="font-size:.76rem;background:#fff0e8;color:#780116;padding:.13rem .45rem;border-radius:5px">${b.id}</code></td>
-      <td>${d.toLocaleDateString('en-IN')} ${d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</td>
+      <td class="nw">${d.toLocaleDateString('en-IN')} ${d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</td>
       <td><strong>${x(b.customer)}</strong></td>
       <td style="font-family:var(--font-num)">₹${total.toFixed(2)}</td>
       <td style="font-family:var(--font-num);color:#1a6b1a;">₹${paid.toFixed(2)}</td>
