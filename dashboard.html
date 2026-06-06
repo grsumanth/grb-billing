@@ -252,13 +252,21 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
 
 /* ═══════════════ MOBILE (≤640px) ═══════════════ */
 @media(max-width:640px){
-  /* Prevent ALL horizontal scrolling and touch panning */
-  html,body{overflow-x:hidden!important;width:100%!important;max-width:100vw!important;
-    overscroll-behavior:none;touch-action:pan-y;}
+  /* Allow natural vertical scrolling and prevent horizontal overflow */
+  html,body{
+    overflow-x:hidden!important;
+    overflow-y:auto!important;
+    width:100%!important;
+    max-width:100%!important;
+    -webkit-overflow-scrolling:touch;
+  }
+  body{
+    display:block!important;
+  }
 
   /* Hide sidebar, show bottom nav */
   .sb{display:none;}
-  .main{margin-left:0;padding-bottom:var(--bot-nav);overflow-x:hidden;width:100%;max-width:100vw;}
+  .main{margin-left:0;padding-bottom:var(--bot-nav);overflow-x:hidden;width:100%;max-width:100%;}
 
   /* Topbar smaller */
   .topbar{padding:.7rem 1rem;}
@@ -450,11 +458,32 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
           </div>
           <span id="gstBadge" class="hide" style="background:linear-gradient(135deg,var(--burg3),var(--burg));color:#fff;padding:.22rem .7rem;border-radius:20px;font-size:.78rem;font-weight:700;"></span>
         </div>
+        <!-- Payment Entry -->
+        <div style="padding:.9rem 1.4rem;border-top:1px solid var(--border);background:linear-gradient(135deg,#f0fff4,#fff);">
+          <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.7rem;">
+            <span style="font-size:1rem;">💳</span>
+            <span style="font-size:.78rem;font-weight:700;color:var(--burg3);text-transform:uppercase;letter-spacing:.8px;">Payment Details</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">
+            <div class="fg"><label>Amount Paid (₹)</label>
+              <input type="number" id="bPaid" value="0" min="0" step="0.01" inputmode="decimal" oninput="onPaidChange()"/>
+            </div>
+            <div class="fg"><label>Balance (₹)</label>
+              <input type="number" id="bBalance" value="0" min="0" step="0.01" inputmode="decimal" oninput="onBalanceManualEdit()" style="color:var(--burg);font-weight:700;"/>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.7rem;margin-top:.6rem;">
+            <label class="tog"><input type="checkbox" id="showBalChk" checked/><span class="sl"></span></label>
+            <span style="font-size:.82rem;font-weight:600;color:var(--burg);">Show Balance in Invoice</span>
+          </div>
+        </div>
         <!-- Totals -->
         <div class="totals">
           <div class="tr2"><span>Subtotal</span><span id="sub">₹0.00</span></div>
           <div class="tr2 gstline hide" id="gstLine"><span id="gstLabel">GST (5%)</span><span id="gstAmt">₹0.00</span></div>
           <div class="tr2 grand"><span>Grand Total</span><span id="gtotal">₹0.00</span></div>
+          <div class="tr2" id="paidRow" style="display:none;color:#1a6b1a;"><span>Amount Paid</span><span id="paidDisp" style="font-family:var(--font-num);">₹0.00</span></div>
+          <div class="tr2" id="balRow" style="display:none;font-weight:700;"><span>Balance Due</span><span id="balDisp" style="font-family:var(--font-num);">₹0.00</span></div>
         </div>
         <!-- Actions -->
         <div class="arow">
@@ -603,22 +632,41 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
 
   <!-- REPORTS PAGE -->
   <section class="page" id="page-reports">
-    <div class="ph"><h2>Reports & Analytics</h2></div>
-    <div class="rgrid">
+    <div class="ph"><h2>Reports &amp; Analytics</h2></div>
+    <div class="rgrid" style="grid-template-columns:repeat(5,1fr);">
       <div class="card rcard"><div class="rico">📅</div><h3>Daily Sales</h3><div class="rval" id="rDS">₹0</div><div class="rlbl">Today</div></div>
       <div class="card rcard"><div class="rico">🧾</div><h3>Total Bills</h3><div class="rval" id="rTB">0</div><div class="rlbl">All Time</div></div>
       <div class="card rcard"><div class="rico">💰</div><h3>Revenue</h3><div class="rval" id="rTR">₹0</div><div class="rlbl">All Time</div></div>
       <div class="card rcard"><div class="rico">📦</div><h3>GST</h3><div class="rval" id="rGC">₹0</div><div class="rlbl">All Time</div></div>
+      <div class="card rcard" style="border-top-color:#cc2222;"><div class="rico">💳</div><h3>Outstanding</h3><div class="rval" id="rOB" style="color:#cc2222;">₹0</div><div class="rlbl">Balance Due</div></div>
     </div>
     <div class="card">
       <div class="ctitle">Bill History</div>
       <div style="overflow-x:auto">
         <table class="dtbl">
-          <thead><tr><th>Bill No</th><th>Date & Time</th><th>Customer</th><th>Items</th><th>GST</th><th>Total</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Bill No</th><th>Date &amp; Time</th><th>Customer</th><th>Items</th><th>GST</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody id="hBody"></tbody>
         </table>
       </div>
       <div class="empty" id="hEmpty">No bills recorded yet</div>
+    </div>
+    
+    <div class="card" style="margin-top:1.5rem;border-top-color:#cc2222;">
+      <div class="ctitle" style="color:#cc2222;">⚠️ Outstanding Balance Report</div>
+      <div class="sbar" style="margin:1rem 1.4rem .5rem;">
+        <input type="text" id="obSrch" placeholder="Filter outstanding by customer name..." oninput="filterOutstanding(this.value)" autocomplete="off"/>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="dtbl">
+          <thead><tr><th>Bill No</th><th>Date &amp; Time</th><th>Customer</th><th>Total</th><th>Amount Paid</th><th>Balance Due</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="obBody"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="obEmpty">No outstanding balances recorded</div>
+      <div style="padding:1rem 1.4rem;background:#fff5f5;border-top:1px solid #ffebe6;display:flex;justify-content:space-between;align-items:center;font-weight:700;color:#cc2222;">
+        <span>Total Outstanding Balance</span>
+        <span id="obTotalSum" style="font-family:var(--font-num);font-size:1.1rem;">₹0.00</span>
+      </div>
     </div>
   </section>
 </main>
@@ -959,6 +1007,10 @@ async function loadFromBackend(){
         total:parseFloat(bill.total)||0,
         gst_percent:parseFloat(bill.gst_percent)||0,
         subtotal:parseFloat(bill.subtotal)||0,
+        amount_paid:parseFloat(bill.amount_paid)||0,
+        balance_amount:parseFloat(bill.balance_amount)||0,
+        payment_status:bill.payment_status || 'unpaid',
+        show_balance:bill.show_balance !== false,
         bill_items:bill.items||[],
         pdf_url:bill.pdf_url
       })));
@@ -1407,17 +1459,70 @@ function toggleGst(){
   document.getElementById('gstBadge').classList.toggle('hide',!on);
   recalc();
 }
+let _isBalanceManuallyEdited = false;
+
+function onPaidChange() {
+  const total = parseFloat(document.getElementById('gtotal').textContent.replace('₹', '')) || 0;
+  const paid = parseFloat(document.getElementById('bPaid').value) || 0;
+  
+  if (!_isBalanceManuallyEdited) {
+    const suggestedBal = Math.max(0, total - paid);
+    document.getElementById('bBalance').value = suggestedBal.toFixed(2);
+  }
+  updateBalanceDisplayRow();
+}
+
+function onBalanceManualEdit() {
+  _isBalanceManuallyEdited = true;
+  updateBalanceDisplayRow();
+}
+
+function updateBalanceDisplayRow() {
+  const total = parseFloat(document.getElementById('gtotal').textContent.replace('₹', '')) || 0;
+  const paid = parseFloat(document.getElementById('bPaid').value) || 0;
+  const bal = parseFloat(document.getElementById('bBalance').value) || 0;
+  
+  const paidRow = document.getElementById('paidRow');
+  const balRow = document.getElementById('balRow');
+  
+  if (paid > 0 || bal > 0) {
+    paidRow.style.display = 'flex';
+    document.getElementById('paidDisp').textContent = '₹' + paid.toFixed(2);
+    
+    balRow.style.display = 'flex';
+    document.getElementById('balDisp').textContent = '₹' + bal.toFixed(2);
+    
+    if (bal > 0) {
+      document.getElementById('balDisp').style.color = '#cc2222'; // Red for balance due
+    } else {
+      document.getElementById('balDisp').style.color = '#1a6b1a'; // Green if fully paid
+    }
+  } else {
+    paidRow.style.display = 'none';
+    balRow.style.display = 'none';
+  }
+}
+
 function recalc(){
   const sub=curBill.reduce((s,i)=>s+i.total,0);
   const on=document.getElementById('gstChk').checked;
   const pct=on?Math.max(0,parseFloat(document.getElementById('gstPct').value)||0):0;
   const gst=on?sub*(pct/100):0;
+  const grand=sub+gst;
   document.getElementById('sub').textContent='₹'+sub.toFixed(2);
   document.getElementById('gstAmt').textContent='₹'+gst.toFixed(2);
-  document.getElementById('gtotal').textContent='₹'+(sub+gst).toFixed(2);
+  document.getElementById('gtotal').textContent='₹'+grand.toFixed(2);
   document.getElementById('gstLine').classList.toggle('hide',!on);
   if(on){document.getElementById('gstLabel').textContent='GST ('+pct+'%)';document.getElementById('gstBadge').textContent=pct+'% GST';}
+  
+  if (!_isBalanceManuallyEdited) {
+    const paid = parseFloat(document.getElementById('bPaid').value) || 0;
+    const suggestedBal = Math.max(0, grand - paid);
+    document.getElementById('bBalance').value = suggestedBal.toFixed(2);
+  }
+  updateBalanceDisplayRow();
 }
+
 function clearBill(force = false){
   if(!force && curBill.length && !confirm('Clear the current bill?'))return;
   curBill=[];
@@ -1427,6 +1532,13 @@ function clearBill(force = false){
   document.getElementById('gstPct').value=5;
   document.getElementById('gstPctWrap').classList.add('hide');
   document.getElementById('gstBadge').classList.add('hide');
+  
+  // Clear payment entry
+  document.getElementById('bPaid').value = '0';
+  document.getElementById('bBalance').value = '0';
+  document.getElementById('showBalChk').checked = true;
+  _isBalanceManuallyEdited = false;
+  
   renderBill();recalc();
 }
 // ── FORMAT PHONE ──
@@ -1446,14 +1558,21 @@ async function emailBill(){
   if(!toEmail) return;
   if(!toEmail.includes('@')){toast('Please enter a valid email.','error');return;}
   toast('Saving and sending bill...','warn');
-  // Save bill inline
+  
   const sub=curBill.reduce((s,i)=>s+i.total,0);
   const gstOn=document.getElementById('gstChk').checked;
   const gstPct=gstOn?Math.max(0,parseFloat(document.getElementById('gstPct').value)||0):0;
   const gst=gstOn?sub*(gstPct/100):0;
   const grand=sub+gst;
+  
+  // Paid and balance fields
+  const paid=parseFloat(document.getElementById('bPaid').value)||0;
+  const balance=parseFloat(document.getElementById('bBalance').value)||0;
+  const showBal=document.getElementById('showBalChk').checked;
+  
   const billPayload={
     customer_name:cname,customer_id:cid||null,gst_percent:gstPct,
+    amount_paid:paid,balance_amount:balance,show_balance:showBal,
     items:curBill.map(it=>({product_id:it.pid||null,product_name:it.name,type:it.type,quantity:it.qty,price:it.price}))
   };
   const tempId = 'TEMP-' + Date.now();
@@ -1463,10 +1582,13 @@ async function emailBill(){
     // Offline mode
     saved = { id: tempId, created_at: new Date().toISOString(), pdf_url: null };
   }
+  
   bills.unshift({
     id:saved.id,date:saved.created_at,customer:cname,
     items:curBill.length,gst,total:grand,
     gst_percent:gstPct,subtotal:sub,
+    amount_paid:paid,balance_amount:balance,show_balance:showBal,
+    payment_status:saved.payment_status || (balance <= 0 && paid > 0 ? 'paid' : (balance > 0 && paid > 0 ? 'partial' : 'unpaid')),
     bill_items:curBill.map(it=>({product_name:it.name,type:it.type,quantity:it.qty,price:it.price,total:it.total})),
     pdf_url:saved.pdf_url
   });
@@ -1501,9 +1623,14 @@ async function printBill(){
   const bW=parseFloat(document.getElementById('billW').value)||14.8;
   const bH=parseFloat(document.getElementById('billH').value)||21;
 
-  // Save to backend first to get sequential bill number
+  // Paid and balance fields
+  const paid=parseFloat(document.getElementById('bPaid').value)||0;
+  const balance=parseFloat(document.getElementById('bBalance').value)||0;
+  const showBal=document.getElementById('showBalChk').checked;
+
   const billPayload={
     customer_name:cname,customer_id:cid||null,gst_percent:gstPct,
+    amount_paid:paid,balance_amount:balance,show_balance:showBal,
     items:curBill.map(it=>({product_id:it.pid||null,product_name:it.name,type:it.type,quantity:it.qty,price:it.price}))
   };
   const tempId = 'TEMP-' + Date.now();
@@ -1522,13 +1649,14 @@ async function printBill(){
     <td style="text-align:right;font-family:var(--font-num);">${it.price.toFixed(2)}</td>
     <td style="text-align:right;font-weight:700;font-family:var(--font-num);color:#780116;">${it.total.toFixed(2)}</td>
   </tr>`).join('');
-  openBillPrintWindow(bno,cname,addr,ds,ts,rows,sub,gst,grand,gstOn,gstPct,bW,bH);
+  openBillPrintWindow(bno,cname,addr,ds,ts,rows,sub,gst,grand,gstOn,gstPct,bW,bH,'INVOICE',showBal,paid,balance);
 
-  // Bill already saved — just update local state
   bills.unshift({
     id:saved.id,date:saved.created_at,customer:cname,
     items:curBill.length,gst,total:grand,
     gst_percent:gstPct,subtotal:sub,
+    amount_paid:paid,balance_amount:balance,show_balance:showBal,
+    payment_status:saved.payment_status || (balance <= 0 && paid > 0 ? 'paid' : (balance > 0 && paid > 0 ? 'partial' : 'unpaid')),
     bill_items:curBill.map(it=>({product_name:it.name,type:it.type,quantity:it.qty,price:it.price,total:it.total})),
     pdf_url:saved.pdf_url
   });
@@ -1591,11 +1719,16 @@ function renderReports(){
   const elTB = document.getElementById('rTB');
   const elTR = document.getElementById('rTR');
   const elGC = document.getElementById('rGC');
+  const elOB = document.getElementById('rOB');
   
   if (elDS) elDS.textContent = '₹' + tb.reduce((s, b) => s + (parseFloat(b.total) || 0), 0).toFixed(0);
   if (elTB) elTB.textContent = bills.length;
   if (elTR) elTR.textContent = '₹' + bills.reduce((s, b) => s + (parseFloat(b.total) || 0), 0).toFixed(0);
   if (elGC) elGC.textContent = '₹' + bills.reduce((s, b) => s + (parseFloat(b.gst) || 0), 0).toFixed(0);
+  
+  // Calculate and display total outstanding
+  const totalOutstanding = bills.reduce((s, b) => s + (parseFloat(b.balance_amount) || 0), 0);
+  if (elOB) elOB.textContent = '₹' + totalOutstanding.toFixed(0);
   
   const hb = document.getElementById('hBody');
   const he = document.getElementById('hEmpty');
@@ -1611,6 +1744,15 @@ function renderReports(){
       const itemCount = b.items || (b.bill_items ? b.bill_items.length : 0) || '—';
       const parsedGst = parseFloat(b.gst) || 0;
       const parsedTotal = parseFloat(b.total) || 0;
+      
+      // Status badge
+      const status = b.payment_status || 'unpaid';
+      const badge = status === 'paid' 
+        ? `<span style="background:#e6f9ed;color:#1a6b1a;padding:.2rem .5rem;border-radius:6px;font-size:.7rem;font-weight:700;">Paid</span>`
+        : status === 'partial'
+          ? `<span style="background:#fff7e6;color:#b26a00;padding:.2rem .5rem;border-radius:6px;font-size:.7rem;font-weight:700;">Partial</span>`
+          : `<span style="background:#ffebe6;color:#cc2222;padding:.2rem .5rem;border-radius:6px;font-size:.7rem;font-weight:700;">Unpaid</span>`;
+          
       hb.innerHTML += `<tr>
         <td><code style="font-size:.76rem;background:#fff0e8;color:#780116;padding:.13rem .45rem;border-radius:5px">${b.id}</code></td>
         <td>${d.toLocaleDateString('en-IN')} ${d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</td>
@@ -1618,6 +1760,7 @@ function renderReports(){
         <td style="font-family:var(--font-num)">${itemCount}</td>
         <td style="font-family:var(--font-num)">${parsedGst > 0 ? '₹' + parsedGst.toFixed(2) : '—'}</td>
         <td style="font-family:var(--font-num)"><strong style="color:var(--burg)">₹${parsedTotal.toFixed(2)}</strong></td>
+        <td>${badge}</td>
         <td style="white-space:nowrap">
           <button class="bedit" id="btn-view-report-${b.id}" onclick="viewBillReport('${b.id}')" style="margin-right:.3rem;background:linear-gradient(135deg,#e8f4ff,#d4eaff);color:#1a5f9e;border:1.5px solid #a8cef8;">👁 View</button>
           ${b.bill_items && b.bill_items.length ? `<button class="bedit" id="btn-print-report-${b.id}" onclick="reprintBill('${b.id}')" style="margin-right:.3rem">🖨 Print</button>` : ''}
@@ -1625,6 +1768,141 @@ function renderReports(){
         </td>
       </tr>`;
     });
+  }
+  
+  // Render the outstanding balances card
+  renderOutstandingTable();
+}
+
+// ── OUTSTANDING BALANCE REPORT FUNCTIONS ──
+function renderOutstandingTable(filter = '') {
+  const obBody = document.getElementById('obBody');
+  const obEmpty = document.getElementById('obEmpty');
+  const obTotalSum = document.getElementById('obTotalSum');
+  
+  if (!obBody) return;
+  
+  obBody.innerHTML = '';
+  
+  // Filter bills to only those with balance_amount > 0
+  let outstandingBills = bills.filter(b => (parseFloat(b.balance_amount) || 0) > 0);
+  
+  if (filter) {
+    outstandingBills = outstandingBills.filter(b => b.customer.toLowerCase().includes(filter.toLowerCase()));
+  }
+  
+  if (outstandingBills.length === 0) {
+    obEmpty.style.display = '';
+    obTotalSum.textContent = '₹0.00';
+    return;
+  }
+  
+  obEmpty.style.display = 'none';
+  
+  let totalSum = 0;
+  
+  outstandingBills.forEach(b => {
+    const d = new Date(b.date);
+    const total = parseFloat(b.total) || 0;
+    const paid = parseFloat(b.amount_paid) || 0;
+    const balance = parseFloat(b.balance_amount) || 0;
+    totalSum += balance;
+    
+    // Status badge
+    const status = b.payment_status || 'unpaid';
+    const badge = status === 'paid' 
+      ? `<span style="background:#e6f9ed;color:#1a6b1a;padding:.2rem .5rem;border-radius:6px;font-size:.7rem;font-weight:700;">Paid</span>`
+      : status === 'partial'
+        ? `<span style="background:#fff7e6;color:#b26a00;padding:.2rem .5rem;border-radius:6px;font-size:.7rem;font-weight:700;">Partial</span>`
+        : `<span style="background:#ffebe6;color:#cc2222;padding:.2rem .5rem;border-radius:6px;font-size:.7rem;font-weight:700;">Unpaid</span>`;
+        
+    obBody.innerHTML += `<tr>
+      <td><code style="font-size:.76rem;background:#fff0e8;color:#780116;padding:.13rem .45rem;border-radius:5px">${b.id}</code></td>
+      <td>${d.toLocaleDateString('en-IN')} ${d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</td>
+      <td><strong>${x(b.customer)}</strong></td>
+      <td style="font-family:var(--font-num)">₹${total.toFixed(2)}</td>
+      <td style="font-family:var(--font-num);color:#1a6b1a;">₹${paid.toFixed(2)}</td>
+      <td style="font-family:var(--font-num);color:#cc2222;font-weight:700;">₹${balance.toFixed(2)}</td>
+      <td>${badge}</td>
+      <td style="white-space:nowrap">
+        <button class="bedit" id="btn-view-outstanding-${b.id}" onclick="viewBillReport('${b.id}')" style="margin-right:.3rem;background:linear-gradient(135deg,#e8f4ff,#d4eaff);color:#1a5f9e;border:1.5px solid #a8cef8;">👁 View</button>
+        <button class="bedit" id="btn-pay-outstanding-${b.id}" onclick="openEditBalanceModal('${b.id}')" style="background:linear-gradient(135deg,#fff2e8,#ffd8bf);color:#d4380d;border:1.5px solid #ffbb96;">💰 Pay</button>
+      </td>
+    </tr>`;
+  });
+  
+  obTotalSum.textContent = '₹' + totalSum.toFixed(2);
+}
+
+function filterOutstanding(val) {
+  renderOutstandingTable(val);
+}
+
+// ── BALANCE EDIT MODAL FUNCTIONS ──
+function openEditBalanceModal(id) {
+  const b = bills.find(x => x.id === id);
+  if (!b) return;
+  document.getElementById('editBalId').value = id;
+  document.getElementById('editBalBillNo').textContent = '#' + b.id;
+  document.getElementById('editBalCust').innerHTML = `Customer: <strong>${x(b.customer)}</strong>`;
+  document.getElementById('editBalTotal').textContent = `Grand Total: ₹${(parseFloat(b.total) || 0).toFixed(2)}`;
+  document.getElementById('editBalPaid').value = (parseFloat(b.amount_paid) || 0).toFixed(2);
+  document.getElementById('editBalDue').value = (parseFloat(b.balance_amount) || 0).toFixed(2);
+  document.getElementById('editBalNote').value = '';
+  document.getElementById('balanceEditModal').classList.remove('hide');
+}
+
+function onEditBalPaidChange() {
+  const id = document.getElementById('editBalId').value;
+  const b = bills.find(x => x.id === id);
+  if (!b) return;
+  const total = parseFloat(b.total) || 0;
+  const paid = parseFloat(document.getElementById('editBalPaid').value) || 0;
+  const suggestedBal = Math.max(0, total - paid);
+  document.getElementById('editBalDue').value = suggestedBal.toFixed(2);
+}
+
+async function saveUpdatedBalance() {
+  const id = document.getElementById('editBalId').value;
+  const paid = parseFloat(document.getElementById('editBalPaid').value) || 0;
+  const balance = parseFloat(document.getElementById('editBalDue').value) || 0;
+  const note = document.getElementById('editBalNote').value.trim();
+  
+  const btn = document.getElementById('btn-save-balance');
+  btn.textContent = 'Saving...';
+  btn.disabled = true;
+  
+  const result = await api('PUT', '/bills/' + id + '/balance', {
+    amount_paid: paid,
+    balance_amount: balance,
+    note: note
+  });
+  
+  btn.textContent = 'Update Balance';
+  btn.disabled = false;
+  
+  if (result || !isOnline) {
+    if (!result && !isOnline) {
+      const idx = bills.findIndex(x => x.id === id);
+      if (idx !== -1) {
+        bills[idx].amount_paid = paid;
+        bills[idx].balance_amount = balance;
+        bills[idx].payment_status = balance <= 0 && paid > 0 ? 'paid' : (balance > 0 && paid > 0 ? 'partial' : 'unpaid');
+        localStorage.setItem('grb_bills', JSON.stringify(bills.slice(0, 150)));
+      }
+    } else if (result) {
+      const idx = bills.findIndex(x => x.id === id);
+      if (idx !== -1) {
+        bills[idx].amount_paid = parseFloat(result.amount_paid) || 0;
+        bills[idx].balance_amount = parseFloat(result.balance_amount) || 0;
+        bills[idx].payment_status = result.payment_status;
+        localStorage.setItem('grb_bills', JSON.stringify(bills.slice(0, 150)));
+      }
+    }
+    closeMod('balanceEditModal');
+    toast('Balance updated successfully ✓');
+    todaySummary();
+    renderReports();
   }
 }
 
@@ -1652,7 +1930,10 @@ function reprintBill(id){
   const grand=parseFloat(b.total||0);
   const gstOn=gstAmt>0;
   const gstPct=parseFloat(b.gst_percent||0);
-  openBillPrintWindow(b.id,cname,addr,ds,ts,rows,sub,gstAmt,grand,gstOn,gstPct,bW,bH);
+  const showBal = b.show_balance !== false;
+  const paid = parseFloat(b.amount_paid) || 0;
+  const balance = parseFloat(b.balance_amount) || 0;
+  openBillPrintWindow(b.id,cname,addr,ds,ts,rows,sub,gstAmt,grand,gstOn,gstPct,bW,bH,'INVOICE',showBal,paid,balance);
 }
 
 
@@ -1970,7 +2251,7 @@ if(_u.profile_pic) updateTopbarPic(_u.profile_pic, _u.name);
 else if(_u.name) updateTopbarPic(null, _u.name);
 
 // ── SHARED BILL PRINT HELPERS ──────────────────────
-function getBillHtml(bno, cname, addr, ds, ts, rows, sub, gst, grand, gstOn, gstPct, bW, bH, type = 'INVOICE') {
+function getBillHtml(bno, cname, addr, ds, ts, rows, sub, gst, grand, gstOn, gstPct, bW, bH, type = 'INVOICE', showBalance = true, amountPaid = 0, balanceAmount = 0) {
   const logoUrl = 'https://i.pinimg.com/1200x/7e/cf/ec/7ecfec130f976641dbbe349abfdbccee.jpg';
   const typeLabel = type === 'ESTIMATE' ? 'ESTIMATE' : (gstOn ? 'TAX INVOICE' : 'ESTIMATE');
   
@@ -2227,6 +2508,17 @@ function getBillHtml(bno, cname, addr, ds, ts, rows, sub, gst, grand, gstOn, gst
             <span class="total-val">₹${grand.toFixed(2)}</span>
           </div>
         </div>
+        ${showBalance && (parseFloat(amountPaid) > 0 || parseFloat(balanceAmount) > 0) ? `
+        <div class="dashed-line"></div>
+        <div style="font-size: 11px; color: #333; display: flex; flex-direction: column; gap: 3px; align-items: flex-end; padding-right: 6px; font-family: Georgia, serif; margin-bottom: 6px;">
+          <div>Amount Paid: ₹${parseFloat(amountPaid).toFixed(2)}</div>
+          ${parseFloat(balanceAmount) > 0 ? `
+            <div style="color: #cc2222; font-weight: bold;">Balance Due: ₹${parseFloat(balanceAmount).toFixed(2)}</div>
+          ` : `
+            <div style="color: #1a6b1a; font-weight: bold;">PAID IN FULL</div>
+          `}
+        </div>
+        ` : ''}
         <div class="dashed-line"></div>
         <div class="footer-section">
           <p class="footer-msg">Thank You – Visit Again</p>
@@ -2246,8 +2538,8 @@ function getBillHtml(bno, cname, addr, ds, ts, rows, sub, gst, grand, gstOn, gst
 </body></html>`;
 }
 
-function openBillPrintWindow(bno,cname,addr,ds,ts,rows,sub,gst,grand,gstOn,gstPct,bW,bH,type='INVOICE'){
-  const html=getBillHtml(bno,cname,addr,ds,ts,rows,sub,gst,grand,gstOn,gstPct,bW,bH,type);
+function openBillPrintWindow(bno,cname,addr,ds,ts,rows,sub,gst,grand,gstOn,gstPct,bW,bH,type='INVOICE',showBalance=true,amountPaid=0,balanceAmount=0){
+  const html=getBillHtml(bno,cname,addr,ds,ts,rows,sub,gst,grand,gstOn,gstPct,bW,bH,type,showBalance,amountPaid,balanceAmount);
   const w=window.open('','_blank','width=600,height=800');
   if(!w){toast('Please allow popups for printing.','error');return;}
   w.document.write(html);w.document.close();w.focus();
@@ -2372,6 +2664,21 @@ async function viewBillReport(id){
           <span style="font-weight: bold; font-size: 15px;">₹${grand.toFixed(2)}</span>
         </div>
       </div>
+      ${b.show_balance !== false && (parseFloat(b.amount_paid) > 0 || parseFloat(b.balance_amount) > 0) ? `
+      <div style="border-top: 1px dashed #C9A84C; margin: 10px 0;"></div>
+      <div style="font-size: 11px; color: #333; display: flex; flex-direction: column; gap: 3px; align-items: flex-end; padding-right: 6px; font-family: Georgia, serif; margin-bottom: 6px;">
+        <div>Amount Paid: ₹${(parseFloat(b.amount_paid) || 0).toFixed(2)}</div>
+        ${(parseFloat(b.balance_amount) || 0) > 0 ? `
+          <div style="color: #cc2222; font-weight: bold;">Balance Due: ₹${(parseFloat(b.balance_amount) || 0).toFixed(2)}</div>
+        ` : `
+          <div style="color: #1a6b1a; font-weight: bold;">PAID IN FULL</div>
+        `}
+      </div>
+      ` : ''}
+      <div style="border-top: 1px dashed #C9A84C; margin: 10px 0;"></div>
+      <div style="display:flex; justify-content:center; gap: 10px; margin-bottom: 8px;">
+        <button onclick="closeMod('billViewModal'); openEditBalanceModal('${b.id}')" style="padding: 6px 14px; background: linear-gradient(135deg,#fff2e8,#ffd8bf); color: #d4380d; border: 1.5px solid #ffbb96; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">💰 Update Balance</button>
+      </div>
       <div style="border-top: 1px dashed #C9A84C; margin: 10px 0;"></div>
       <div style="text-align: center; margin-top: 12px;">
         <p style="font-size: 13px; font-weight: bold; color: #780116; font-family: Georgia, serif; margin: 0;">Thank You – Visit Again</p>
@@ -2414,7 +2721,10 @@ function printFromViewModal(){
     <td style="text-align:right;font-family:var(--font-num);">${parseFloat(it.price||0).toFixed(2)}</td>
     <td style="text-align:right;font-weight:700;font-family:var(--font-num);color:#780116;">${parseFloat(it.total||0).toFixed(2)}</td>
   </tr>`).join('');
-  openBillPrintWindow(b.id,cname,addr,ds,ts,rows,sub,gstAmt,grand,gstOn,gstPct,bW,bH);
+  const showBal = b.show_balance !== false;
+  const paid = parseFloat(b.amount_paid) || 0;
+  const balance = parseFloat(b.balance_amount) || 0;
+  openBillPrintWindow(b.id,cname,addr,ds,ts,rows,sub,gstAmt,grand,gstOn,gstPct,bW,bH,'INVOICE',showBal,paid,balance);
 }
 
 async function downloadPdfFile(){
@@ -2446,6 +2756,37 @@ async function downloadPdfFile(){
   }
 }
 </script>
+
+<!-- BALANCE EDIT MODAL -->
+<div class="ov hide" id="balanceEditModal">
+  <div class="mb">
+    <h3>Update Bill Balance</h3>
+    <input type="hidden" id="editBalId"/>
+    <div style="background:var(--cream2);border-radius:10px;padding:.8rem 1rem;margin-bottom:.9rem;">
+      <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--muted);">
+        <span>Bill No: <strong id="editBalBillNo" style="color:var(--burg)"></strong></span>
+      </div>
+      <div style="font-size:1rem;font-weight:700;color:var(--text);margin-top:.3rem;" id="editBalCust">Customer: </div>
+      <div style="font-size:1.15rem;font-weight:800;color:var(--burg);margin-top:.3rem;" id="editBalTotal">Grand Total: ₹0.00</div>
+    </div>
+    <div class="ig2 full" style="margin-bottom:.9rem">
+      <label>Amount Paid (₹)</label>
+      <input type="number" id="editBalPaid" placeholder="0.00" min="0" step="0.01" inputmode="decimal" oninput="onEditBalPaidChange()"/>
+    </div>
+    <div class="ig2 full" style="margin-bottom:.9rem">
+      <label>Balance Due (₹) (Manual Entry)</label>
+      <input type="number" id="editBalDue" placeholder="0.00" min="0" step="0.01" inputmode="decimal"/>
+    </div>
+    <div class="ig2 full" style="margin-bottom:.9rem">
+      <label>Update Note / Comment</label>
+      <textarea id="editBalNote" rows="2" placeholder="e.g. Received partial payment in cash..."></textarea>
+    </div>
+    <div class="macts">
+      <button class="bprim" id="btn-save-balance" style="flex:1;padding:.72rem" onclick="saveUpdatedBalance()">Update Balance</button>
+      <button class="bout" id="btn-cancel-balance" onclick="closeMod('balanceEditModal')">Cancel</button>
+    </div>
+  </div>
+</div>
 
 <!-- BILL VIEW MODAL -->
 <div class="ov hide" id="billViewModal">
