@@ -17,17 +17,7 @@ const testPhone = `+1${Math.floor(1000000000 + Math.random() * 9000000000)}`;
 test.describe('GRB Billing API Integration Tests', () => {
 
   test.before(async () => {
-    console.log('🧹 Preparing database for tests...');
-    try {
-      await pool.query('DELETE FROM balance_history');
-      await pool.query('DELETE FROM bill_items');
-      await pool.query('DELETE FROM bills');
-      await pool.query('DELETE FROM products');
-      await pool.query('DELETE FROM customers');
-      await pool.query('DELETE FROM users');
-    } catch (err) {
-      console.warn('Stale database cleanup failed:', err.message);
-    }
+    console.log('🧹 Preparing database for tests (destructive blanket deletions disabled to protect dev data)...');
   });
 
   test.after(async () => {
