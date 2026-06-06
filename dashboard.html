@@ -461,19 +461,16 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
           </div>
           <span id="gstBadge" class="hide" style="background:linear-gradient(135deg,var(--burg3),var(--burg));color:#fff;padding:.22rem .7rem;border-radius:20px;font-size:.78rem;font-weight:700;"></span>
         </div>
-        <!-- Previous Balance Display -->
-        <div id="prevBalSection" style="display:none;padding:.9rem 1.4rem;border-top:1px solid var(--border);background:linear-gradient(135deg,#fff8f8,#fff);">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;">
-            <div style="display:flex;align-items:center;gap:.5rem;">
-              <span style="font-size:1rem;">⚠️</span>
-              <span style="font-size:.82rem;font-weight:700;color:#cc2222;text-transform:uppercase;letter-spacing:.8px;">Include Previous Balance</span>
-            </div>
+        <!-- Include Previous Balance Row -->
+        <div class="gst-r" style="border-top:none;padding-top:0;">
+          <div style="display:flex;align-items:center;gap:.8rem;flex-wrap:wrap">
             <label class="tog"><input type="checkbox" id="includePrevBalChk" onchange="toggleIncludePrevBal()"/><span class="sl"></span></label>
-          </div>
-          <div id="prevBalInputWrap" style="display:none;margin-top:.7rem;">
-            <div class="fg" style="margin-bottom:0;">
-              <label style="font-size:.75rem;font-weight:700;color:#cc2222;">Previous Balance (₹)</label>
-              <input type="number" id="prevBalInput" value="0" min="0" step="0.01" inputmode="decimal" oninput="recalc()" style="color:#cc2222;font-weight:700;"/>
+            <span style="font-weight:700;color:var(--burg)">Include Previous Balance</span>
+            <div class="gst-pct-wrap hide" id="prevBalInputWrap">
+              <span style="font-size:.85rem;color:var(--muted);font-weight:600">₹</span>
+              <input type="number" id="prevBalInput" value="0" min="0" step="0.01" inputmode="decimal"
+                style="width:100px;padding:.36rem .5rem;border:2px solid var(--cream3);border-radius:8px;font-family:inherit;font-size:.92rem;font-weight:700;color:var(--burg);background:var(--cream);outline:none;text-align:center;"
+                oninput="recalc()"/>
             </div>
           </div>
         </div>
@@ -1406,22 +1403,14 @@ async function selCust(id){
   }
   
   // Reset the toggle and value
-  const prevSection = document.getElementById('prevBalSection');
   const includeChk = document.getElementById('includePrevBalChk');
   const wrap = document.getElementById('prevBalInputWrap');
   const input = document.getElementById('prevBalInput');
   
   if (includeChk) includeChk.checked = false;
-  if (wrap) wrap.style.display = 'none';
+  if (wrap) wrap.classList.add('hide');
   if (input) input.value = '0';
   
-  if (prevSection) {
-    if (prevOutstanding > 0) {
-      prevSection.style.display = 'block';
-    } else {
-      prevSection.style.display = 'none';
-    }
-  }
   recalc();
 }
 function openPicker(){
@@ -1476,13 +1465,15 @@ function toggleIncludePrevBal() {
   const chk = document.getElementById('includePrevBalChk');
   const wrap = document.getElementById('prevBalInputWrap');
   const input = document.getElementById('prevBalInput');
+  const on = chk && chk.checked;
   
-  if (chk && chk.checked) {
-    if (wrap) wrap.style.display = 'block';
-    if (input) input.value = prevOutstanding.toFixed(2);
-  } else {
-    if (wrap) wrap.style.display = 'none';
-    if (input) input.value = '0';
+  if (wrap) wrap.classList.toggle('hide', !on);
+  if (input) {
+    if (on) {
+      input.value = prevOutstanding.toFixed(2);
+    } else {
+      input.value = '0';
+    }
   }
   recalc();
 }
@@ -1507,7 +1498,7 @@ function recalc(){
   
   const prevBalRow = document.getElementById('prevBalRow');
   const prevBalDisp = document.getElementById('prevBalDisp');
-  if (isIncluded && inputVal > 0) {
+  if (isIncluded) {
     prevBalDisp.textContent = '₹' + inputVal.toFixed(2);
     prevBalRow.style.display = 'flex';
   } else {
@@ -1527,12 +1518,10 @@ function clearBill(force = false){
   
   // Reset previous balance states
   prevOutstanding = 0;
-  const prevSection = document.getElementById('prevBalSection');
-  if (prevSection) prevSection.style.display = 'none';
   const includeChk = document.getElementById('includePrevBalChk');
   if (includeChk) includeChk.checked = false;
   const wrap = document.getElementById('prevBalInputWrap');
-  if (wrap) wrap.style.display = 'none';
+  if (wrap) wrap.classList.add('hide');
   const input = document.getElementById('prevBalInput');
   if (input) input.value = '0';
   
@@ -1560,7 +1549,7 @@ async function emailBill(){
   const gstOn=document.getElementById('gstChk').checked;
   const gstPct=gstOn?Math.max(0,parseFloat(document.getElementById('gstPct').value)||0):0;
   const gst=gstOn?sub*(gstPct/100):0;
-  const grand=sub+gst;
+  let grand=sub+gst;
   
   // Previous balance field
   const includeChk = document.getElementById('includePrevBalChk');
@@ -1568,7 +1557,7 @@ async function emailBill(){
   const prevVal = isIncluded ? (parseFloat(document.getElementById('prevBalInput')?.value) || 0) : 0;
   const showBal = isIncluded;
   const itemsTotal = sub + gst;
-  const grand = itemsTotal + prevVal;
+  grand = itemsTotal + prevVal;
   
   const billPayload={
     customer_name:cname,customer_id:cid||null,gst_percent:gstPct,
@@ -1614,7 +1603,6 @@ async function printBill(){
   const gstOn=document.getElementById('gstChk').checked;
   const gstPct=gstOn?Math.max(0,parseFloat(document.getElementById('gstPct').value)||0):0;
   const gst=gstOn?sub*(gstPct/100):0;
-  const grand=sub+gst;
   const cid=document.getElementById('bCust').dataset.cid;
   const cust=custs.find(c=>c.id===cid);
   const addr=cust?cust.address:'';
