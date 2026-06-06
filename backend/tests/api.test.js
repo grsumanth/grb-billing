@@ -260,4 +260,55 @@ test.describe('GRB Billing API Integration Tests', () => {
     assert.strictEqual(parseFloat(found.balance_amount), 194.94);
   });
 
+  test('POST /api/bills should carry forward outstanding balance and mark old bills paid', async () => {
+    // 1. Verify endpoint reports outstanding balance for customer
+    const oRes = await request(app)
+      .get(`/api/bills/customer-outstanding?customer_id=${testCustomerId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200);
+    assert.strictEqual(parseFloat(oRes.body.outstanding_balance), 194.94);
+
+    // 2. Post new bill
+    const res = await request(app)
+      .post('/api/bills')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        customer_name: 'John Test Customer',
+        customer_id: testCustomerId,
+        gst_percent: 0,
+        items: [
+          {
+            product_id: testProductId,
+            product_name: 'Test Incense Stick',
+            type: 'Box',
+            quantity: 2,
+            price: 50.00
+          }
+        ]
+      })
+      .expect(201);
+
+    // Items total = 2 * 50.00 = 100.00
+    // Previous balance = 194.94
+    // Final total = 294.94
+    assert.strictEqual(parseFloat(res.body.previous_balance), 194.94);
+    assert.strictEqual(parseFloat(res.body.total), 294.94);
+    assert.strictEqual(parseFloat(res.body.balance_amount), 294.94);
+    assert.strictEqual(res.body.payment_status, 'unpaid');
+
+    // 3. Verify old bill is now cleared/paid
+    const oldBillRes = await pool.query('SELECT balance_amount, payment_status FROM bills WHERE id = $1', [testBillId]);
+    assert.strictEqual(parseFloat(oldBillRes.rows[0].balance_amount), 0);
+    assert.strictEqual(oldBillRes.rows[0].payment_status, 'paid');
+
+    // 4. Verify history log
+    const histRes = await pool.query('SELECT note FROM balance_history WHERE bill_id = $1 ORDER BY changed_at DESC LIMIT 1', [testBillId]);
+    assert.ok(histRes.rows[0].note.includes('Carried forward'));
+
+    // Clean up second bill too
+    await pool.query('DELETE FROM bill_items WHERE bill_id = $1', [res.body.id]);
+    await pool.query('DELETE FROM bills WHERE id = $1', [res.body.id]);
+  });
+
 });
+

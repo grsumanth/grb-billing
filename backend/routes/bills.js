@@ -15,6 +15,38 @@ function computePaymentStatus(amountPaid, balanceAmount) {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  GET /api/bills/customer-outstanding — get outstanding balance for a customer
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+router.get('/customer-outstanding', async (req, res) => {
+  try {
+    const { customer_id, customer_name } = req.query;
+    if (!customer_id && !customer_name) {
+      return res.status(400).json({ error: 'customer_id or customer_name is required' });
+    }
+    
+    let query = `
+      SELECT COALESCE(SUM(balance_amount), 0) AS outstanding_balance
+      FROM bills
+      WHERE balance_amount > 0
+    `;
+    let params = [];
+    if (customer_id) {
+      params.push(customer_id);
+      query += ` AND customer_id = $${params.length}`;
+    } else {
+      params.push(customer_name);
+      query += ` AND customer_name = $${params.length}`;
+    }
+    
+    const result = await pool.query(query, params);
+    res.json({ outstanding_balance: parseFloat(result.rows[0].outstanding_balance) || 0 });
+  } catch (err) {
+    console.error('Fetch customer outstanding error:', err.message);
+    res.status(500).json({ error: 'Failed to fetch customer outstanding balance.' });
+  }
+});
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 //  GET /api/bills — list all bills
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 router.get('/', async (req, res) => {
@@ -84,27 +116,56 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'At least one item is required.' });
     }
 
+    await client.query('BEGIN');
+
+    // 1. Fetch previous outstanding bills to compute previous balance
+    const outstandingRes = await client.query(
+      `SELECT id, balance_amount, amount_paid FROM bills
+       WHERE (customer_id = $1 OR (customer_id IS NULL AND customer_name = $2))
+         AND balance_amount > 0`,
+      [customer_id || null, customer_name]
+    );
+
+    let previousBalance = 0;
+    const prevBills = outstandingRes.rows;
+    for (const row of prevBills) {
+      previousBalance += parseFloat(row.balance_amount) || 0;
+    }
+
     const subtotal  = items.reduce((s, i) => s + (i.price * i.quantity), 0);
     const gstPct    = parseFloat(gst_percent) || 0;
     const gstAmount = subtotal * (gstPct / 100);
-    const total     = subtotal + gstAmount;
+    const itemsTotal = subtotal + gstAmount;
+    const finalTotal = itemsTotal + previousBalance;
 
     // Balance fields
-    const paid    = parseFloat(amount_paid) || 0;
-    const balance = parseFloat(balance_amount) || 0;
+    const paid    = 0; // Amount paid is always 0 on bill creation now
+    const balance = finalTotal;
     const showBal = show_balance !== false; // default true
-    const status  = computePaymentStatus(paid, balance);
+    const status  = 'unpaid';
 
     // Get next sequential bill number
-    const seqResult = await pool.query(`SELECT nextval('bill_number_seq') AS num`);
+    const seqResult = await client.query(`SELECT nextval('bill_number_seq') AS num`);
     const billId    = String(seqResult.rows[0].num);
 
-    await client.query('BEGIN');
+    // 2. Clear old bills and write logs to balance_history
+    for (const row of prevBills) {
+      await client.query(
+        `UPDATE bills SET balance_amount = 0, payment_status = 'paid' WHERE id = $1`,
+        [row.id]
+      );
+      await client.query(
+        `INSERT INTO balance_history (bill_id, old_balance, new_balance, old_paid, new_paid, note)
+         VALUES ($1, $2, 0, $3, $3, $4)`,
+        [row.id, parseFloat(row.balance_amount) || 0, parseFloat(row.amount_paid) || 0, `Carried forward to Bill #${billId}`]
+      );
+    }
 
+    // 3. Insert new bill
     await client.query(
-      `INSERT INTO bills (id, customer_name, customer_id, gst_percent, gst_amount, subtotal, total, amount_paid, balance_amount, payment_status, show_balance)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
-      [billId, customer_name, customer_id || null, gstPct, gstAmount, subtotal, total, paid, balance, status, showBal]
+      `INSERT INTO bills (id, customer_name, customer_id, gst_percent, gst_amount, subtotal, total, amount_paid, balance_amount, payment_status, show_balance, previous_balance)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+      [billId, customer_name, customer_id || null, gstPct, gstAmount, subtotal, finalTotal, paid, balance, status, showBal, previousBalance]
     );
 
     for (const item of items) {

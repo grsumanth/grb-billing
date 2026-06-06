@@ -55,6 +55,7 @@ pool.connect((err, client, release) => {
     
     const migrationSql = `
       ALTER TABLE bills ADD COLUMN IF NOT EXISTS pdf_url TEXT;
+      ALTER TABLE bills ADD COLUMN IF NOT EXISTS previous_balance NUMERIC(10,2) DEFAULT 0;
       
       DO $$
       BEGIN

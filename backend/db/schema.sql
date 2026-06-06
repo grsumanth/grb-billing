@@ -70,6 +70,7 @@ CREATE TABLE IF NOT EXISTS bills (
   payment_status VARCHAR(20)  DEFAULT 'unpaid',
   show_balance  BOOLEAN       DEFAULT true,
   pdf_url       TEXT,
+  previous_balance NUMERIC(10,2) DEFAULT 0,
   created_at    TIMESTAMP DEFAULT NOW()
 );
 
