@@ -18,10 +18,9 @@
   --bot-nav:64px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-html{overflow-x:hidden;width:100%;overscroll-behavior:none;-webkit-text-size-adjust:100%;}
+html{overflow-x:hidden;width:100%;-webkit-text-size-adjust:100%;}
 body{font-family:var(--font-ui);background:var(--bg);color:var(--text);display:block;min-height:100vh;
-  overflow-x:hidden;width:100%;max-width:100%;overscroll-behavior:none;position:relative;
-  touch-action:pan-y;}
+  overflow-x:hidden;width:100%;max-width:100%;position:relative;}
 
 /* ═══════════════ SIDEBAR (desktop) ═══════════════ */
 .sb{
@@ -258,10 +257,8 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
   /* Allow natural vertical scrolling and prevent horizontal overflow */
   html,body{
     overflow-x:hidden!important;
-    overflow-y:auto!important;
     width:100%!important;
     max-width:100%!important;
-    -webkit-overflow-scrolling:touch;
   }
   body{
     display:block!important;
@@ -329,7 +326,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
     border-top:2px solid rgba(201,168,76,0.2);
     box-shadow:0 -4px 20px rgba(0,0,0,0.3);
     height:var(--bot-nav);
-    touch-action:none;
+    touch-action:manipulation;
   }
   .bot-nav::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
     background:linear-gradient(90deg,transparent,var(--gold2),var(--gold),var(--gold2),transparent);}
@@ -1248,22 +1245,7 @@ function pg(name){
   if(name==='profile') loadProfile();
 }
 
-// ── PREVENT HORIZONTAL SWIPE/SCROLL ON MOBILE ──
-(function(){
-  let startX=0;
-  document.addEventListener('touchstart',function(e){startX=e.touches[0].clientX;},{passive:true});
-  document.addEventListener('touchmove',function(e){
-    const dx=Math.abs(e.touches[0].clientX-startX);
-    const dy=Math.abs(e.touches[0].clientY-(e.touches[0]?.clientY||0));
-    // Only block if swiping mostly horizontally on the body/main (not inside scrollable tables)
-    const t=e.target;
-    const inScrollable=t.closest('.twrap')||t.closest('[style*="overflow-x"]')||t.closest('.mobile-stats')||t.closest('.sugg')||t.closest('.pklist');
-    if(!inScrollable && dx>10 && document.documentElement.scrollLeft>0){
-      document.documentElement.scrollLeft=0;
-      document.body.scrollLeft=0;
-    }
-  },{passive:true});
-})();
+// Horizontal scrolling is prevented natively via CSS overflow-x settings.
 
 // ── PRODUCTS ──
 function openProdMod(id=null){
