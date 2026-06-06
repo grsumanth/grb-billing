@@ -114,7 +114,7 @@ async function generateBillPDF(bill, items) {
 
     doc.moveTo(30, y).lineTo(W - 30, y).strokeColor(burgundy).lineWidth(1.5).stroke();
     y += 8;
-    const displayTotal = showBalance ? parseFloat(bill.total) : itemsTotal;
+    const displayTotal = showBalance ? (itemsTotal + prevBalance) : itemsTotal;
     doc.fillColor(burgundy).fontSize(14).font('Times-Bold')
       .text('TOTAL AMOUNT', 30, y, { width: W - 60 })
       .text('Rs.' + displayTotal.toFixed(2), 30, y, { align: 'right', width: W - 60 });

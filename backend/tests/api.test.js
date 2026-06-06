@@ -295,39 +295,36 @@ test.describe('GRB Billing API Integration Tests', () => {
 
     // Items total = 2 * 50.00 = 100.00
     // Previous balance = 194.94
-    // Final total = 294.94
     assert.strictEqual(parseFloat(res.body.previous_balance), 194.94);
-    assert.strictEqual(parseFloat(res.body.total), 294.94);
-    assert.strictEqual(parseFloat(res.body.balance_amount), 294.94);
+    assert.strictEqual(parseFloat(res.body.total), 100.00); // Excludes previous balance
+    assert.strictEqual(parseFloat(res.body.balance_amount), 100.00); // Excludes previous balance
     assert.strictEqual(res.body.payment_status, 'unpaid');
 
-    // 3. Verify old bill is now cleared/carried_forward
+    // 3. Verify old bill is untouched at creation time (no blanket zeroing)
     const oldBillRes = await pool.query('SELECT balance_amount, payment_status FROM bills WHERE id = $1', [testBillId]);
-    assert.strictEqual(parseFloat(oldBillRes.rows[0].balance_amount), 0);
-    assert.strictEqual(oldBillRes.rows[0].payment_status, 'carried_forward');
+    assert.strictEqual(parseFloat(oldBillRes.rows[0].balance_amount), 194.94);
+    assert.strictEqual(oldBillRes.rows[0].payment_status, 'partial');
 
-    // 4. Verify history log
-    const histRes = await pool.query('SELECT note FROM balance_history WHERE bill_id = $1 ORDER BY changed_at DESC LIMIT 1', [testBillId]);
-    assert.ok(histRes.rows[0].note.includes('Carried forward'));
-
-    // 5. Pay the new bill fully
+    // 4. Pay the new bill with the full combined outstanding amount (294.94)
     await request(app)
       .put(`/api/bills/${res.body.id}/balance`)
       .set('Authorization', `Bearer ${token}`)
       .send({
         amount_paid: 294.94,
         balance_amount: 0,
-        note: 'Full settlement'
+        note: 'Full settlement of all outstanding'
       })
       .expect(200);
 
-    // 6. Verify old bill is now automatically paid/cleared
-    const oldBillAfterRes = await pool.query('SELECT payment_status FROM bills WHERE id = $1', [testBillId]);
+    // 5. Verify old bill is now cleared/paid via oldest-first distribution
+    const oldBillAfterRes = await pool.query('SELECT payment_status, balance_amount FROM bills WHERE id = $1', [testBillId]);
     assert.strictEqual(oldBillAfterRes.rows[0].payment_status, 'paid');
+    assert.strictEqual(parseFloat(oldBillAfterRes.rows[0].balance_amount), 0);
 
-    // 7. Verify new bill is paid
-    const newBillRes = await pool.query('SELECT payment_status FROM bills WHERE id = $1', [res.body.id]);
+    // 6. Verify new bill is paid
+    const newBillRes = await pool.query('SELECT payment_status, balance_amount FROM bills WHERE id = $1', [res.body.id]);
     assert.strictEqual(newBillRes.rows[0].payment_status, 'paid');
+    assert.strictEqual(parseFloat(newBillRes.rows[0].balance_amount), 0);
 
     // Clean up second bill too
     await pool.query('DELETE FROM bill_items WHERE bill_id = $1', [res.body.id]);

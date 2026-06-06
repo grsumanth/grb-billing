@@ -124,11 +124,11 @@ router.post('/', async (req, res) => {
     const itemsTotal = subtotal + gstAmount;
 
     const reqPrevBalance = parseFloat(previous_balance) || 0;
-    const finalTotal = itemsTotal + reqPrevBalance;
+    const finalTotal = itemsTotal; // Bill total is just the current items total
 
     // Balance fields
     const paid    = 0;
-    const balance = finalTotal;
+    const balance = itemsTotal; // Bill balance is just the current items total
     const showBal = show_balance !== false; // default true
     const status  = 'unpaid';
 
@@ -136,59 +136,14 @@ router.post('/', async (req, res) => {
     const seqResult = await client.query(`SELECT nextval('bill_number_seq') AS num`);
     const billId    = String(seqResult.rows[0].num);
 
-    // 1. Insert new bill first (to allow foreign key references for carried_to_bill_id)
+    // 1. Insert new bill
     await client.query(
       `INSERT INTO bills (id, customer_name, customer_id, gst_percent, gst_amount, subtotal, total, amount_paid, balance_amount, payment_status, show_balance, previous_balance)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
       [billId, customer_name, customer_id || null, gstPct, gstAmount, subtotal, finalTotal, paid, balance, status, showBal, reqPrevBalance]
     );
 
-    // 2. Clear/deduct old bills and write logs to balance_history if prev balance is selected
-    if (reqPrevBalance > 0) {
-      const outstandingRes = await client.query(
-        `SELECT id, balance_amount, amount_paid FROM bills
-         WHERE (customer_id = $1 OR (customer_id IS NULL AND customer_name = $2))
-           AND balance_amount > 0
-           AND id <> $3
-         ORDER BY created_at ASC`,
-        [customer_id || null, customer_name, billId]
-      );
-
-      let remainingRollover = reqPrevBalance;
-      for (const row of outstandingRes.rows) {
-        if (remainingRollover <= 0) break;
-
-        const oldBal = parseFloat(row.balance_amount) || 0;
-        const oldPaid = parseFloat(row.amount_paid) || 0;
-
-        if (oldBal <= remainingRollover) {
-          // Clear this bill's active balance (set to 0) and link to the new bill
-          await client.query(
-            `UPDATE bills SET balance_amount = 0, payment_status = 'carried_forward', carried_to_bill_id = $1 WHERE id = $2`,
-            [billId, row.id]
-          );
-          await client.query(
-            `INSERT INTO balance_history (bill_id, old_balance, new_balance, old_paid, new_paid, note)
-             VALUES ($1, $2, 0, $3, $3, $4)`,
-            [row.id, oldBal, oldPaid, `Carried forward to Bill #${billId}`]
-          );
-          remainingRollover -= oldBal;
-        } else {
-          // Deduct partially from this bill
-          const newBal = oldBal - remainingRollover;
-          await client.query(
-            `UPDATE bills SET balance_amount = $1, payment_status = 'partial' WHERE id = $2`,
-            [newBal, row.id]
-          );
-          await client.query(
-            `INSERT INTO balance_history (bill_id, old_balance, new_balance, old_paid, new_paid, note)
-             VALUES ($1, $2, $3, $4, $4, $5)`,
-            [row.id, oldBal, newBal, oldPaid, `Partially carried forward to Bill #${billId}`]
-          );
-          remainingRollover = 0;
-        }
-      }
-    }
+    // 2. Old bills are kept active and separate (no balance resets upon new bill creation)
 
     for (const item of items) {
       await client.query(
@@ -246,52 +201,89 @@ router.put('/:id/balance', async (req, res) => {
 
     await client.query('BEGIN');
 
-    // Update bill
-    await client.query(
-      `UPDATE bills SET amount_paid = $1, balance_amount = $2, payment_status = $3 WHERE id = $4`,
-      [newPaid, newBal, newStatus, billId]
-    );
+    const netPaid = newPaid - (parseFloat(oldBill.amount_paid) || 0);
 
-    // Log to balance_history
-    await client.query(
-      `INSERT INTO balance_history (bill_id, old_balance, new_balance, old_paid, new_paid, note)
-       VALUES ($1, $2, $3, $4, $5, $6)`,
-      [billId, parseFloat(oldBill.balance_amount) || 0, newBal, parseFloat(oldBill.amount_paid) || 0, newPaid, note || null]
-    );
+    if (netPaid > 0) {
+      let outstandingRes;
+      if (oldBill.customer_id) {
+        outstandingRes = await client.query(
+          `SELECT * FROM bills WHERE customer_id = $1 AND balance_amount > 0 ORDER BY created_at ASC`,
+          [oldBill.customer_id]
+        );
+      } else {
+        outstandingRes = await client.query(
+          `SELECT * FROM bills WHERE customer_name = $1 AND customer_id IS NULL AND balance_amount > 0 ORDER BY created_at ASC`,
+          [oldBill.customer_name]
+        );
+      }
 
-    // ── Carry-forward settlement logic ──
-    const prevBal = parseFloat(oldBill.previous_balance) || 0;
-    const carriedBills = await client.query(
-      `SELECT id, amount_paid, payment_status FROM bills WHERE carried_to_bill_id = $1`,
-      [billId]
-    );
-    
-    if (carriedBills.rows.length > 0) {
-      const isCleared = (newBal === 0) || (newPaid >= prevBal);
-      
-      for (const row of carriedBills.rows) {
-        if (isCleared && row.payment_status !== 'paid') {
+      let remainingPayment = netPaid;
+      for (const row of outstandingRes.rows) {
+        if (remainingPayment <= 0) break;
+        const currentBal = parseFloat(row.balance_amount) || 0;
+        const currentPaid = parseFloat(row.amount_paid) || 0;
+
+        if (currentBal <= remainingPayment) {
+          const applyAmt = currentBal;
+          const nextPaid = currentPaid + applyAmt;
+          const nextBal = 0;
+          const nextStatus = 'paid';
           await client.query(
-            `UPDATE bills SET payment_status = 'paid' WHERE id = $1`,
-            [row.id]
+            `UPDATE bills SET amount_paid = $1, balance_amount = $2, payment_status = $3 WHERE id = $4`,
+            [nextPaid, nextBal, nextStatus, row.id]
           );
           await client.query(
             `INSERT INTO balance_history (bill_id, old_balance, new_balance, old_paid, new_paid, note)
-             VALUES ($1, 0, 0, $2, $2, $3)`,
-            [row.id, parseFloat(row.amount_paid) || 0, `Cleared via payment of carried forward Bill #${billId}`]
+             VALUES ($1, $2, $3, $4, $5, $6)`,
+            [row.id, currentBal, nextBal, currentPaid, nextPaid, row.id === billId ? (note || null) : `Payment allocated from Bill #${billId} receipt. ${note ? 'Note: ' + note : ''}`]
           );
-        } else if (!isCleared && row.payment_status === 'paid') {
+          remainingPayment -= applyAmt;
+        } else {
+          const applyAmt = remainingPayment;
+          const nextPaid = currentPaid + applyAmt;
+          const nextBal = currentBal - applyAmt;
+          const nextStatus = 'partial';
           await client.query(
-            `UPDATE bills SET payment_status = 'carried_forward' WHERE id = $1`,
-            [row.id]
+            `UPDATE bills SET amount_paid = $1, balance_amount = $2, payment_status = $3 WHERE id = $4`,
+            [nextPaid, nextBal, nextStatus, row.id]
           );
           await client.query(
             `INSERT INTO balance_history (bill_id, old_balance, new_balance, old_paid, new_paid, note)
-             VALUES ($1, 0, 0, $2, $2, $3)`,
-            [row.id, parseFloat(row.amount_paid) || 0, `Reverted to carried_forward due to payment adjustment on Bill #${billId}`]
+             VALUES ($1, $2, $3, $4, $5, $6)`,
+            [row.id, currentBal, nextBal, currentPaid, nextPaid, row.id === billId ? (note || null) : `Partial payment allocated from Bill #${billId} receipt. ${note ? 'Note: ' + note : ''}`]
           );
+          remainingPayment = 0;
         }
       }
+      // If there's still leftover payment (overpayment), apply it to the current bill
+      if (remainingPayment > 0) {
+        const curFresh = await client.query('SELECT amount_paid, balance_amount FROM bills WHERE id = $1', [billId]);
+        const curPaid = parseFloat(curFresh.rows[0].amount_paid) || 0;
+        const curBal = parseFloat(curFresh.rows[0].balance_amount) || 0;
+        const nextPaid = curPaid + remainingPayment;
+        const nextBal = Math.max(0, curBal - remainingPayment);
+        const nextStatus = computePaymentStatus(nextPaid, nextBal);
+        await client.query(
+          `UPDATE bills SET amount_paid = $1, balance_amount = $2, payment_status = $3 WHERE id = $4`,
+          [nextPaid, nextBal, nextStatus, billId]
+        );
+        await client.query(
+          `INSERT INTO balance_history (bill_id, old_balance, new_balance, old_paid, new_paid, note)
+           VALUES ($1, $2, $3, $4, $5, $6)`,
+          [billId, curBal, nextBal, curPaid, nextPaid, `Overpayment credit applied. ${note ? 'Note: ' + note : ''}`]
+        );
+      }
+    } else {
+      // Standard update for no-op or adjustments
+      await client.query(
+        `UPDATE bills SET amount_paid = $1, balance_amount = $2, payment_status = $3 WHERE id = $4`,
+        [newPaid, newBal, newStatus, billId]
+      );
+      await client.query(
+        `INSERT INTO balance_history (bill_id, old_balance, new_balance, old_paid, new_paid, note)
+         VALUES ($1, $2, $3, $4, $5, $6)`,
+        [billId, parseFloat(oldBill.balance_amount) || 0, newBal, parseFloat(oldBill.amount_paid) || 0, newPaid, note || null]
+      );
     }
 
     await client.query('COMMIT');
