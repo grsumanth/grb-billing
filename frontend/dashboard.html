@@ -19,8 +19,8 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html{overflow-x:hidden;width:100%;overscroll-behavior:none;-webkit-text-size-adjust:100%;}
-body{font-family:var(--font-ui);background:var(--bg);color:var(--text);display:flex;min-height:100vh;
-  overflow-x:hidden;width:100%;max-width:100vw;overscroll-behavior:none;position:relative;
+body{font-family:var(--font-ui);background:var(--bg);color:var(--text);display:block;min-height:100vh;
+  overflow-x:hidden;width:100%;max-width:100%;overscroll-behavior:none;position:relative;
   touch-action:pan-y;}
 
 /* ═══════════════ SIDEBAR (desktop) ═══════════════ */
@@ -202,7 +202,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
 .bdelbill:hover,.bdelbill:active{background:#ffdddd;border-color:#cc2222;}
 
 /* Reports grid */
-.rgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.1rem;margin-bottom:1.4rem;}
+.rgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:1.1rem;margin-bottom:1.4rem;}
 .rcard{padding:1.3rem;text-align:center;}
 .rico{font-size:2rem;margin-bottom:.4rem;}
 .rcard h3{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;
@@ -217,6 +217,9 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
 .mb{background:var(--cream);border-radius:20px;padding:1.6rem;width:100%;max-width:460px;
   box-shadow:0 0 0 1px rgba(201,168,76,0.3),0 30px 80px rgba(0,0,0,0.35);
   border-top:3px solid var(--burg);max-height:90vh;overflow-y:auto;}
+.mb.wide{max-width:600px;}
+.mb.med{max-width:560px;}
+.tbl-wrap{overflow-x:auto;max-width:100%;width:100%;-webkit-overflow-scrolling:touch;}
 .mb h3{font-family:'Cinzel Decorative',serif;font-size:.95rem;font-weight:700;
   color:var(--burg);margin-bottom:1.2rem;letter-spacing:.3px;}
 .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;}
@@ -298,7 +301,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
   .ov{align-items:flex-end;padding:0;}
   .mb{border-radius:20px 20px 0 0;max-width:100%;width:100%;max-height:88vh;
     padding:1.4rem 1.2rem 2rem;overflow-x:hidden;}
-  .mb.wide{max-width:100%;}
+  .mb.wide, .mb.med{max-width:100%!important;}
 
   /* Modal grid → single column on small phones */
   .mgrid{grid-template-columns:1fr;}
@@ -536,7 +539,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
     </div>
     <div class="sbar"><input type="text" id="input-search-customers" placeholder="🔍 Search customers..." oninput="srchCustTbl(this.value)"/></div>
     <div class="card" style="overflow:hidden">
-      <div style="overflow-x:auto">
+      <div class="tbl-wrap">
         <table class="dtbl">
           <thead><tr><th>#</th><th>Name</th><th>Phone</th><th>Email</th><th>Address</th><th>Notes</th><th>Actions</th></tr></thead>
           <tbody id="cBody"></tbody>
@@ -554,7 +557,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
     </div>
     <div class="sbar"><input type="text" id="input-search-products" placeholder="🔍 Search products..." oninput="srchProdTbl(this.value)"/></div>
     <div class="card" style="overflow:hidden">
-      <div style="overflow-x:auto">
+      <div class="tbl-wrap">
         <table class="dtbl">
           <thead><tr><th>#</th><th>Name</th><th>Type</th><th>Price</th><th>Actions</th></tr></thead>
           <tbody id="pBody"></tbody>
@@ -633,7 +636,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
   <!-- REPORTS PAGE -->
   <section class="page" id="page-reports">
     <div class="ph"><h2>Reports &amp; Analytics</h2></div>
-    <div class="rgrid" style="grid-template-columns:repeat(5,1fr);">
+    <div class="rgrid">
       <div class="card rcard"><div class="rico">📅</div><h3>Daily Sales</h3><div class="rval" id="rDS">₹0</div><div class="rlbl">Today</div></div>
       <div class="card rcard"><div class="rico">🧾</div><h3>Total Bills</h3><div class="rval" id="rTB">0</div><div class="rlbl">All Time</div></div>
       <div class="card rcard"><div class="rico">💰</div><h3>Revenue</h3><div class="rval" id="rTR">₹0</div><div class="rlbl">All Time</div></div>
@@ -642,7 +645,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
     </div>
     <div class="card">
       <div class="ctitle">Bill History</div>
-      <div style="overflow-x:auto">
+      <div class="tbl-wrap">
         <table class="dtbl">
           <thead><tr><th>Bill No</th><th>Date &amp; Time</th><th>Customer</th><th>Items</th><th>GST</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody id="hBody"></tbody>
@@ -656,7 +659,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
       <div class="sbar" style="margin:1rem 1.4rem .5rem;">
         <input type="text" id="obSrch" placeholder="Filter outstanding by customer name..." oninput="filterOutstanding(this.value)" autocomplete="off"/>
       </div>
-      <div style="overflow-x:auto">
+      <div class="tbl-wrap">
         <table class="dtbl">
           <thead><tr><th>Bill No</th><th>Date &amp; Time</th><th>Customer</th><th>Total</th><th>Amount Paid</th><th>Balance Due</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody id="obBody"></tbody>
@@ -695,14 +698,14 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
 
 <!-- ESTIMATE MODAL -->
 <div class="ov hide" id="estimateModal">
-  <div class="mb wide" style="max-width:600px;">
+  <div class="mb wide">
     <h3 id="estModalTitle">New Estimate</h3>
     <input type="hidden" id="estEditId"/>
     <div class="ig2 full" style="margin-bottom:.9rem">
       <label>Customer Name *</label>
       <input type="text" id="estCust" placeholder="Customer name" autocomplete="off"/>
     </div>
-    <div style="border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:.9rem;">
+    <div class="tbl-wrap" style="border:1px solid var(--border);border-radius:10px;margin-bottom:.9rem;">
       <table class="dtbl" id="estItemsTable">
         <thead><tr><th>#</th><th>Item</th><th>Type</th><th>Qty</th><th>Price</th><th>Total</th><th></th></tr></thead>
         <tbody id="estItemsBody"></tbody>
@@ -746,7 +749,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
 
 <!-- ESTIMATE VIEW MODAL -->
 <div class="ov hide" id="estimateViewModal">
-  <div class="mb wide" style="max-width:560px;">
+  <div class="mb med">
     <h3>Estimate Details</h3>
     <div id="estViewContent"></div>
     <div class="macts" style="margin-top:1rem;">
@@ -1163,7 +1166,7 @@ function viewEstimate(id){
       </div>
       <div style="font-size:1rem;font-weight:700;color:var(--text);margin-top:.3rem;">Customer: ${x(est.customer)}</div>
     </div>
-    <div style="overflow-x:auto;margin-bottom:.9rem;">
+    <div class="tbl-wrap" style="margin-bottom:.9rem;">
       <table class="dtbl">
         <thead><tr><th>#</th><th>Item</th><th>Type</th><th>Qty</th><th>Rate</th><th>Total</th></tr></thead>
         <tbody>${rows}</tbody>
