@@ -101,6 +101,35 @@ pool.connect((err, client, release) => {
             ON balance_history FOR SELECT TO authenticated USING (true);
         END IF;
       END $$;
+
+      DO $$
+      BEGIN
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='products' AND column_name='name') THEN
+          ALTER TABLE products RENAME COLUMN name TO product_name;
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='products' AND column_name='updated_at') THEN
+          ALTER TABLE products ADD COLUMN updated_at TIMESTAMP DEFAULT NOW();
+        END IF;
+      END $$;
+
+      CREATE INDEX IF NOT EXISTS idx_products_product_name ON products(product_name);
+
+      UPDATE products SET type = 'Piece' WHERE type NOT IN ('Piece', 'Box', 'Pack') OR type IS NULL;
+
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM pg_constraint WHERE conname = 'chk_products_type'
+        ) THEN
+          ALTER TABLE products ADD CONSTRAINT chk_products_type CHECK (type IN ('Piece', 'Box', 'Pack'));
+        END IF;
+      END $$;
+
+      UPDATE bill_items
+      SET product_name = products.product_name
+      FROM products
+      WHERE bill_items.product_id = products.id
+        AND (bill_items.product_name LIKE '₹%' OR bill_items.product_name = '' OR bill_items.product_name IS NULL);
     `;
 
     client.query(migrationSql, (migrationErr) => {
@@ -108,7 +137,7 @@ pool.connect((err, client, release) => {
       if (migrationErr) {
         console.error('❌ Migration failed (balance columns & tables):', migrationErr.message);
       } else {
-        console.log('✅ Migration: Balance tracking columns, tables, and indexes ensured.');
+        console.log('✅ Migration: Balance tracking, product_name, and index ensured.');
       }
     });
   }

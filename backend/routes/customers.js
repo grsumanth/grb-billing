@@ -77,6 +77,15 @@ router.put('/:id', async (req, res) => {
       return res.status(400).json({ error: 'Name and phone are required.' });
     }
 
+    // Check for duplicate phone number (exclude current customer)
+    const dup = await pool.query(
+      'SELECT id FROM customers WHERE phone = $1 AND id != $2',
+      [phone.trim(), req.params.id]
+    );
+    if (dup.rows.length) {
+      return res.status(409).json({ error: 'Another customer with this phone number already exists.' });
+    }
+
     const result = await pool.query(
       `UPDATE customers SET name=$1, phone=$2, email=$3, address=$4, notes=$5
        WHERE id=$6 RETURNING *`,

@@ -104,16 +104,29 @@ async function sendBill(toEmail, customerName, bill) {
           </div>
           <!-- Totals -->
           <div style="margin:16px 20px;padding:16px;background:#fff8f3;border-radius:10px;border:1px solid #EDD8B0;">
-            <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;color:#7A4050;">
-              <span>Subtotal</span><span>₹${parseFloat(bill.subtotal).toFixed(2)}</span>
-            </div>
-            ${parseFloat(bill.gst_amount)>0?`
-            <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;color:#7A4050;">
-              <span>GST (${bill.gst_percent}%)</span><span>₹${parseFloat(bill.gst_amount).toFixed(2)}</span>
-            </div>`:''}
-            <div style="display:flex;justify-content:space-between;padding:10px 0 0;margin-top:8px;border-top:2px solid #780116;font-size:16px;font-weight:900;color:#780116;">
-              <span>TOTAL AMOUNT</span><span>₹${parseFloat(bill.total).toFixed(2)}</span>
-            </div>
+            <table style="width:100%;border-collapse:collapse;">
+              <tr>
+                <td style="padding:4px 0;font-size:13px;color:#7A4050;text-align:left;">Subtotal</td>
+                <td style="padding:4px 0;font-size:13px;color:#7A4050;text-align:right;">₹${parseFloat(bill.subtotal).toFixed(2)}</td>
+              </tr>
+              ${parseFloat(bill.gst_amount)>0?`
+              <tr>
+                <td style="padding:4px 0;font-size:13px;color:#7A4050;text-align:left;">GST (${bill.gst_percent}%)</td>
+                <td style="padding:4px 0;font-size:13px;color:#7A4050;text-align:right;">₹${parseFloat(bill.gst_amount).toFixed(2)}</td>
+              </tr>`:''}
+              ${(bill.show_balance !== false && parseFloat(bill.previous_balance) > 0)?`
+              <tr>
+                <td style="padding:4px 0;font-size:13px;color:#7A4050;text-align:left;">Previous Balance</td>
+                <td style="padding:4px 0;font-size:13px;color:#7A4050;text-align:right;">₹${parseFloat(bill.previous_balance).toFixed(2)}</td>
+              </tr>`:''}
+              <tr>
+                <td colspan="2" style="padding:0;"><div style="border-top:2px solid #780116;margin-top:8px;"></div></td>
+              </tr>
+              <tr>
+                <td style="padding:10px 0 0;font-size:16px;font-weight:900;color:#780116;text-align:left;">TOTAL AMOUNT</td>
+                <td style="padding:10px 0 0;font-size:16px;font-weight:900;color:#780116;text-align:right;">₹${parseFloat(bill.total).toFixed(2)}</td>
+              </tr>
+            </table>
           </div>
           <!-- Footer -->
           <div style="background:#FBF3E8;padding:20px;text-align:center;font-size:12px;color:#7A4050;border-top:1px solid #EDD8B0;">

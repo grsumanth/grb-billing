@@ -62,7 +62,8 @@ const generalLimiter = rateLimit({
   max: 200,
   message: { error: 'Too many requests. Please try again later.' },
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === 'test'
 });
 app.use('/api', generalLimiter);
 
@@ -72,14 +73,16 @@ const authLimiter = rateLimit({
   max: 10, // max 10 login attempts per 15 min
   message: { error: 'Too many login attempts. Please wait 15 minutes.' },
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === 'test'
 });
 
 // ── SECURITY: OTP Rate Limiting ────────────────────
 const otpLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 5, // max 5 OTP requests per hour
-  message: { error: 'Too many OTP requests. Please wait an hour.' }
+  message: { error: 'Too many OTP requests. Please wait an hour.' },
+  skip: () => process.env.NODE_ENV === 'test'
 });
 
 

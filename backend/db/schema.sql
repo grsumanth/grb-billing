@@ -34,11 +34,12 @@ CREATE TABLE IF NOT EXISTS customers (
 
 -- ── PRODUCTS ─────────────────────────────────────
 CREATE TABLE IF NOT EXISTS products (
-  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name        VARCHAR(150) NOT NULL,
-  type        VARCHAR(50)  NOT NULL DEFAULT 'Piece',
-  price       NUMERIC(10,2) NOT NULL,
-  created_at  TIMESTAMP DEFAULT NOW()
+  id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  product_name VARCHAR(150) NOT NULL,
+  type         VARCHAR(50)  NOT NULL DEFAULT 'Piece' CONSTRAINT chk_products_type CHECK (type IN ('Piece', 'Box', 'Pack')),
+  price        NUMERIC(10,2) NOT NULL,
+  created_at   TIMESTAMP DEFAULT NOW(),
+  updated_at   TIMESTAMP DEFAULT NOW()
 );
 
 -- ── BILL NUMBER SEQUENCE ─────────────────────────
@@ -106,7 +107,7 @@ CREATE INDEX IF NOT EXISTS idx_bill_items_bill ON bill_items(bill_id);
 CREATE INDEX IF NOT EXISTS idx_balance_history_bill ON balance_history(bill_id);
 CREATE INDEX IF NOT EXISTS idx_customers_name  ON customers(name);
 CREATE INDEX IF NOT EXISTS idx_customers_phone ON customers(phone);
-CREATE INDEX IF NOT EXISTS idx_products_name   ON products(name);
+CREATE INDEX IF NOT EXISTS idx_products_product_name ON products(product_name);
 
 -- ── ROW LEVEL SECURITY (RLS) ─────────────────────
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;

@@ -78,7 +78,14 @@ router.get('/outstanding', async (req, res) => {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 router.get('/daily', async (req, res) => {
   try {
-    const days = parseInt(req.query.days) || 30;
+    let days = 30;
+    if (req.query.days !== undefined) {
+      const parsed = parseInt(req.query.days, 10);
+      if (isNaN(parsed)) {
+        return res.status(400).json({ error: 'Days must be a valid number.' });
+      }
+      days = parsed;
+    }
     if (days < 1 || days > 365) {
       return res.status(400).json({ error: 'Days must be between 1 and 365.' });
     }
