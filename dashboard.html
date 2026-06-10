@@ -90,6 +90,7 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);display:b
 .bl{display:grid;grid-template-columns:1fr 280px;gap:1.4rem;align-items:start;max-width:100%;min-width:0;}
 .fr{padding:.9rem 1.4rem 0;display:grid;grid-template-columns:1fr;gap:.9rem;}
 .fr.t3{grid-template-columns:2fr 1fr 1.2fr;}
+.fr.t4{grid-template-columns:2fr 1fr 1fr 1.2fr;}
 .fg label{display:block;font-size:.72rem;font-weight:700;color:var(--burg3);
   text-transform:uppercase;letter-spacing:.8px;margin-bottom:.32rem;}
 .fg input,.fg select{width:100%;padding:.65rem .9rem;border:2px solid var(--cream3);
@@ -250,6 +251,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
   .bl{grid-template-columns:1fr;}
   .rgrid{grid-template-columns:repeat(2,1fr);}
   .fr.t3{grid-template-columns:1fr 1fr;}
+  .fr.t4{grid-template-columns:1fr 1fr;}
   .ov{backdrop-filter:none !important;background:rgba(18,0,3,0.88) !important;}
 }
 
@@ -284,6 +286,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
 
   /* 3-col form → 1 col */
   .fr.t3{grid-template-columns:1fr;}
+  .fr.t4{grid-template-columns:1fr;}
 
   /* Reports 2x2 grid */
   .rgrid{grid-template-columns:repeat(2,1fr);gap:.8rem;}
@@ -429,12 +432,15 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
             <div class="sugg hide" id="sugg"></div>
           </div>
         </div>
-        <div class="fr t3">
+        <div class="fr t4">
           <div class="fg"><label>Product</label>
             <select id="pSel" onchange="onProd()"><option value="">-- Select Product --</option></select>
           </div>
           <div class="fg"><label>Qty</label>
             <input type="number" id="bQty" value="1" min="1" inputmode="numeric"/>
+          </div>
+          <div class="fg"><label>Unit</label>
+            <input type="text" id="bType" readonly style="background:var(--cream2);color:var(--muted);cursor:not-allowed;font-weight:700;"/>
           </div>
           <div class="fg"><label>Price (₹)</label>
             <input type="number" id="bPrice" placeholder="0.00" inputmode="decimal"/>
@@ -552,7 +558,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
     <div class="card" style="overflow:hidden">
       <div class="tbl-wrap">
         <table class="dtbl">
-          <thead><tr><th>#</th><th>Price</th><th>Actions</th></tr></thead>
+          <thead><tr><th>#</th><th>Product Name</th><th>Unit Type</th><th>Price</th><th>Actions</th></tr></thead>
           <tbody id="pBody"></tbody>
         </table>
       </div>
@@ -704,11 +710,12 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
         <tbody id="estItemsBody"></tbody>
       </table>
     </div>
-    <div class="est-add-row" style="display:grid;grid-template-columns:2fr 1fr 1.2fr auto;gap:.5rem;margin-bottom:.9rem;align-items:end;">
+    <div class="est-add-row" style="display:grid;grid-template-columns:2fr 1fr 1fr 1.2fr auto;gap:.5rem;margin-bottom:.9rem;align-items:end;">
       <div class="ig2"><label>Product</label>
         <select id="estProdSel" onchange="onEstProd()"><option value="">-- Select --</option></select>
       </div>
       <div class="ig2"><label>Qty</label><input type="number" id="estQty" value="1" min="1" inputmode="numeric"/></div>
+      <div class="ig2"><label>Unit</label><input type="text" id="estType" readonly style="background:var(--cream2);color:var(--muted);cursor:not-allowed;font-weight:700;"/></div>
       <div class="ig2"><label>Price</label><input type="number" id="estPrice" placeholder="0.00" inputmode="decimal"/></div>
       <button class="bprim" id="btn-estimate-add-item-trigger" style="padding:.65rem .8rem;flex:none;min-height:44px;margin-top:1.2rem;" onclick="addEstItem()">+</button>
     </div>
@@ -825,7 +832,22 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
   <div class="mb">
     <h3 id="pModTitle">Add Product</h3>
     <input type="hidden" id="pEditId"/>
-    <div class="ig2" style="margin-bottom:.9rem"><label>Price (₹) *</label><input type="number" id="pPrice" placeholder="0.00" min="0" step="0.01" inputmode="decimal"/></div>
+    <div class="ig2" style="margin-bottom:.9rem">
+      <label>Product Name *</label>
+      <input type="text" id="pNameInput" placeholder="Product name" autocomplete="off"/>
+    </div>
+    <div class="ig2" style="margin-bottom:.9rem">
+      <label>Unit Type *</label>
+      <select id="pTypeSelect">
+        <option value="Piece">Piece</option>
+        <option value="Box">Box</option>
+        <option value="Pack">Pack</option>
+      </select>
+    </div>
+    <div class="ig2" style="margin-bottom:.9rem">
+      <label>Price (₹) *</label>
+      <input type="number" id="pPrice" placeholder="0.00" min="0" step="0.01" inputmode="decimal"/>
+    </div>
     <div class="macts">
       <button class="bprim" id="btn-save-product" style="flex:1;padding:.75rem" onclick="saveProd()">Save Product</button>
       <button class="bout" id="btn-cancel-product" onclick="closeMod('prodMod')">Cancel</button>
@@ -1028,31 +1050,38 @@ function newEstimate(){
   document.getElementById('estGstPct').value = 5;
   document.getElementById('estGstWrap').classList.add('hide');
   document.getElementById('estGstLine').classList.add('hide');
+  if (document.getElementById('estType')) document.getElementById('estType').value = '';
   renderEstItems(); recalcEst();
   // populate product dropdown
   const sel = document.getElementById('estProdSel');
   sel.innerHTML = '<option value="">-- Select --</option>';
-  prods.forEach(p => sel.innerHTML += `<option value="${p.id}">${x(p.name)} — ₹${p.price}</option>`);
+  prods.forEach(p => {
+    const pName = p.product_name || p.name || '';
+    sel.innerHTML += `<option value="${p.id}">${x(pName)} — ₹${p.price}</option>`;
+  });
   document.getElementById('estimateModal').classList.remove('hide');
 }
 
 function onEstProd(){
   const p = prods.find(z => z.id === document.getElementById('estProdSel').value);
   document.getElementById('estPrice').value = p ? p.price : '';
+  if (document.getElementById('estType')) document.getElementById('estType').value = p ? p.type || 'Piece' : '';
 }
 
 function addEstItem(){
   const pid   = document.getElementById('estProdSel').value;
   const qty   = parseInt(document.getElementById('estQty').value);
   const price = parseFloat(document.getElementById('estPrice').value);
+  const type  = document.getElementById('estType') ? document.getElementById('estType').value : '';
   if(!pid){ toast('Please select a product.','error'); return; }
   if(!qty||qty<1){ toast('Enter valid quantity.','error'); return; }
   if(!price||price<=0){ toast('Enter valid price.','error'); return; }
   const prod = prods.find(p => p.id === pid);
-  estItems.push({ pid, name: prod.name, type: prod.type, qty, price, total: price * qty });
+  estItems.push({ pid, name: prod.product_name || prod.name, type: type || prod.type || 'Piece', qty, price, total: price * qty });
   renderEstItems(); recalcEst();
   document.getElementById('estProdSel').value = '';
   document.getElementById('estQty').value = 1;
+  if (document.getElementById('estType')) document.getElementById('estType').value = '';
   document.getElementById('estPrice').value = '';
 }
 
@@ -1180,7 +1209,10 @@ function editEstimate(id){
   document.getElementById('estGstPct').value = est.gst_percent || 5;
   const sel = document.getElementById('estProdSel');
   sel.innerHTML = '<option value="">-- Select --</option>';
-  prods.forEach(p => sel.innerHTML += `<option value="${p.id}">${x(p.name)} — ₹${p.price}</option>`);
+  prods.forEach(p => {
+    const pName = p.product_name || p.name || '';
+    sel.innerHTML += `<option value="${p.id}">${x(pName)} — ₹${p.price}</option>`;
+  });
   renderEstItems(); recalcEst();
   document.getElementById('estimateModal').classList.remove('hide');
 }
@@ -1243,31 +1275,43 @@ function pg(name){
 function openProdMod(id=null){
   document.getElementById('pEditId').value=id||'';
   document.getElementById('pModTitle').textContent=id?'Edit Product':'Add Product';
-  if(id){const p=prods.find(x=>x.id===id);document.getElementById('pPrice').value=p.price;}
-  else{document.getElementById('pPrice').value='';}
+  if(id){
+    const p=prods.find(x=>x.id===id);
+    document.getElementById('pNameInput').value=p.product_name || p.name || '';
+    document.getElementById('pTypeSelect').value=p.type || 'Piece';
+    document.getElementById('pPrice').value=p.price;
+  }
+  else{
+    document.getElementById('pNameInput').value='';
+    document.getElementById('pTypeSelect').value='Piece';
+    document.getElementById('pPrice').value='';
+  }
   document.getElementById('prodMod').classList.remove('hide');
-  setTimeout(()=>document.getElementById('pPrice').focus(),300);
+  setTimeout(()=>document.getElementById('pNameInput').focus(),300);
 }
 async function saveProd(){
+  const productName=document.getElementById('pNameInput').value.trim();
+  const productType=document.getElementById('pTypeSelect').value;
   const price=parseFloat(document.getElementById('pPrice').value);
-  if(isNaN(price)||price<0){toast('Fill all required fields correctly.','error');return;}
-  const name = '₹' + price.toFixed(2);
-  const type = 'Piece';
+  if(!productName||!productType||isNaN(price)||price<0){toast('Fill all required fields correctly.','error');return;}
+  if(!['Piece', 'Box', 'Pack'].includes(productType)){toast('Invalid Unit Type.','error');return;}
   const eid=document.getElementById('pEditId').value;
   const btn=document.querySelector('#prodMod .bprim');
   btn.textContent='Saving...';btn.disabled=true;
+  
+  const payload = { product_name: productName, name: productName, type: productType, price };
   let result;
-  if(eid) result=await api('PUT','/products/'+eid,{name,type,price});
-  else result=await api('POST','/products',{name,type,price});
+  if(eid) result=await api('PUT','/products/'+eid,payload);
+  else result=await api('POST','/products',payload);
   btn.textContent='Save Product';btn.disabled=false;
   if(result||!isOnline){
     if(!result && !isOnline){
       if(eid){
         const idx = prods.findIndex(p => p.id === eid);
-        if(idx !== -1) prods[idx] = { ...prods[idx], name, type, price };
+        if(idx !== -1) prods[idx] = { ...prods[idx], product_name: productName, name: productName, type: productType, price };
       } else {
         const tempId = 'TEMP-' + Date.now();
-        prods.push({ id: tempId, name, type, price, created_at: new Date().toISOString() });
+        prods.push({ id: tempId, product_name: productName, name: productName, type: productType, price, created_at: new Date().toISOString() });
       }
       localStorage.setItem('grb_prods', JSON.stringify(prods));
     }
@@ -1292,6 +1336,8 @@ function renderProds(){
   if(!prods.length){e.style.display='';return;}e.style.display='none';
   prods.forEach((p,i)=>{b.innerHTML+=`<tr>
     <td>${i+1}</td>
+    <td><strong>${x(p.product_name || p.name || '')}</strong></td>
+    <td><span class="pill">${x(p.type || 'Piece')}</span></td>
     <td><strong>₹${parseFloat(p.price).toFixed(2)}</strong></td>
     <td><button class="bedit" id="btn-edit-prod-${p.id}" onclick="openProdMod('${p.id}')">✏ Edit</button><button class="bdel" id="btn-delete-prod-${p.id}" onclick="delProd('${p.id}')">🗑</button></td>
   </tr>`;});
@@ -1300,10 +1346,17 @@ function srchProdTbl(q){document.querySelectorAll('#pBody tr').forEach(r=>{r.sty
 function fillDrop(){
   const s=document.getElementById('pSel'),v=s.value;
   s.innerHTML='<option value="">-- Select Product --</option>';
-  prods.forEach(p=>{s.innerHTML+=`<option value="${p.id}">${x(p.name)} (${p.type}) — ₹${p.price}</option>`;});
+  prods.forEach(p=>{
+    const pName = p.product_name || p.name || '';
+    s.innerHTML+=`<option value="${p.id}">${x(pName)} (${p.type}) — ₹${p.price}</option>`;
+  });
   if(v)s.value=v;
 }
-function onProd(){const p=prods.find(z=>z.id===document.getElementById('pSel').value);document.getElementById('bPrice').value=p?p.price:'';}
+function onProd(){
+  const p=prods.find(z=>z.id===document.getElementById('pSel').value);
+  document.getElementById('bPrice').value=p?p.price:'';
+  document.getElementById('bType').value=p?p.type || 'Piece':'';
+}
 
 // ── CUSTOMERS ──
 function openCustMod(id=null){
@@ -1429,7 +1482,7 @@ function addItem(){
   if(!qty||qty<1){alert('Enter a valid quantity.');return;}
   if(!price||price<=0){alert('Enter a valid price.');return;}
   const prod=prods.find(p=>p.id===pid);
-  curBill.push({pid,name:prod.name,type:prod.type,qty,price,total:price*qty});
+  curBill.push({pid,name:prod.product_name||prod.name,type:prod.type,qty,price,total:price*qty});
   renderBill();recalc();
   document.getElementById('pSel').value='';
   document.getElementById('bQty').value=1;
@@ -1558,6 +1611,7 @@ function clearBill(force = false){
   const input = document.getElementById('prevBalInput');
   if (input) input.value = '0';
   
+  if (document.getElementById('bType')) document.getElementById('bType').value = '';
   renderBill();recalc();
 }
 // ── FORMAT PHONE ──
@@ -1693,6 +1747,25 @@ async function printBill(){
 
 // ── TODAY SUMMARY ──
 function todaySummary(){
+  // Immediate local render for responsiveness
+  _renderLocalTodaySummary();
+
+  // If online, also fetch accurate data from backend
+  if (isOnline) {
+    api('GET', '/reports/summary').then(data => {
+      if (!data) return;
+      const t = data.today || {};
+      const elBills = document.getElementById('sBills');
+      const elSales = document.getElementById('sSales');
+      const elGst = document.getElementById('sGst');
+      if (elBills) elBills.textContent = t.bills_today || 0;
+      if (elSales) elSales.textContent = '₹' + (parseFloat(t.sales_today) || 0).toFixed(0);
+      if (elGst) elGst.textContent = '₹' + (parseFloat(t.gst_today) || 0).toFixed(0);
+    }).catch(() => {});
+  }
+}
+
+function _renderLocalTodaySummary(){
   const today = new Date().toLocaleDateString('en-IN');
   const tb = bills.filter(b => b.date && new Date(b.date).toLocaleDateString('en-IN') === today);
   
@@ -1738,6 +1811,36 @@ async function delBill(id){
   todaySummary();renderReports();
 }
 function renderReports(){
+  // Immediate local render
+  _renderLocalReportStats();
+
+  // If online, fetch accurate stats from backend
+  if (isOnline) {
+    api('GET', '/reports/summary').then(data => {
+      if (!data) return;
+      const t = data.today || {};
+      const a = data.allTime || {};
+      const elDS = document.getElementById('rDS');
+      const elTB = document.getElementById('rTB');
+      const elTR = document.getElementById('rTR');
+      const elGC = document.getElementById('rGC');
+      const elOB = document.getElementById('rOB');
+      if (elDS) elDS.textContent = '₹' + (parseFloat(t.sales_today) || 0).toFixed(0);
+      if (elTB) elTB.textContent = a.total_bills || 0;
+      if (elTR) elTR.textContent = '₹' + (parseFloat(a.total_revenue) || 0).toFixed(0);
+      if (elGC) elGC.textContent = '₹' + (parseFloat(a.total_gst) || 0).toFixed(0);
+      if (elOB) elOB.textContent = '₹' + (parseFloat(a.total_outstanding) || 0).toFixed(0);
+    }).catch(() => {});
+  }
+
+  // Render the bill history table (always from local data)
+  _renderBillHistoryTable();
+  
+  // Render the outstanding balances card
+  renderOutstandingTable();
+}
+
+function _renderLocalReportStats(){
   const today = new Date().toLocaleDateString('en-IN');
   const tb = bills.filter(b => b.date && new Date(b.date).toLocaleDateString('en-IN') === today);
   
@@ -1755,7 +1858,9 @@ function renderReports(){
   // Calculate and display total outstanding
   const totalOutstanding = bills.reduce((s, b) => s + (parseFloat(b.balance_amount) || 0), 0);
   if (elOB) elOB.textContent = '₹' + totalOutstanding.toFixed(0);
-  
+}
+
+function _renderBillHistoryTable(){
   const hb = document.getElementById('hBody');
   const he = document.getElementById('hEmpty');
   if (hb) {
@@ -1795,9 +1900,6 @@ function renderReports(){
       </tr>`;
     });
   }
-  
-  // Render the outstanding balances card
-  renderOutstandingTable();
 }
 
 // ── OUTSTANDING BALANCE REPORT FUNCTIONS ──
