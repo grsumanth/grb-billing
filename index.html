@@ -191,6 +191,10 @@ body::before{
     <div class="auth-form on" id="form-login">
       <div class="msg" id="login-msg"></div>
       <div class="field">
+        <label>Full Name</label>
+        <input type="text" id="login-name" placeholder="Your full name" autocomplete="name"/>
+      </div>
+      <div class="field">
         <label>Email Address</label>
         <input type="email" id="login-email" placeholder="you@example.com" inputmode="email" autocomplete="off"/>
       </div>
@@ -216,7 +220,6 @@ body::before{
           <button type="button" class="toggle-pass" onclick="togglePass('signup-pass', this)" tabindex="-1">👁️</button>
         </div>
       </div>
-      <div class="field"><label>Role</label><select id="signup-role"><option value="user">User</option><option value="admin">Admin</option></select></div>
       <button class="btn" id="btn-signup-submit" onclick="doSignup()">Create Account</button>
     </div>
   </div>
@@ -235,9 +238,10 @@ function switchTab(tab){
 function showMsg(id,text,type){const el=document.getElementById(id);el.textContent=text;el.className='msg '+type;}
 
 async function doLogin(){
+  const name=document.getElementById('login-name').value.trim();
   const email=document.getElementById('login-email').value.trim();
   const pass=document.getElementById('login-pass').value;
-  if(!email||!pass){showMsg('login-msg','Please fill in all fields.','error');return;}
+  if(!name||!email||!pass){showMsg('login-msg','Please fill in all fields.','error');return;}
   const btn=document.querySelector('#form-login .btn');
   btn.textContent='Logging in...';btn.disabled=true;
   try{
@@ -245,7 +249,9 @@ async function doLogin(){
     const data=await res.json();
     if(!res.ok){showMsg('login-msg',data.error,'error');return;}
     localStorage.setItem('grb_token',data.token);
-    localStorage.setItem('grb_user',JSON.stringify(data.user));
+    const user = data.user || {};
+    user.name = name;
+    localStorage.setItem('grb_user',JSON.stringify(user));
     showMsg('login-msg','Login successful! Redirecting...','success');
     setTimeout(()=>window.location.replace('dashboard.html'),800);
   }catch(e){showMsg('login-msg','Connection error. Please try again.','error');}
@@ -256,13 +262,12 @@ async function doSignup(){
   const name=document.getElementById('signup-name').value.trim();
   const email=document.getElementById('signup-email').value.trim();
   const pass=document.getElementById('signup-pass').value;
-  const role=document.getElementById('signup-role').value;
   if(!name||!email||!pass){showMsg('signup-msg','Please fill in all fields.','error');return;}
   if(pass.length<6){showMsg('signup-msg','Password must be at least 6 characters.','error');return;}
   const btn=document.querySelector('#form-signup .btn');
   btn.textContent='Creating account...';btn.disabled=true;
   try{
-    const res=await fetch(API_BASE + '/api/auth/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,password:pass,role})});
+    const res=await fetch(API_BASE + '/api/auth/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,password:pass})});
     const data=await res.json();
     if(!res.ok){showMsg('signup-msg',data.error,'error');return;}
     localStorage.setItem('grb_token',data.token);
