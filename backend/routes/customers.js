@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
     let params = [];
 
     if (search) {
-      query  += ' WHERE name ILIKE $1 OR phone ILIKE $1 OR email ILIKE $1';
+      query  += ' WHERE name ILIKE $1 OR phone ILIKE $1';
       params  = [`%${search}%`];
     }
 

@@ -27,9 +27,17 @@ const allowedOrigins = [
   'https://grsumanth.github.io',
   'http://localhost:5000'
 ];
+
+const isLocalOrigin = (origin) => {
+  if (!origin) return true;
+  if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) return true;
+  if (/^https?:\/\/(192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+)(:\d+)?$/.test(origin)) return true;
+  return false;
+};
+
 app.use(cors({
   origin: function(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.includes(origin) || isLocalOrigin(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -120,6 +128,7 @@ app.use('/api/customers', auth, require('./routes/customers'));
 app.use('/api/products',  auth, require('./routes/products'));
 app.use('/api/reports',   auth, require('./routes/reports'));
 app.use('/api/profile',   auth, require('./routes/profile'));
+app.use('/api/gallery',   auth, require('./routes/gallery'));
 
 // ── PDF Route (protected) ──────────────────────────
 app.use('/api/bills', auth, require('./routes/pdf'));
@@ -184,6 +193,11 @@ if (require.main === module) {
   const server = app.listen(PORT, () => {
     console.log(`🚀  GRB Billing running at http://localhost:${PORT}`);
   });
+
+  // Start background Google Drive backup worker
+  const { initBackupWorker } = require('./googleDriveHelper');
+  initBackupWorker();
+
 
   // ── Graceful shutdown ──────────────────────────────
   const handleShutdown = (signal) => {

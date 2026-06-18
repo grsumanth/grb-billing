@@ -57,6 +57,10 @@ pool.connect((err, client, release) => {
       ALTER TABLE bills ADD COLUMN IF NOT EXISTS pdf_url TEXT;
       ALTER TABLE bills ADD COLUMN IF NOT EXISTS previous_balance NUMERIC(10,2) DEFAULT 0;
       ALTER TABLE bills ADD COLUMN IF NOT EXISTS carried_to_bill_id VARCHAR(20) REFERENCES bills(id) ON DELETE SET NULL;
+      ALTER TABLE bills ADD COLUMN IF NOT EXISTS gd_file_id TEXT;
+      ALTER TABLE bills ADD COLUMN IF NOT EXISTS gd_file_link TEXT;
+      ALTER TABLE bills ADD COLUMN IF NOT EXISTS backup_status VARCHAR(20) DEFAULT 'Pending';
+
       
       DO $$
       BEGIN
@@ -88,6 +92,27 @@ pool.connect((err, client, release) => {
       CREATE INDEX IF NOT EXISTS idx_bills_payment_status ON bills(payment_status);
       CREATE INDEX IF NOT EXISTS idx_bills_balance ON bills(balance_amount) WHERE balance_amount > 0;
       CREATE INDEX IF NOT EXISTS idx_balance_history_bill ON balance_history(bill_id);
+
+      CREATE TABLE IF NOT EXISTS gallery (
+        id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        name        VARCHAR(150) NOT NULL,
+        price       NUMERIC(10,2) NOT NULL DEFAULT 0,
+        images      JSONB NOT NULL DEFAULT '[]'::jsonb,
+        created_at  TIMESTAMP DEFAULT NOW()
+      );
+
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM pg_policies 
+          WHERE tablename = 'gallery' 
+            AND policyname = 'Allow logged-in users to view gallery'
+        ) THEN
+          ALTER TABLE gallery ENABLE ROW LEVEL SECURITY;
+          CREATE POLICY "Allow logged-in users to view gallery" 
+            ON gallery FOR SELECT TO authenticated USING (true);
+        END IF;
+      END $$;
 
       DO $$
       BEGIN

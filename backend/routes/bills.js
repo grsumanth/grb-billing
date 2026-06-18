@@ -52,21 +52,25 @@ router.get('/customer-outstanding', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const { date, customer } = req.query;
-    let query  = 'SELECT * FROM bills';
+    let query  = `
+      SELECT b.*, c.phone AS customer_phone 
+      FROM bills b 
+      LEFT JOIN customers c ON b.customer_id = c.id
+    `;
     let params = [];
     let conds  = [];
 
     if (date) {
       params.push(date);
-      conds.push(`DATE(created_at) = $${params.length}`);
+      conds.push(`DATE(b.created_at) = $${params.length}`);
     }
     if (customer) {
       params.push(`%${customer}%`);
-      conds.push(`customer_name ILIKE $${params.length}`);
+      conds.push(`b.customer_name ILIKE $${params.length}`);
     }
 
     if (conds.length) query += ' WHERE ' + conds.join(' AND ');
-    query += ' ORDER BY created_at DESC';
+    query += ' ORDER BY b.created_at DESC';
 
     const result = await pool.query(query, params);
     res.json(result.rows);
@@ -80,7 +84,13 @@ router.get('/', async (req, res) => {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 router.get('/:id', async (req, res) => {
   try {
-    const bill = await pool.query('SELECT * FROM bills WHERE id = $1', [req.params.id]);
+    const bill = await pool.query(
+      `SELECT b.*, c.phone AS customer_phone 
+       FROM bills b 
+       LEFT JOIN customers c ON b.customer_id = c.id 
+       WHERE b.id = $1`,
+      [req.params.id]
+    );
     if (!bill.rows.length) return res.status(404).json({ error: 'Bill not found.' });
 
     const items = await pool.query(
@@ -162,14 +172,31 @@ router.post('/', async (req, res) => {
     let pdfUrl = null;
     try {
       const pdfBuffer = await generateBillPDF(saved.rows[0], savedItems.rows);
+      
+      // Store PDF in local server storage
+      try {
+        const { savePDFLocally } = require('../pdfHelper');
+        savePDFLocally(billId, pdfBuffer);
+      } catch (localErr) {
+        console.error('⚠️ PDF local save error:', localErr.message);
+      }
+
+      // Store PDF in Supabase storage
       pdfUrl = await uploadPDF(billId, pdfBuffer);
       if (pdfUrl) {
         await pool.query('UPDATE bills SET pdf_url = $1 WHERE id = $2', [pdfUrl, billId]);
         saved.rows[0].pdf_url = pdfUrl;
       }
+
+      // Trigger GDrive backup immediately in background
+      const { uploadPDFToDrive } = require('../googleDriveHelper');
+      uploadPDFToDrive(billId, pdfBuffer).catch(gdErr => {
+        console.error(`⚠️ Immediate GDrive backup failed for Bill #${billId}:`, gdErr.message);
+      });
     } catch (pdfErr) {
       console.error('⚠️ PDF Upload/Generation background error:', pdfErr.message);
     }
+
 
     res.status(201).json({ ...saved.rows[0], items: savedItems.rows });
   } catch (err) {
