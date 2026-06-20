@@ -2,9 +2,11 @@ const { Pool } = require('pg');
 require('dotenv').config();
 
 const poolConfig = {
-  statement_timeout: 10000,        // Terminate any query that takes more than 10 seconds
-  query_timeout: 10000,            // Terminate any query that takes more than 10 seconds
-  connectionTimeoutMillis: 5000,   // Fail connection attempt after 5 seconds
+  statement_timeout: 30000,        // Terminate any query that takes more than 30 seconds
+  query_timeout: 30000,            // Terminate any query that takes more than 30 seconds
+  connectionTimeoutMillis: 15000,  // Fail connection attempt after 15 seconds (handles Render cold starts)
+  idleTimeoutMillis: 30000,        // Close idle connections after 30 seconds
+  max: 5,                          // Limit pool size for Supabase session pooler compatibility
 };
 
 if (process.env.DATABASE_URL) {
