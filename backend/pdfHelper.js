@@ -90,11 +90,11 @@ async function generateInvoicePDF(bill, items) {
     const tableHeaderY = 96 + custBoxH + 10;
     doc.rect(20, tableHeaderY, W - 40, 18).fill(burgundy);
     doc.fillColor('white').fontSize(8).font('Helvetica-Bold');
-    doc.text('#', 25, tableHeaderY + 5);
-    doc.text('ITEM NAME', 45, tableHeaderY + 5);
-    doc.text('QTY', 280, tableHeaderY + 5, { width: 35, align: 'center' });
-    doc.text('RATE (₹)', 320, tableHeaderY + 5, { width: 45, align: 'right' });
-    doc.text('TOTAL (₹)', 365, tableHeaderY + 5, { width: 30, align: 'right' });
+    doc.text('#', 25, tableHeaderY + 5, { width: 15 });
+    doc.text('ITEM NAME', 45, tableHeaderY + 5, { width: 210 });
+    doc.text('QTY', 260, tableHeaderY + 5, { width: 40, align: 'center' });
+    doc.text('RATE (Rs.)', 302, tableHeaderY + 5, { width: 50, align: 'right' });
+    doc.text('TOTAL (Rs.)', 355, tableHeaderY + 5, { width: 42, align: 'right' });
 
     let y = tableHeaderY + 18;
     const itemHeight = 18;
@@ -113,11 +113,11 @@ async function generateInvoicePDF(bill, items) {
         y = 96;
         doc.rect(20, y, W - 40, 18).fill(burgundy);
         doc.fillColor('white').fontSize(8).font('Helvetica-Bold');
-        doc.text('#', 25, y + 5);
-        doc.text('ITEM NAME', 45, y + 5);
-        doc.text('QTY', 280, y + 5, { width: 35, align: 'center' });
-        doc.text('RATE (₹)', 320, y + 5, { width: 45, align: 'right' });
-        doc.text('TOTAL (₹)', 365, y + 5, { width: 30, align: 'right' });
+        doc.text('#', 25, y + 5, { width: 15 });
+        doc.text('ITEM NAME', 45, y + 5, { width: 210 });
+        doc.text('QTY', 260, y + 5, { width: 40, align: 'center' });
+        doc.text('RATE (Rs.)', 302, y + 5, { width: 50, align: 'right' });
+        doc.text('TOTAL (Rs.)', 355, y + 5, { width: 42, align: 'right' });
         
         y += 18;
       }
@@ -128,16 +128,16 @@ async function generateInvoicePDF(bill, items) {
       }
       
       doc.fillColor('#1A0005').fontSize(8.5).font('Times-Roman');
-      doc.text(String(idx + 1), 25, y + 5);
+      doc.text(String(idx + 1), 25, y + 5, { width: 15 });
       
       let nameStr = item.product_name || item.name || '';
       if (item.type) {
         nameStr += ` (${item.type})`;
       }
-      doc.text(nameStr, 45, y + 5, { width: 225, ellipsis: true });
-      doc.text(String(item.quantity || item.qty || 0), 280, y + 5, { width: 35, align: 'center' });
-      doc.text(parseFloat(item.price || 0).toFixed(2), 320, y + 5, { width: 45, align: 'right' });
-      doc.text(parseFloat(item.total || 0).toFixed(2), 365, y + 5, { width: 30, align: 'right' });
+      doc.text(nameStr, 45, y + 5, { width: 210, ellipsis: true });
+      doc.text(String(item.quantity || item.qty || 0), 260, y + 5, { width: 40, align: 'center' });
+      doc.text(parseFloat(item.price || 0).toFixed(2), 302, y + 5, { width: 50, align: 'right' });
+      doc.text(parseFloat(item.total || 0).toFixed(2), 355, y + 5, { width: 42, align: 'right' });
       
       // Bottom border line for the row
       doc.moveTo(20, y + itemHeight).lineTo(W - 20, y + itemHeight).strokeColor('#F2E2D2').lineWidth(0.5).stroke();
