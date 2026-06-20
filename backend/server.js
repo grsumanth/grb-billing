@@ -212,11 +212,20 @@ if (require.main === module) {
 
   process.on('uncaughtException', (err) => {
     console.error('Uncaught Exception:', err.message);
+    // Don't crash on transient network errors
+    if (['ECONNRESET', 'EPIPE', 'ETIMEDOUT', 'ECONNABORTED'].includes(err.code)) {
+      console.warn('⚠️ Transient network error caught, server continues running.');
+      return;
+    }
     process.exit(1);
   });
 
   process.on('unhandledRejection', (reason) => {
     console.error('Unhandled Rejection:', reason instanceof Error ? reason.message : String(reason));
+    // Don't crash on transient network rejections either
+    if (reason instanceof Error && ['ECONNRESET', 'EPIPE', 'ETIMEDOUT'].includes(reason.code)) {
+      return;
+    }
     process.exit(1);
   });
 }
