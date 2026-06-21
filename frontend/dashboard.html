@@ -2767,8 +2767,8 @@ function buildWhatsAppBillText(bill, items) {
   const prevBal = parseFloat(bill.previous_balance) || 0;
   const paymentStatus = bill.payment_status || 'unpaid';
   let origin = API_BASE || window.location.origin;
-  if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
-    origin = origin.replace('localhost', '192.168.29.253').replace('127.0.0.1', '192.168.29.253');
+  if (!origin || origin.includes('localhost') || origin.includes('127.0.0.1') || origin.includes('192.168.')) {
+    origin = 'https://grb-billing.onrender.com';
   }
   const pdfUrl = bill.gd_file_link || (origin + '/api/bills/' + billId + '/pdf?template=whatsapp');
   const d = new Date(bill.date || bill.created_at || Date.now());
