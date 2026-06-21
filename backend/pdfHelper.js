@@ -261,7 +261,7 @@ async function generateInvoicePDF(bill, items) {
     const gtH = 28;
     doc.rect(bm, y, cW, gtH).fill(burgundy);
     doc.fillColor('white').fontSize(11).font('Helvetica-Bold')
-       .text('TOTAL AMOUNT DUE', bm + 10, y + 9);
+       .text('TOTAL AMOUNT', bm + 10, y + 9);
     doc.fillColor('white').fontSize(13).font('Times-Bold')
        .text('Rs.' + displayTotal.toFixed(2), bm, y + 8, { width: cW - 8, align: 'right' });
     y += gtH + 10;
@@ -294,7 +294,7 @@ async function generateInvoicePDF(bill, items) {
 
     // ── Footer ─────────────────────────────────────────────────
     doc.fillColor(burgundy).fontSize(11).font('Helvetica-Bold')
-       .text('\uD83D\uDE4F Thank You \u2013 Visit Again', 0, y, { align: 'center', width: W });
+       .text('Thank You \u2013 Visit Again', 0, y, { align: 'center', width: W });
     y += 14;
     doc.fillColor(muted).fontSize(7.5).font('Helvetica')
        .text('GRB Pooja Items \u2022 Sacred Supplies \u2022 Trusted Quality', 0, y, { align: 'center', width: W });
