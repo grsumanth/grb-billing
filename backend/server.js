@@ -121,6 +121,9 @@ app.use('/api/email', require('./routes/email'));
 
 
 
+// ── PDF Route (public) ─────────────────────────────
+app.use('/api/bills', require('./routes/pdf'));
+
 // ── Protected API Routes ───────────────────────────
 const auth = require('./middleware/auth');
 app.use('/api/bills',     auth, require('./routes/bills'));
@@ -129,9 +132,6 @@ app.use('/api/products',  auth, require('./routes/products'));
 app.use('/api/reports',   auth, require('./routes/reports'));
 app.use('/api/profile',   auth, require('./routes/profile'));
 app.use('/api/gallery',   auth, require('./routes/gallery'));
-
-// ── PDF Route (protected) ──────────────────────────
-app.use('/api/bills', auth, require('./routes/pdf'));
 
 // ── Health Check (public) ──────────────────────────
 app.get('/api/health', async (req, res) => {
