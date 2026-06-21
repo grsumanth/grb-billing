@@ -2448,7 +2448,7 @@ function getBillHtml(bno, cname, addr, ds, ts, rows, sub, gst, grand, gstOn, gst
           <div class="totals-row" style="color:#cc2222;"><span class="label">Previous Balance:</span><span class="val num">&#8377;${parseFloat(previousBalance).toFixed(2)}</span></div>` : ''}
         </div>
         <div class="grand-total-box">
-          <span class="grand-label">Total Amount Due</span>
+          <span class="grand-label">Total Amount</span>
           <span class="grand-val">&#8377;${displayTotal.toFixed(2)}</span>
         </div>
         ${showBalance && parseFloat(amountPaid) > 0 ? `
@@ -2458,7 +2458,7 @@ function getBillHtml(bno, cname, addr, ds, ts, rows, sub, gst, grand, gstOn, gst
         </div>` : ''}
         <div class="sep-line"></div>
         <div class="footer-section">
-          <p class="footer-msg">&#128591; Thank You &#8211; Visit Again</p>
+          <p class="footer-msg">Thank You &#8211; Visit Again</p>
           <p class="footer-sub">GRB Pooja Items &#8226; Sacred Supplies &#8226; Trusted Quality</p>
           <svg width="80" height="12" viewBox="0 0 80 12" fill="none" style="display:block;margin:6px auto 0;">
             <path d="M 40 2 L 44 6 L 40 10 L 36 6 Z" fill="#C9A84C"/>
@@ -2653,7 +2653,7 @@ async function viewBillReport(id){
       ` : ''}
       <div style="display: flex; justify-content: flex-end; margin: 8px 0;">
         <div style="border-bottom: 1px solid #1A0005; padding-bottom: 3px; display: inline-flex; align-items: center; font-size: 13px; font-family: Georgia, serif; color: #1A0005;">
-          <span style="font-weight: bold; margin-right: 15px;">Total Amount Due</span>
+          <span style="font-weight: bold; margin-right: 15px;">Total Amount</span>
           <span style="margin-right: 15px;">:</span>
           <span style="font-weight: bold; font-size: 15px;" class="num">₹${(b.show_balance !== false ? (grand + parseFloat(b.previous_balance || 0)) : (sub + gstAmt)).toFixed(2)}</span>
         </div>
@@ -2831,7 +2831,7 @@ function buildWhatsAppBillText(bill, items) {
   }
 
   text += `${dottedLine}\n`;
-  text += `*💰 Total Amount Due:  ₹${grand.toFixed(2)}*\n`;
+  text += `*💰 Total Amount:  ₹${grand.toFixed(2)}*\n`;
   text += `${dottedLine}\n`;
 
   // ── Payment Status ──
@@ -2845,7 +2845,7 @@ function buildWhatsAppBillText(bill, items) {
   text += `\n*Status:* ${statusEmoji} ${statusText}\n`;
 
   text += `\n${line}\n`;
-  text += `*🙏 Thank You – Visit Again*\n`;
+  text += `*Thank You – Visit Again*\n`;
   text += `_— ❖ GRB Pooja Items ❖ —_\n\n`;
 
   text += `📄 *View/Download Invoice:*\n${pdfUrl}`;
