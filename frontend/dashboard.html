@@ -2775,12 +2775,12 @@ function buildWhatsAppBillText(bill, items) {
   let text = '';
 
   // Header
-  text += `*GRB POOJA ITEMS*\n`;
+  text += `GRB POOJA ITEMS\n`;
   text += `_${typeLabel}_\n\n`;
 
   // Bill Info
-  text += `*Bill No:* ${billId}  |  ${ds}, ${ts}\n`;
-  text += `*Customer:* ${cname}\n`;
+  text += `Bill No: ${billId}  |  ${ds}, ${ts}\n`;
+  text += `Customer: ${cname}\n`;
   text += `${line}\n\n`;
 
   // Items
@@ -2793,19 +2793,19 @@ function buildWhatsAppBillText(bill, items) {
 
     text += `${idx + 1}. ${name}`;
     if (type) text += ` _${type}_`;
-    text += `\n    ${qty} x ₹${price} = *₹${total}*\n`;
+    text += `\n    ${qty} x ₹${price} = ₹${total}\n`;
   });
 
   // Total
   text += `\n${line}\n`;
-  text += `*Total Amount: ₹${grand.toFixed(2)}*\n`;
+  text += `Total Amount: ₹${grand.toFixed(2)}\n`;
   text += `${line}\n\n`;
 
   // Invoice Link
-  text += `📄 *View Invoice:*\n${pdfUrl}\n\n`;
+  text += `📄 View Invoice:\n${pdfUrl}\n\n`;
 
   // Sign-off
-  text += `_Thank you for choosing *GRB POOJA ITEMS*!_`;
+  text += `_Thank you for choosing GRB POOJA ITEMS!_`;
 
   return text;
 }
