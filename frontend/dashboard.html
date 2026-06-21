@@ -2759,13 +2759,7 @@ function buildWhatsAppBillText(bill, items) {
   const cname = bill.customer || bill.customer_name || '';
   const billId = bill.id;
   const grand = parseFloat(bill.total) || 0;
-  const subtotal = parseFloat(bill.subtotal) || 0;
-  const gstPct = parseFloat(bill.gst_percent) || 0;
   const gstAmt = parseFloat(bill.gst || bill.gst_amount || 0);
-  const amountPaid = parseFloat(bill.amount_paid) || 0;
-  const balanceAmount = parseFloat(bill.balance_amount) || 0;
-  const prevBal = parseFloat(bill.previous_balance) || 0;
-  const paymentStatus = bill.payment_status || 'unpaid';
   let origin = API_BASE || window.location.origin;
   if (!origin || origin.includes('localhost') || origin.includes('127.0.0.1') || origin.includes('192.168.')) {
     origin = 'https://grb-billing.onrender.com';
@@ -2774,81 +2768,45 @@ function buildWhatsAppBillText(bill, items) {
   const d = new Date(bill.date || bill.created_at || Date.now());
   const ds = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
   const ts = d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
-  const typeLabel = gstAmt > 0 ? 'TAX INVOICE' : 'ESTIMATE';
+  const typeLabel = gstAmt > 0 ? 'INVOICE' : 'ESTIMATE';
 
-  const line = '━━━━━━━━━━━━━━━━━━━━━━━━━━━━';
-  const dottedLine = '┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈';
+  const line = '———————————————————';
 
-  // ── Header ──
   let text = '';
-  text += `*✦ GRB POOJA ITEMS ✦*\n`;
-  text += `_Sacred Supplies • Trusted Quality_\n\n`;
 
-  // ── Badge ──
-  text += `*〔 ${typeLabel} 〕*\n`;
-  text += `${line}\n`;
+  // Header
+  text += `*GRB POOJA ITEMS*\n`;
+  text += `_${typeLabel}_\n\n`;
 
-  // ── Bill Info ──
-  text += `*Bill No:* ${billId}    |    *Date:* ${ds}\n`;
-  text += `*Time:* ${ts}\n`;
+  // Bill Info
+  text += `*Bill No:* ${billId}  |  ${ds}, ${ts}\n`;
+  text += `*Customer:* ${cname}\n`;
   text += `${line}\n\n`;
 
-  // ── Customer ──
-  text += `*Customer:* ${cname}\n`;
-  if (bill.phone || bill.customer_phone) {
-    text += `*Mobile:* ${bill.phone || bill.customer_phone}\n`;
-  }
-  text += `\n${dottedLine}\n`;
-
-  // ── Items ──
-  text += `*ITEMS:*\n\n`;
-  
+  // Items
   items.forEach((it, idx) => {
-    const sl = idx + 1;
     const name = it.product_name || it.name || '';
     const qty = it.quantity || it.qty || 0;
     const type = it.type || '';
     const price = parseFloat(it.price || 0).toFixed(2);
     const total = parseFloat(it.total || (it.price * qty)).toFixed(2);
-    
-    text += `*${sl}.* ${name}`;
-    if (type) text += ` _(${type})_`;
-    text += `\n`;
-    text += `     ${qty} × ₹${price} = *₹${total}*\n`;
+
+    text += `${idx + 1}. ${name}`;
+    if (type) text += ` _${type}_`;
+    text += `\n    ${qty} x ₹${price} = *₹${total}*\n`;
   });
 
-  text += `\n${dottedLine}\n`;
-
-  // ── Totals ──
-  text += `*Subtotal:*  ₹${subtotal.toFixed(2)}\n`;
-
-  if (gstAmt > 0) {
-    text += `*GST (${gstPct}%):*  ₹${gstAmt.toFixed(2)}\n`;
-  }
-
-  if (prevBal > 0) {
-    text += `*Previous Balance:*  ₹${prevBal.toFixed(2)}\n`;
-  }
-
-  text += `${dottedLine}\n`;
-  text += `*💰 Total Amount:  ₹${grand.toFixed(2)}*\n`;
-  text += `${dottedLine}\n`;
-
-  // ── Payment Status ──
-  if (amountPaid > 0) {
-    text += `\n*Amount Received:*  ₹${amountPaid.toFixed(2)}\n`;
-    text += `*Remaining Balance:*  ₹${balanceAmount.toFixed(2)}\n`;
-  }
-
-  const statusEmoji = paymentStatus === 'paid' ? '✅' : paymentStatus === 'partial' ? '⏳' : '🔴';
-  const statusText = paymentStatus === 'paid' ? 'PAID' : paymentStatus === 'partial' ? 'PARTIALLY PAID' : 'UNPAID';
-  text += `\n*Status:* ${statusEmoji} ${statusText}\n`;
-
+  // Total
   text += `\n${line}\n`;
-  text += `*Thank You – Visit Again*\n`;
-  text += `_— ❖ GRB Pooja Items ❖ —_\n\n`;
+  text += `*Total Amount: ₹${grand.toFixed(2)}*\n`;
+  text += `${line}\n\n`;
 
-  text += `📄 *View/Download Invoice:*\n${pdfUrl}`;
+  // Invoice Link
+  text += `📄 *View Invoice:*\n${pdfUrl}\n\n`;
+
+  // Sign-off
+  text += `_Thank you for choosing *GRB POOJA ITEMS*!_`;
+
   return text;
 }
 
