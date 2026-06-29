@@ -1,6 +1,4 @@
 const { google } = require('googleapis');
-const fs = require('fs');
-const path = require('path');
 const pool = require('./db');
 
 const folderCache = {};
@@ -31,26 +29,25 @@ function getDriveClient() {
   const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
   let privateKey = process.env.GOOGLE_PRIVATE_KEY;
 
-  if (!email || !privateKey) {
-    return null;
+  if (email && privateKey) {
+    // Handle escape sequences in private key (e.g., if loaded from env string)
+    privateKey = privateKey.replace(/\\n/g, '\n');
+
+    try {
+      const auth = new google.auth.GoogleAuth({
+        credentials: {
+          client_email: email,
+          private_key: privateKey
+        },
+        scopes: ['https://www.googleapis.com/auth/drive']
+      });
+      return google.drive({ version: 'v3', auth });
+    } catch (err) {
+      console.error('❌ Failed to initialize Google Drive client via Service Account:', err.message);
+    }
   }
 
-  // Handle escape sequences in private key (e.g., if loaded from env string)
-  privateKey = privateKey.replace(/\\n/g, '\n');
-
-  try {
-    const auth = new google.auth.GoogleAuth({
-      credentials: {
-        client_email: email,
-        private_key: privateKey
-      },
-      scopes: ['https://www.googleapis.com/auth/drive']
-    });
-    return google.drive({ version: 'v3', auth });
-  } catch (err) {
-    console.error('❌ Failed to initialize Google Drive client:', err.message);
-    return null;
-  }
+  return null;
 }
 
 /**
@@ -214,7 +211,7 @@ async function uploadPDFToDrive(billId, pdfBuffer = null) {
 
   // 6. Update database row
   await pool.query(
-    `UPDATE bills SET gd_file_id = $1, gd_file_link = $2, backup_status = 'Backed Up' WHERE id = $3`,
+    `UPDATE bills SET gd_file_id = $1, gd_file_link = $2, backup_status = 'Completed', backup_date_time = NOW() WHERE id = $3`,
     [fileId, fileLink, billId]
   );
 
@@ -233,7 +230,10 @@ async function processPendingBackups() {
 
   try {
     const pending = await pool.query(
-      `SELECT id FROM bills WHERE backup_status IN ('Pending', 'Failed') ORDER BY created_at DESC LIMIT 5`
+      `SELECT id FROM bills 
+       WHERE payment_status = 'paid' 
+         AND backup_status IN ('Pending', 'Failed', 'Pending (Waiting for Payment)') 
+       ORDER BY created_at DESC LIMIT 5`
     );
 
     if (pending.rows.length > 0) {

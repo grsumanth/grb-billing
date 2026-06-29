@@ -85,13 +85,7 @@ const authLimiter = rateLimit({
   skip: () => process.env.NODE_ENV === 'test'
 });
 
-// ── SECURITY: OTP Rate Limiting ────────────────────
-const otpLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 5, // max 5 OTP requests per hour
-  message: { error: 'Too many OTP requests. Please wait an hour.' },
-  skip: () => process.env.NODE_ENV === 'test'
-});
+
 
 
 // ── Body Parser ────────────────────────────────────
@@ -115,9 +109,7 @@ app.use('/api/auth/login',  authLimiter);
 app.use('/api/auth/signup', authLimiter);
 app.use('/api/auth', require('./routes/auth'));
 
-// ── Email Routes (OTP rate limited) ────────────────
-app.use('/api/email/forgot-password', otpLimiter);
-app.use('/api/email', require('./routes/email'));
+
 
 
 
@@ -212,9 +204,11 @@ if (require.main === module) {
 
   process.on('uncaughtException', (err) => {
     console.error('Uncaught Exception:', err.message);
-    // Don't crash on transient network errors
-    if (['ECONNRESET', 'EPIPE', 'ETIMEDOUT', 'ECONNABORTED'].includes(err.code)) {
-      console.warn('⚠️ Transient network error caught, server continues running.');
+    // Don't crash on transient network errors or database timeouts/connection issues
+    if (['ECONNRESET', 'EPIPE', 'ETIMEDOUT', 'ECONNABORTED'].includes(err.code) || 
+        err.message.toLowerCase().includes('timeout') || 
+        err.message.toLowerCase().includes('connection')) {
+      console.warn('⚠️ Transient network/database error caught, server continues running.');
       return;
     }
     process.exit(1);
@@ -222,8 +216,12 @@ if (require.main === module) {
 
   process.on('unhandledRejection', (reason) => {
     console.error('Unhandled Rejection:', reason instanceof Error ? reason.message : String(reason));
-    // Don't crash on transient network rejections either
-    if (reason instanceof Error && ['ECONNRESET', 'EPIPE', 'ETIMEDOUT'].includes(reason.code)) {
+    // Don't crash on transient network rejections or database timeouts/connection issues
+    if (reason instanceof Error && 
+        (['ECONNRESET', 'EPIPE', 'ETIMEDOUT'].includes(reason.code) || 
+         reason.message.toLowerCase().includes('timeout') || 
+         reason.message.toLowerCase().includes('connection'))) {
+      console.warn('⚠️ Transient database rejection caught, server continues running.');
       return;
     }
     process.exit(1);

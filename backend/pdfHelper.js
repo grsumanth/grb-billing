@@ -168,7 +168,6 @@ async function generateInvoicePDF(bill, items) {
     // ── Table rows ──────────────────────────────────────────────
     const rowH     = 22;
     const pageLimit = H - bm - 110; // reserve space for totals+footer
-    let   pageNum  = 1;
 
     items.forEach((item, idx) => {
       // Page break
@@ -276,17 +275,7 @@ async function generateInvoicePDF(bill, items) {
       y += 15;
     }
 
-    // Payment status badge
-    const payStatus  = bill.payment_status || 'unpaid';
-    const statusText = payStatus.toUpperCase();
-    const bClr = payStatus === 'paid' ? '#1a6b1a' : payStatus === 'partial' ? '#b26a00' : '#cc2222';
-    const bBg  = payStatus === 'paid' ? '#e6f9ed' : payStatus === 'partial' ? '#fff7e6' : '#ffebe6';
-    const pbW  = 58;
 
-    doc.roundedRect(bm + 2, y, pbW, 16, 3).fill(bBg);
-    doc.fillColor(bClr).fontSize(7.5).font('Helvetica-Bold')
-       .text(statusText, bm + 2, y + 5, { width: pbW, align: 'center' });
-    y += 24;
 
     // ── Gold dashed separator ───────────────────────────────────
     drawDashedLine(y);

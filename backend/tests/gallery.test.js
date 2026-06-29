@@ -9,8 +9,8 @@ let token = '';
 let testUserId = '';
 let testGalleryId = '';
 
-const testEmail = `gallery_tester_${Date.now()}@example.com`;
-const testPassword = 'Password123!';
+const testUsername = `gallery_tester_${Date.now()}`;
+const testPin = '1234';
 
 test.describe('GRB Gallery API Integration Tests', () => {
 
@@ -20,8 +20,8 @@ test.describe('GRB Gallery API Integration Tests', () => {
       .post('/api/auth/signup')
       .send({
         name: 'Gallery Tester',
-        email: testEmail,
-        password: testPassword
+        username: testUsername,
+        pin: testPin
       });
     token = res.token || res.body.token;
     testUserId = res.user ? res.user.id : (res.body.user ? res.body.user.id : '');

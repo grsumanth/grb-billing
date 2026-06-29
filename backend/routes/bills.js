@@ -53,7 +53,8 @@ router.get('/', async (req, res) => {
   try {
     const { date, customer } = req.query;
     let query  = `
-      SELECT b.*, c.phone AS customer_phone 
+      SELECT b.*, c.phone AS customer_phone,
+        (SELECT COUNT(*) FROM bill_items bi WHERE bi.bill_id = b.id) AS items_count
       FROM bills b 
       LEFT JOIN customers c ON b.customer_id = c.id
     `;
@@ -137,10 +138,10 @@ router.post('/', async (req, res) => {
     const finalTotal = itemsTotal; // Bill total is just the current items total
 
     // Balance fields
-    const paid    = 0;
-    const balance = itemsTotal; // Bill balance is just the current items total
+    const paid    = parseFloat(req.body.amount_paid) || 0;
+    const balance = (req.body.balance_amount !== undefined && req.body.balance_amount !== null && !isNaN(parseFloat(req.body.balance_amount))) ? parseFloat(req.body.balance_amount) : itemsTotal;
     const showBal = show_balance !== false; // default true
-    const status  = 'unpaid';
+    const status  = computePaymentStatus(paid, balance);
 
     // Get next sequential bill number
     const seqResult = await client.query(`SELECT nextval('bill_number_seq') AS num`);
@@ -148,9 +149,9 @@ router.post('/', async (req, res) => {
 
     // 1. Insert new bill
     await client.query(
-      `INSERT INTO bills (id, customer_name, customer_id, gst_percent, gst_amount, subtotal, total, amount_paid, balance_amount, payment_status, show_balance, previous_balance)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
-      [billId, customer_name, customer_id || null, gstPct, gstAmount, subtotal, finalTotal, paid, balance, status, showBal, reqPrevBalance]
+      `INSERT INTO bills (id, customer_name, customer_id, gst_percent, gst_amount, subtotal, total, amount_paid, balance_amount, payment_status, show_balance, previous_balance, backup_status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+      [billId, customer_name, customer_id || null, gstPct, gstAmount, subtotal, finalTotal, paid, balance, status, showBal, reqPrevBalance, status === 'paid' ? 'Pending' : 'Pending (Waiting for Payment)']
     );
 
     // 2. Old bills are kept active and separate (no balance resets upon new bill creation)
@@ -188,11 +189,13 @@ router.post('/', async (req, res) => {
         saved.rows[0].pdf_url = pdfUrl;
       }
 
-      // Trigger GDrive backup immediately in background
-      const { uploadPDFToDrive } = require('../googleDriveHelper');
-      uploadPDFToDrive(billId, pdfBuffer).catch(gdErr => {
-        console.error(`⚠️ Immediate GDrive backup failed for Bill #${billId}:`, gdErr.message);
-      });
+      // Trigger GDrive backup immediately in background ONLY if paid
+      if (saved.rows[0].payment_status === 'paid') {
+        const { uploadPDFToDrive } = require('../googleDriveHelper');
+        uploadPDFToDrive(billId, pdfBuffer).catch(gdErr => {
+          console.error(`⚠️ Immediate GDrive backup failed for Bill #${billId}:`, gdErr.message);
+        });
+      }
     } catch (pdfErr) {
       console.error('⚠️ PDF Upload/Generation background error:', pdfErr.message);
     }
@@ -225,6 +228,9 @@ router.put('/:id/balance', async (req, res) => {
     const newPaid   = parseFloat(amount_paid) || 0;
     const newBal    = parseFloat(balance_amount) || 0;
     const newStatus = computePaymentStatus(newPaid, newBal);
+
+    const paidBillsToBackup = [];
+    const updatedBillIds = new Set();
 
     await client.query('BEGIN');
 
@@ -259,6 +265,10 @@ router.put('/:id/balance', async (req, res) => {
             `UPDATE bills SET amount_paid = $1, balance_amount = $2, payment_status = $3 WHERE id = $4`,
             [nextPaid, nextBal, nextStatus, row.id]
           );
+          updatedBillIds.add(row.id);
+          if (!paidBillsToBackup.includes(row.id)) {
+            paidBillsToBackup.push(row.id);
+          }
           await client.query(
             `INSERT INTO balance_history (bill_id, old_balance, new_balance, old_paid, new_paid, note)
              VALUES ($1, $2, $3, $4, $5, $6)`,
@@ -274,6 +284,7 @@ router.put('/:id/balance', async (req, res) => {
             `UPDATE bills SET amount_paid = $1, balance_amount = $2, payment_status = $3 WHERE id = $4`,
             [nextPaid, nextBal, nextStatus, row.id]
           );
+          updatedBillIds.add(row.id);
           await client.query(
             `INSERT INTO balance_history (bill_id, old_balance, new_balance, old_paid, new_paid, note)
              VALUES ($1, $2, $3, $4, $5, $6)`,
@@ -294,6 +305,10 @@ router.put('/:id/balance', async (req, res) => {
           `UPDATE bills SET amount_paid = $1, balance_amount = $2, payment_status = $3 WHERE id = $4`,
           [nextPaid, nextBal, nextStatus, billId]
         );
+        updatedBillIds.add(billId);
+        if (nextStatus === 'paid' && !paidBillsToBackup.includes(billId)) {
+          paidBillsToBackup.push(billId);
+        }
         await client.query(
           `INSERT INTO balance_history (bill_id, old_balance, new_balance, old_paid, new_paid, note)
            VALUES ($1, $2, $3, $4, $5, $6)`,
@@ -306,6 +321,10 @@ router.put('/:id/balance', async (req, res) => {
         `UPDATE bills SET amount_paid = $1, balance_amount = $2, payment_status = $3 WHERE id = $4`,
         [newPaid, newBal, newStatus, billId]
       );
+      updatedBillIds.add(billId);
+      if (newStatus === 'paid' && !paidBillsToBackup.includes(billId)) {
+        paidBillsToBackup.push(billId);
+      }
       await client.query(
         `INSERT INTO balance_history (bill_id, old_balance, new_balance, old_paid, new_paid, note)
          VALUES ($1, $2, $3, $4, $5, $6)`,
@@ -314,6 +333,56 @@ router.put('/:id/balance', async (req, res) => {
     }
 
     await client.query('COMMIT');
+
+    // Regenerate and upload PDF for all modified bills
+    for (const modId of updatedBillIds) {
+      try {
+        const billQuery = await pool.query(
+          `SELECT b.*, c.phone AS customer_phone 
+           FROM bills b 
+           LEFT JOIN customers c ON b.customer_id = c.id 
+           WHERE b.id = $1`,
+          [modId]
+        );
+        const itemsQuery = await pool.query(
+          'SELECT * FROM bill_items WHERE bill_id = $1 ORDER BY id',
+          [modId]
+        );
+        if (billQuery.rows.length) {
+          const pdfBuffer = await generateBillPDF(billQuery.rows[0], itemsQuery.rows);
+          
+          // Save locally
+          try {
+            const { savePDFLocally } = require('../pdfHelper');
+            savePDFLocally(modId, pdfBuffer);
+          } catch (localErr) {
+            console.error(`⚠️ PDF local save error for mod bill #${modId}:`, localErr.message);
+          }
+
+          // Upload to Supabase
+          const newPdfUrl = await uploadPDF(modId, pdfBuffer);
+          if (newPdfUrl) {
+            await pool.query('UPDATE bills SET pdf_url = $1 WHERE id = $2', [newPdfUrl, modId]);
+          }
+        }
+      } catch (pdfErr) {
+        console.error(`⚠️ Failed to regenerate PDF for updated Bill #${modId}:`, pdfErr.message);
+      }
+    }
+
+    // Trigger GDrive backup for any bills that became paid
+    if (paidBillsToBackup.length > 0) {
+      try {
+        const { uploadPDFToDrive } = require('../googleDriveHelper');
+        for (const paidId of paidBillsToBackup) {
+          uploadPDFToDrive(paidId).catch(gdErr => {
+            console.error(`⚠️ GDrive backup failed for paid Bill #${paidId}:`, gdErr.message);
+          });
+        }
+      } catch (backupLoadErr) {
+        console.error('⚠️ Failed to load Google Drive helper or backup paid bills:', backupLoadErr.message);
+      }
+    }
 
     const updated = await pool.query('SELECT * FROM bills WHERE id = $1', [billId]);
     res.json(updated.rows[0]);

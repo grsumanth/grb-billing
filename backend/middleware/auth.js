@@ -6,7 +6,7 @@ const failedAttempts = {};
 module.exports = function auth(req, res, next) {
   const header = req.headers['authorization'];
   const token  = header && header.split(' ')[1];
-  const ip     = req.ip || req.connection.remoteAddress;
+  const ip     = req.ip || req.socket.remoteAddress;
 
   if (!token) {
     return res.status(401).json({ error: 'Access denied. Please login.' });
@@ -22,7 +22,7 @@ module.exports = function auth(req, res, next) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Check token has required fields
-    if (!decoded.id || !decoded.email) {
+    if (!decoded.id || (!decoded.email && !decoded.username)) {
       return res.status(401).json({ error: 'Invalid token format. Please login again.' });
     }
 

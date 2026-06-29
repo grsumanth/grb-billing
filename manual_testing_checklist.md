@@ -8,63 +8,34 @@ Use this checklist to verify the frontend user interface and backend integration
 
 ### 🔹 Login Tab
 - [ ] **Tab Switcher**: Click on **Login** and **Sign Up** tabs. Verify the forms toggle correctly.
-- [ ] **Email Input (`#login-email`)**: Focus, type a valid/invalid email.
-- [ ] **Password Input (`#login-pass`)**: Type characters and verify they are masked.
-- [ ] **Visibility Toggle (`👁️` / `🙈` button)**: Click to toggle password masking.
-- [ ] **Forgot Password Link (`#link-forgot-password`)**: Click and verify it redirects to `forgot-password.html`.
-- [ ] **Enter Key Submission**: Focus inside password and hit `Enter` key. Verify login starts.
+- [ ] **Username Input (`#login-username`)**: Focus, type a valid username.
+- [ ] **Username pre-fill & checkmark**: If a user just registered, verify the Username is automatically pre-filled, set as read-only, has a checkmark `✓` visible, and the PIN input is auto-focused.
+- [ ] **Edit Username link**: If username is pre-filled, click "Change Username" and verify the field becomes editable.
+- [ ] **Security PIN Input (`#login-pin`)**: Verify PIN masked by default.
+- [ ] **Visibility Toggle (`👁️` / `🙈` button)**: Click to toggle PIN visibility.
+- [ ] **Forgot PIN & Change PIN Links**: Click to verify helpful info alerts.
+- [ ] **Enter Key Submission**: Focus inside PIN input and hit `Enter` key. Verify login starts.
 - [ ] **Login Button (`#btn-login-submit`)**: 
   - Leave fields blank, click, and verify the validation message: *“Please fill in all fields.”*
-  - Type invalid credentials, click, and verify the error message matches backend API feedback.
+  - Type invalid credentials, click, and verify the error message.
   - Type valid credentials, click, verify the success message appears, and you are redirected to `dashboard.html`.
 
 ### 🔹 Sign Up Tab
 - [ ] **Full Name Input (`#signup-name`)**: Focus and type your name.
-- [ ] **Email Input (`#signup-email`)**: Focus and type a unique email.
-- [ ] **Password Input (`#signup-pass`)**: Type a password.
-- [ ] **Visibility Toggle (`👁️` / `🙈` button)**: Verify password visibility toggle works.
-- [ ] **Role Dropdown (`#signup-role`)**: Click and verify options **User** and **Admin** are selectable.
+- [ ] **Username Input (`#signup-username`)**: Focus and type a unique username (lowercase, alphanumeric).
+- [ ] **Security PIN Input (`#signup-pin`)**: Type a 4 or 6-digit numeric PIN.
+- [ ] **Visibility Toggle (`👁️` / `🙈` button)**: Verify PIN visibility toggle works.
 - [ ] **Create Account Button (`#btn-signup-submit`)**:
   - Leave fields blank, click, verify the validation error.
-  - Type a password shorter than 6 characters, click, verify the validation error: *“Password must be at least 6 characters.”*
-  - Type a valid new user payload, click, verify successful registration, and automatic redirection to `dashboard.html`.
+  - Type a PIN with invalid length (e.g. 3 or 5 digits), click, verify the validation error.
+  - Type a valid new user payload, click, verify successful registration, and automatic tab switch to Login page with username pre-filled.
 
 ---
 
-## 🔑 2. Password Recovery (`forgot-password.html`)
-
-### 🔹 Step 1: Request OTP
-- [ ] **Email Input (`#fp-email`)**: Focus and type email.
-- [ ] **Back to Login (`#link-back-to-login`)**: Verify link redirects back to `index.html`.
-- [ ] **Send OTP Button (`#btn-send-otp`)**:
-  - Leave email blank, click, and verify error message.
-  - Enter a nonexistent email, click, verify `404` error message.
-  - Enter a valid user email, click, verify it moves to **Step 2**.
-
-### 🔹 Step 2: OTP Verification
-- [ ] **OTP Input (`#fp-otp`)**: Verify it accepts exactly 6 numeric characters.
-- [ ] **Enter different email Link (`#link-change-email`)**: Click to go back to Step 1.
-- [ ] **Verify OTP Button (`#btn-verify-otp`)**:
-  - Enter a wrong/random OTP, click, and verify validation error.
-  - Enter the correct OTP (sent to your email console/inbox), click, and verify it moves to **Step 3**.
-
-### 🔹 Step 3: Password Reset
-- [ ] **New Password Input (`#fp-newpass`)**: Type new password (with visibility toggles).
-- [ ] **Confirm Password Input (`#fp-confirmpass`)**: Type password confirmation.
-- [ ] **Reset Password Button (`#btn-reset-password-submit`)**:
-  - Enter mismatched passwords, click, verify mismatch error.
-  - Enter a valid matching password, click, verify it transitions to **Step 4: Success**.
-
-### 🔹 Step 4: Success Screen
-- [ ] **Go to Login Button (`#btn-go-to-login`)**: Click and verify it redirects to `index.html`.
-- [ ] **New Password Test**: Login with the newly set password to confirm it works.
-
----
-
-## 🧾 3. Main Dashboard: Billing Tab (`dashboard.html` → Billing)
+## 🧾 2. Main Dashboard: Billing Tab (`dashboard.html` → Billing)
 
 ### 🔹 Sidebar / Navigation Panel (Desktop) or Bottom Navigation (Mobile)
-- [ ] **Nav Buttons**: Click each nav link (**Billing, Customers, Products, Gallery, Profile, Reports**). Verify pages switch instantly and the URL hash updates.
+- [ ] **Nav Buttons**: Click each nav link (**Billing, Customers, Products, Gallery, Reports, Profile**). Verify pages switch instantly and the URL hash updates.
 - [ ] **Profile Badge (Top Right)**: Verify it displays your initials (`#topbarInitial`) and name (`#uname`).
 - [ ] **Logout Button (`#btn-sidebar-logout`)**: Click and verify you are logged out and redirected to the login screen.
 
@@ -93,7 +64,6 @@ Use this checklist to verify the frontend user interface and backend integration
 - [ ] **Subtotal (`#sub`)**: Verify it equals the sum of line item totals.
 - [ ] **Grand Total (`#gtotal`)**: Verify the calculation: `(Subtotal + GST Amount) + Previous Balance`.
 - [ ] **Clear Bill Button (`#btn-clear-bill` 🗑)**: Click and verify all fields, table rows, and toggles reset.
-- [ ] **Email Bill Button (`#btn-email-bill` 📧)**: Click to send the bill as a PDF attachment to the customer's email. Verify success toast message.
 - [ ] **Print Bill Button (`#btn-print-bill` 🖨)**: Click to trigger printing layout.
 - [ ] **Bill Size Presets**: Click **A4**, **A5**, and **Receipt** presets. Verify width (`#billW`) and height (`#billH`) inputs update to preset coordinates.
 
@@ -105,11 +75,11 @@ Use this checklist to verify the frontend user interface and backend integration
 
 ---
 
-## 👤 4. Customers Page (`dashboard.html` → Customers)
+## 👤 3. Customers Page (`dashboard.html` → Customers)
 
 - [ ] **Search Box (`#input-search-customers`)**: Type letters. Verify the customer list filters dynamically.
 - [ ] **Add Customer Modal Button (`#btn-customer-add`)**: Click to open.
-  - Enter Name, Phone, Email, Address, Notes.
+  - Enter Name, Phone, Address, Notes.
   - Click **Save**. Verify the new customer is added to the table.
   - Try registering a duplicate phone number; verify the validation error triggers.
 - [ ] **Edit Customer Button (`bedit` ✏)**: Click on a customer row.
@@ -119,7 +89,7 @@ Use this checklist to verify the frontend user interface and backend integration
 
 ---
 
-## 📦 5. Products Page (`dashboard.html` → Products)
+## 📦 4. Products Page (`dashboard.html` → Products)
 
 - [ ] **Search Box (`#input-search-products`)**: Type letters. Verify products filter dynamically.
 - [ ] **Add Product Modal Button (`#btn-product-add`)**: Click to open.
@@ -132,7 +102,7 @@ Use this checklist to verify the frontend user interface and backend integration
 
 ---
 
-## 🖼️ 6. Gallery Page (`dashboard.html` → Gallery)
+## 🖼️ 5. Gallery Page (`dashboard.html` → Gallery)
 
 - [ ] **Add Category Button (`#btn-gallery-add-category`)**: Click to create a new category.
 - [ ] **Category Grid (`#galleryGrid`)**: Verify categories display cleanly.
@@ -143,22 +113,20 @@ Use this checklist to verify the frontend user interface and backend integration
 
 ---
 
-## ⚙️ 7. Profile Settings Page (`dashboard.html` → Profile)
+## ⚙️ 6. Profile Settings Page (`dashboard.html` → Profile)
 
-- [ ] **Profile Picture Upload (`#profilePicInput`)**: Click the pencil icon (`✏`), choose an image file. Verify image updates locally and header badge updates.
-- [ ] **Full Name Input (`#profileName`)**: Change name, click **Save Profile**. Verify name changes in the Top Bar badge.
-- [ ] **Phone Number Input (`#profilePhone`)**:
-  - Enter a valid 10-digit number.
-  - Try typing letters; verify only numbers are accepted.
-  - Click **Save Profile** and check if updates persist.
-- [ ] **Read-only Fields**: Verify **Email Address** and **Role** inputs are disabled/readonly.
+- [ ] **Profile Picture Upload (`#profilePicInput`)**: Click profile picture frame, choose an image file. Verify image updates locally and header badge updates.
+- [ ] **Full Name Input (`#profName`)**: Change name, click **Save Profile**. Verify name changes in the Top Bar badge.
+- [ ] **Phone Number Input (`#profPhone`)**: Change phone, click **Save Profile** and verify it updates.
+- [ ] **Read-only Fields**: Verify **Username** and **Email** are read-only / disabled.
+- [ ] **Change PIN (`#profCurPwd` & `#profNewPwd`)**: Enter current PIN and a new 4 or 6-digit PIN. Click **Change PIN** and verify success toast.
 
 ---
 
-## 📊 8. Reports & Analytics Page (`dashboard.html` → Reports)
+## 📊 7. Reports & Analytics Page (`dashboard.html` → Reports)
 
 ### 🔹 Analytics Cards
-- [ ] **Sales Cards**: Verify counts for Daily Sales (`#rDS`), Total Bills (`#rTB`), Revenue (`#rTR`), GST (`#rGC`), and Outstanding (`#rOB`) load correctly.
+- [ ] **Sales Cards**: Verify counts for Daily Sales (`#rDS`), Total Bills (`#rTB`), Collected Paid (`#rTR` - sum of paid amounts), GST (`#rGC`), and Outstanding (`#rOB`) load correctly.
 
 ### 🔹 Bill History Table
 - [ ] **Bill Details**: Verify all previous bills show correct details.
@@ -176,8 +144,10 @@ Use this checklist to verify the frontend user interface and backend integration
 ---
 
 ### 🚀 Recommended Testing Flow:
-1. Register a new account under **Sign Up**.
-2. Go to **Products** and add 2-3 items.
-3. Go to **Customers** and add a test customer.
-4. Go to **Billing**, create a bill using the new customer & products, toggle GST on, and click **Print Bill**.
-5. Go to **Reports** and verify the bill history and analytics cards show your new transaction.
+1. Register a new account under **Sign Up** using Username and 4/6-digit security PIN.
+2. Confirm you are redirected to **Login** tab with your Username pre-filled and checkmarked. Enter security PIN to login.
+3. Go to **Products** and add 2-3 items.
+4. Go to **Customers** and add a test customer.
+5. Go to **Billing**, create a bill using the new customer & products, toggle GST on, and click **Print Bill**.
+6. Go to **Reports** and verify the bill history and analytics cards show your new transaction.
+

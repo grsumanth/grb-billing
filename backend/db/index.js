@@ -56,12 +56,26 @@ pool.connect((err, client, release) => {
     console.log('✅ Connected to Database successfully');
     
     const migrationSql = `
+      CREATE SEQUENCE IF NOT EXISTS bill_number_seq START 1;
+
+      ALTER TABLE users ALTER COLUMN email DROP NOT NULL;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS username VARCHAR(50);
+      DO $$
+      BEGIN
+        IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'users_username_key') THEN
+          ALTER TABLE users ADD CONSTRAINT users_username_key UNIQUE (username);
+        END IF;
+      END $$;
+
       ALTER TABLE bills ADD COLUMN IF NOT EXISTS pdf_url TEXT;
       ALTER TABLE bills ADD COLUMN IF NOT EXISTS previous_balance NUMERIC(10,2) DEFAULT 0;
       ALTER TABLE bills ADD COLUMN IF NOT EXISTS carried_to_bill_id VARCHAR(20) REFERENCES bills(id) ON DELETE SET NULL;
       ALTER TABLE bills ADD COLUMN IF NOT EXISTS gd_file_id TEXT;
       ALTER TABLE bills ADD COLUMN IF NOT EXISTS gd_file_link TEXT;
-      ALTER TABLE bills ADD COLUMN IF NOT EXISTS backup_status VARCHAR(20) DEFAULT 'Pending';
+      ALTER TABLE bills ADD COLUMN IF NOT EXISTS backup_status VARCHAR(50) DEFAULT 'Pending (Waiting for Payment)';
+      ALTER TABLE bills ALTER COLUMN backup_status TYPE VARCHAR(50);
+      ALTER TABLE bills ALTER COLUMN backup_status SET DEFAULT 'Pending (Waiting for Payment)';
+      ALTER TABLE bills ADD COLUMN IF NOT EXISTS backup_date_time TIMESTAMP;
 
       
       DO $$

@@ -190,7 +190,7 @@ router.get('/customer-history/:id', async (req, res) => {
     );
 
     const itemsRes = await pool.query(
-      `SELECT bi.product_name, SUM(bi.quantity) as total_qty, COUNT(bi.id) as purchases_count
+      `SELECT bi.product_name, MAX(bi.type) as type, SUM(bi.quantity) as total_qty, COUNT(bi.id) as purchases_count
        FROM bill_items bi
        JOIN bills b ON bi.bill_id = b.id
        WHERE b.customer_id = $1 OR b.customer_name ILIKE $2
@@ -261,12 +261,12 @@ router.get('/backup-drive-status', async (req, res) => {
     const drive = getDriveClient();
     const driveConfigured = !!drive;
 
-    // Get statistics
     const statsResult = await pool.query(`
       SELECT 
         COUNT(*) AS total_bills,
-        COUNT(CASE WHEN backup_status = 'Backed Up' THEN 1 END) AS backed_up,
+        COUNT(CASE WHEN backup_status IN ('Backed Up', 'Completed') THEN 1 END) AS backed_up,
         COUNT(CASE WHEN backup_status = 'Pending' THEN 1 END) AS pending,
+        COUNT(CASE WHEN backup_status = 'Pending (Waiting for Payment)' THEN 1 END) AS waiting_payment,
         COUNT(CASE WHEN backup_status = 'Failed' THEN 1 END) AS failed
       FROM bills
     `);
@@ -277,6 +277,7 @@ router.get('/backup-drive-status', async (req, res) => {
       total_bills: parseInt(stats.total_bills) || 0,
       backed_up: parseInt(stats.backed_up) || 0,
       pending: parseInt(stats.pending) || 0,
+      waiting_payment: parseInt(stats.waiting_payment) || 0,
       failed: parseInt(stats.failed) || 0
     });
   } catch (err) {
@@ -429,9 +430,15 @@ async function restoreDatabasePayload(payload) {
     if (bills && bills.length) {
       for (const b of bills) {
         await client.query(
-          `INSERT INTO bills (id, customer_name, customer_id, gst_percent, gst_amount, subtotal, total, amount_paid, balance_amount, payment_status, show_balance, pdf_url, previous_balance, created_at) 
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
-          [b.id, b.customer_name, b.customer_id, b.gst_percent, b.gst_amount, b.subtotal, b.total, b.amount_paid, b.balance_amount, b.payment_status, b.show_balance, b.pdf_url, b.previous_balance, b.created_at]
+          `INSERT INTO bills (id, customer_name, customer_id, gst_percent, gst_amount, subtotal, total, amount_paid, balance_amount, payment_status, show_balance, pdf_url, previous_balance, created_at, carried_to_bill_id, gd_file_id, gd_file_link, backup_status, backup_date_time) 
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)`,
+          [
+            b.id, b.customer_name, b.customer_id, b.gst_percent, b.gst_amount, 
+            b.subtotal, b.total, b.amount_paid, b.balance_amount, b.payment_status, 
+            b.show_balance, b.pdf_url, b.previous_balance, b.created_at,
+            b.carried_to_bill_id || null, b.gd_file_id || null, b.gd_file_link || null,
+            b.backup_status || 'Pending (Waiting for Payment)', b.backup_date_time || null
+          ]
         );
       }
     }

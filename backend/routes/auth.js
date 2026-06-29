@@ -8,44 +8,48 @@ const router = express.Router();
 // ── POST /api/auth/signup ──────────────────────────
 router.post('/signup', async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, username, pin } = req.body;
 
-    if (!name || !email || !password) {
-      return res.status(400).json({ error: 'Name, email and password are required.' });
-    }
-    if (password.length < 6) {
-      return res.status(400).json({ error: 'Password must be at least 6 characters.' });
+    if (!name || !username || !pin) {
+      return res.status(400).json({ error: 'Name, username and security PIN are required.' });
     }
 
-    // Basic email format validation
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return res.status(400).json({ error: 'Please enter a valid email address.' });
+    const cleanUsername = username.toLowerCase().trim();
+    if (cleanUsername.length < 3) {
+      return res.status(400).json({ error: 'Username must be at least 3 characters.' });
+    }
+    if (!/^[a-z0-9_.]+$/.test(cleanUsername)) {
+      return res.status(400).json({ error: 'Username can only contain lowercase letters, numbers, underscores, and dots.' });
     }
 
-    // Check duplicate email
-    const existing = await pool.query('SELECT id FROM users WHERE email = $1', [email.toLowerCase()]);
+    if (!/^\d{4}$|^\d{6}$/.test(pin)) {
+      return res.status(400).json({ error: 'Security PIN must be exactly 4 or 6 digits.' });
+    }
+
+    // Check duplicate username
+    const existing = await pool.query('SELECT id FROM users WHERE username = $1', [cleanUsername]);
     if (existing.rows.length) {
-      return res.status(409).json({ error: 'An account with this email already exists.' });
+      return res.status(409).json({ error: 'An account with this username already exists.' });
     }
 
-    // Hash password
-    const hashed = await bcrypt.hash(password, 12);
+    // Hash security PIN as the password
+    const hashed = await bcrypt.hash(pin, 12);
 
     // SECURITY: Always assign 'user' role. Admin must be set via DB directly.
     const result = await pool.query(
-      `INSERT INTO users (name, email, password, role)
-       VALUES ($1, $2, $3, $4) RETURNING id, name, email, role, created_at`,
-      [name.trim(), email.toLowerCase().trim(), hashed, 'user']
+      `INSERT INTO users (name, username, password, role)
+       VALUES ($1, $2, $3, $4) RETURNING id, name, username, role, created_at`,
+      [name.trim(), cleanUsername, hashed, 'user']
     );
 
     const user = result.rows[0];
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      { id: user.id, username: user.username, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
 
-    res.status(201).json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+    res.status(201).json({ token, user: { id: user.id, name: user.name, username: user.username, role: user.role } });
   } catch (err) {
     console.error('Signup error:', err.message);
     res.status(500).json({ error: 'Signup failed. Please try again.' });
@@ -55,37 +59,39 @@ router.post('/signup', async (req, res) => {
 // ── POST /api/auth/login ───────────────────────────
 router.post('/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { username, pin } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required.' });
+    if (!username || !pin) {
+      return res.status(400).json({ error: 'Username and security PIN are required.' });
     }
+
+    const cleanUsername = username.toLowerCase().trim();
 
     // Find user
     const result = await pool.query(
-      'SELECT * FROM users WHERE email = $1',
-      [email.toLowerCase().trim()]
+      'SELECT * FROM users WHERE username = $1',
+      [cleanUsername]
     );
 
     if (!result.rows.length) {
-      return res.status(401).json({ error: 'Invalid email or password.' });
+      return res.status(401).json({ error: 'Invalid username or security PIN.' });
     }
 
     const user = result.rows[0];
 
-    // Check password
-    const match = await bcrypt.compare(password, user.password);
+    // Check PIN
+    const match = await bcrypt.compare(pin, user.password);
     if (!match) {
-      return res.status(401).json({ error: 'Invalid email or password.' });
+      return res.status(401).json({ error: 'Invalid username or security PIN.' });
     }
 
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      { id: user.id, username: user.username, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
 
-    res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+    res.json({ token, user: { id: user.id, name: user.name, username: user.username, role: user.role } });
   } catch (err) {
     console.error('Login error:', err.message);
     res.status(500).json({ error: 'Login failed. Please try again.' });

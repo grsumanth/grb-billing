@@ -191,33 +191,36 @@ body::before{
     <div class="auth-form on" id="form-login">
       <div class="msg" id="login-msg"></div>
       <div class="field">
-        <label>Full Name</label>
-        <input type="text" id="login-name" placeholder="Your full name" autocomplete="name"/>
+        <label>Username</label>
+        <div style="position:relative; display:flex; align-items:center; width:100%;">
+          <input type="text" id="login-username" placeholder="Enter username" autocomplete="username" style="padding-right:45px;"/>
+          <span id="login-username-check" style="position:absolute; right:14px; color:#1a6b1a; font-weight:bold; font-size:1.2rem; display:none;">✓</span>
+        </div>
+        <div id="change-username-link" onclick="makeUsernameEditable()" style="font-size:.78rem; color:var(--burg); cursor:pointer; font-weight:700; margin-top:.35rem; display:none; text-align:right;">Change Username</div>
       </div>
       <div class="field">
-        <label>Email Address</label>
-        <input type="email" id="login-email" placeholder="you@example.com" inputmode="email" autocomplete="off"/>
-      </div>
-      <div class="field">
-        <label>Password</label>
+        <label>Security PIN</label>
         <div class="pass-wrap">
-          <input type="password" id="login-pass" placeholder="Enter your password" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')"/>
-          <button type="button" class="toggle-pass" onclick="togglePass('login-pass', this)" tabindex="-1">👁️</button>
+          <input type="password" id="login-pin" placeholder="Enter 4 or 6-digit PIN" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="current-password" readonly onfocus="this.removeAttribute('readonly')"/>
+          <button type="button" class="toggle-pass" onclick="togglePass('login-pin', this)" tabindex="-1">👁️</button>
         </div>
       </div>
-      <a href="forgot-password.html" id="link-forgot-password" class="forgot">Forgot password?</a>
       <button class="btn" id="btn-login-submit" onclick="doLogin()" style="margin-top:.8rem">Login to Dashboard</button>
+      <div style="display:flex; justify-content:space-between; margin-top:1.1rem; font-size:.8rem; font-weight:700;">
+        <span onclick="alert('Please contact your database administrator to reset your security PIN.')" style="color:var(--muted); cursor:pointer; text-decoration:none;">Forgot PIN?</span>
+        <span onclick="alert('To change your Security PIN, please login first and go to the Profile Settings tab.')" style="color:var(--burg); cursor:pointer; text-decoration:none;">Change PIN</span>
+      </div>
     </div>
 
     <div class="auth-form" id="form-signup">
       <div class="msg" id="signup-msg"></div>
       <div class="field"><label>Full Name</label><input type="text" id="signup-name" placeholder="Your full name" autocomplete="name"/></div>
-      <div class="field"><label>Email Address</label><input type="email" id="signup-email" placeholder="you@example.com" inputmode="email"/></div>
+      <div class="field"><label>Username</label><input type="text" id="signup-username" placeholder="Alphanumeric, lowercase only" autocomplete="username"/></div>
       <div class="field">
-        <label>Password</label>
+        <label>Security PIN</label>
         <div class="pass-wrap">
-          <input type="password" id="signup-pass" placeholder="Min 6 characters" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')"/>
-          <button type="button" class="toggle-pass" onclick="togglePass('signup-pass', this)" tabindex="-1">👁️</button>
+          <input type="password" id="signup-pin" placeholder="Enter 4 or 6-digit PIN" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')"/>
+          <button type="button" class="toggle-pass" onclick="togglePass('signup-pin', this)" tabindex="-1">👁️</button>
         </div>
       </div>
       <button class="btn" id="btn-signup-submit" onclick="doSignup()">Create Account</button>
@@ -230,6 +233,36 @@ body::before{
 if(window.history && window.history.replaceState) window.history.replaceState(null,'',window.location.href);
 if(localStorage.getItem('grb_token')) window.location.replace('dashboard.html');
 
+document.addEventListener('DOMContentLoaded', () => {
+  prefillUsername();
+});
+
+function prefillUsername() {
+  const savedUser = localStorage.getItem('grb_new_username');
+  if(savedUser){
+    const userInp = document.getElementById('login-username');
+    userInp.value = savedUser;
+    userInp.setAttribute('readonly', 'true');
+    userInp.style.backgroundColor = 'var(--cream2)';
+    document.getElementById('login-username-check').style.display = 'inline';
+    document.getElementById('change-username-link').style.display = 'inline-block';
+    
+    // Focus the PIN input
+    setTimeout(() => {
+      document.getElementById('login-pin').focus();
+    }, 100);
+  }
+}
+
+function makeUsernameEditable() {
+  const userInp = document.getElementById('login-username');
+  userInp.removeAttribute('readonly');
+  userInp.style.backgroundColor = '';
+  userInp.focus();
+  document.getElementById('login-username-check').style.display = 'none';
+  document.getElementById('change-username-link').style.display = 'none';
+}
+
 function switchTab(tab){
   document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('on',(tab==='login'&&i===0)||(tab==='signup'&&i===1)));
   document.querySelectorAll('.auth-form').forEach(f=>f.classList.remove('on'));
@@ -238,20 +271,22 @@ function switchTab(tab){
 function showMsg(id,text,type){const el=document.getElementById(id);el.textContent=text;el.className='msg '+type;}
 
 async function doLogin(){
-  const name=document.getElementById('login-name').value.trim();
-  const email=document.getElementById('login-email').value.trim();
-  const pass=document.getElementById('login-pass').value;
-  if(!name||!email||!pass){showMsg('login-msg','Please fill in all fields.','error');return;}
+  const username=document.getElementById('login-username').value.trim();
+  const pin=document.getElementById('login-pin').value;
+  if(!username||!pin){showMsg('login-msg','Please fill in all fields.','error');return;}
+  if(!/^\d{4}$|^\d{6}$/.test(pin)){showMsg('login-msg','Security PIN must be 4 or 6 digits.','error');return;}
   const btn=document.querySelector('#form-login .btn');
   btn.textContent='Logging in...';btn.disabled=true;
   try{
-    const res=await fetch(API_BASE + '/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})});
+    const res=await fetch(API_BASE + '/api/auth/login',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username, pin})
+    });
     const data=await res.json();
     if(!res.ok){showMsg('login-msg',data.error,'error');return;}
     localStorage.setItem('grb_token',data.token);
-    const user = data.user || {};
-    user.name = name;
-    localStorage.setItem('grb_user',JSON.stringify(user));
+    localStorage.setItem('grb_user',JSON.stringify(data.user));
     showMsg('login-msg','Login successful! Redirecting...','success');
     setTimeout(()=>window.location.replace('dashboard.html'),800);
   }catch(e){showMsg('login-msg','Connection error. Please try again.','error');}
@@ -260,20 +295,36 @@ async function doLogin(){
 
 async function doSignup(){
   const name=document.getElementById('signup-name').value.trim();
-  const email=document.getElementById('signup-email').value.trim();
-  const pass=document.getElementById('signup-pass').value;
-  if(!name||!email||!pass){showMsg('signup-msg','Please fill in all fields.','error');return;}
-  if(pass.length<6){showMsg('signup-msg','Password must be at least 6 characters.','error');return;}
+  const username=document.getElementById('signup-username').value.trim();
+  const pin=document.getElementById('signup-pin').value;
+  if(!name||!username||!pin){showMsg('signup-msg','Please fill in all fields.','error');return;}
+  if(username.length < 3) {showMsg('signup-msg','Username must be at least 3 characters.','error');return;}
+  if(!/^[a-zA-Z0-9_.]+$/.test(username)){showMsg('signup-msg','Username must contain only alphanumeric, dots or underscores.','error');return;}
+  if(!/^\d{4}$|^\d{6}$/.test(pin)){showMsg('signup-msg','Security PIN must be exactly 4 or 6 digits.','error');return;}
   const btn=document.querySelector('#form-signup .btn');
   btn.textContent='Creating account...';btn.disabled=true;
   try{
-    const res=await fetch(API_BASE + '/api/auth/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,password:pass})});
+    const res=await fetch(API_BASE + '/api/auth/signup',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name, username, pin})
+    });
     const data=await res.json();
     if(!res.ok){showMsg('signup-msg',data.error,'error');return;}
-    localStorage.setItem('grb_token',data.token);
-    localStorage.setItem('grb_user',JSON.stringify(data.user));
-    showMsg('signup-msg','Account created! Redirecting...','success');
-    setTimeout(()=>window.location.replace('dashboard.html'),800);
+    
+    // Save to localStorage for pre-filling, clear inputs, switch to login page
+    localStorage.setItem('grb_new_username', username.toLowerCase());
+    
+    document.getElementById('signup-name').value = '';
+    document.getElementById('signup-username').value = '';
+    document.getElementById('signup-pin').value = '';
+    
+    showMsg('signup-msg','Account created successfully! Redirecting to login...','success');
+    setTimeout(() => {
+      showMsg('signup-msg','','');
+      switchTab('login');
+      prefillUsername();
+    }, 1500);
   }catch(e){showMsg('signup-msg','Connection error. Please try again.','error');}
   finally{btn.textContent='Create Account';btn.disabled=false;}
 }

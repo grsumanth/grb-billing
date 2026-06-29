@@ -14,8 +14,8 @@ let testCustomerId = '';
 let testProductId = '';
 let testBillId = '';
 
-const testEmail = `test_user_${Date.now()}@example.com`;
-const testPassword = 'Password123!';
+const testUsername = `user_${Date.now()}`;
+const testPin = '1234';
 const testPhone = `+1${Math.floor(1000000000 + Math.random() * 9000000000)}`;
 
 test.describe('GRB Billing API Integration Tests', () => {
@@ -67,7 +67,7 @@ test.describe('GRB Billing API Integration Tests', () => {
   test('POST /api/auth/signup should reject incomplete payloads', async () => {
     const res = await request(app)
       .post('/api/auth/signup')
-      .send({ email: testEmail })
+      .send({ username: testUsername })
       .expect(400);
 
     assert.ok(res.body.error);
@@ -78,14 +78,14 @@ test.describe('GRB Billing API Integration Tests', () => {
       .post('/api/auth/signup')
       .send({
         name: 'QA Auditor',
-        email: testEmail,
-        password: testPassword
+        username: testUsername,
+        pin: testPin
       })
       .expect(201);
 
     assert.ok(res.body.token);
     assert.ok(res.body.user);
-    assert.strictEqual(res.body.user.email, testEmail.toLowerCase());
+    assert.strictEqual(res.body.user.username, testUsername.toLowerCase());
     
     // Save token and user id for subsequent tests
     token = res.body.token;
@@ -97,8 +97,8 @@ test.describe('GRB Billing API Integration Tests', () => {
     const res = await request(app)
       .post('/api/auth/login')
       .send({
-        email: testEmail,
-        password: 'WrongPassword'
+        username: testUsername,
+        pin: '9999'
       })
       .expect(401);
 
@@ -109,8 +109,8 @@ test.describe('GRB Billing API Integration Tests', () => {
     const res = await request(app)
       .post('/api/auth/login')
       .send({
-        email: testEmail,
-        password: testPassword
+        username: testUsername,
+        pin: testPin
       })
       .expect(200);
 

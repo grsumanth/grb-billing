@@ -25,8 +25,8 @@ let testProductId2 = '';
 let testBillId = '';
 let testBillId2 = '';
 
-const testEmail = `comp_test_${Date.now()}@example.com`;
-const testPassword = 'Secure123!';
+const testUsername = `comp_test_${Date.now()}`;
+const testPin = '1234';
 const testPhone = `+91${Math.floor(7000000000 + Math.random() * 2999999999)}`;
 const testPhone2 = `+91${Math.floor(7000000000 + Math.random() * 2999999999)}`;
 
@@ -95,27 +95,27 @@ test.describe('GRB Billing — Comprehensive Test Suite', () => {
 
   test('POST /api/auth/signup — should reject missing fields', async () => {
     await request(app).post('/api/auth/signup').send({}).expect(400);
-    await request(app).post('/api/auth/signup').send({ email: 'a@b.com' }).expect(400);
-    await request(app).post('/api/auth/signup').send({ name: 'x', email: 'a@b.com' }).expect(400);
+    await request(app).post('/api/auth/signup').send({ username: 'abc' }).expect(400);
+    await request(app).post('/api/auth/signup').send({ name: 'x', username: 'abc' }).expect(400);
   });
 
-  test('POST /api/auth/signup — should reject short passwords', async () => {
+  test('POST /api/auth/signup — should reject invalid PIN format', async () => {
     const res = await request(app).post('/api/auth/signup')
-      .send({ name: 'Test', email: 'short@test.com', password: '123' })
+      .send({ name: 'Test', username: 'testuser', pin: '123' })
       .expect(400);
-    assert.ok(res.body.error.includes('6 characters'));
+    assert.ok(res.body.error.includes('PIN must be exactly 4 or 6 digits'));
   });
 
-  test('POST /api/auth/signup — should reject invalid email format', async () => {
+  test('POST /api/auth/signup — should reject invalid username format', async () => {
     const res = await request(app).post('/api/auth/signup')
-      .send({ name: 'Test', email: 'not-an-email', password: 'Password123!' })
+      .send({ name: 'Test', username: 'not a user', pin: '1234' })
       .expect(400);
-    assert.ok(res.body.error.includes('valid email'));
+    assert.ok(res.body.error.includes('Username can only contain'));
   });
 
   test('POST /api/auth/signup — should create user with role=user (never admin)', async () => {
     const res = await request(app).post('/api/auth/signup')
-      .send({ name: 'Comp Tester', email: testEmail, password: testPassword, role: 'admin' })
+      .send({ name: 'Comp Tester', username: testUsername, pin: testPin, role: 'admin' })
       .expect(201);
     assert.ok(res.body.token);
     assert.strictEqual(res.body.user.role, 'user'); // role must always be 'user'
@@ -123,33 +123,33 @@ test.describe('GRB Billing — Comprehensive Test Suite', () => {
     testUserId = res.body.user.id;
   });
 
-  test('POST /api/auth/signup — should reject duplicate email', async () => {
+  test('POST /api/auth/signup — should reject duplicate username', async () => {
     const res = await request(app).post('/api/auth/signup')
-      .send({ name: 'Dup', email: testEmail, password: testPassword })
+      .send({ name: 'Dup', username: testUsername, pin: testPin })
       .expect(409);
     assert.ok(res.body.error.includes('already exists'));
   });
 
   test('POST /api/auth/login — should reject missing fields', async () => {
     await request(app).post('/api/auth/login').send({}).expect(400);
-    await request(app).post('/api/auth/login').send({ email: testEmail }).expect(400);
+    await request(app).post('/api/auth/login').send({ username: testUsername }).expect(400);
   });
 
-  test('POST /api/auth/login — should reject wrong password', async () => {
+  test('POST /api/auth/login — should reject wrong PIN', async () => {
     await request(app).post('/api/auth/login')
-      .send({ email: testEmail, password: 'Wrong!!' }).expect(401);
+      .send({ username: testUsername, pin: '9999' }).expect(401);
   });
 
-  test('POST /api/auth/login — should reject nonexistent email', async () => {
+  test('POST /api/auth/login — should reject nonexistent username', async () => {
     await request(app).post('/api/auth/login')
-      .send({ email: 'nobody@nowhere.com', password: testPassword }).expect(401);
+      .send({ username: 'nobody', pin: testPin }).expect(401);
   });
 
   test('POST /api/auth/login — should authenticate with correct credentials', async () => {
     const res = await request(app).post('/api/auth/login')
-      .send({ email: testEmail, password: testPassword }).expect(200);
+      .send({ username: testUsername, pin: testPin }).expect(200);
     assert.ok(res.body.token);
-    assert.strictEqual(res.body.user.email, testEmail.toLowerCase());
+    assert.strictEqual(res.body.user.username, testUsername.toLowerCase());
     token = res.body.token;
   });
 
@@ -176,7 +176,7 @@ test.describe('GRB Billing — Comprehensive Test Suite', () => {
     const res = await request(app).get('/api/auth/me')
       .set('Authorization', `Bearer ${token}`).expect(200);
     assert.ok(res.body.user);
-    assert.strictEqual(res.body.user.email, testEmail.toLowerCase());
+    assert.strictEqual(res.body.user.username, testUsername.toLowerCase());
   });
 
   test('POST /api/auth/logout — should return success message', async () => {
@@ -589,7 +589,7 @@ test.describe('GRB Billing — Comprehensive Test Suite', () => {
     const res = await request(app).get('/api/profile')
       .set('Authorization', `Bearer ${token}`).expect(200);
     assert.ok(res.body.id);
-    assert.strictEqual(res.body.email, testEmail.toLowerCase());
+    assert.strictEqual(res.body.username, testUsername.toLowerCase());
     assert.strictEqual(res.body.name, 'Comp Tester');
     assert.ok(!res.body.password); // password must never be returned
   });
@@ -612,32 +612,32 @@ test.describe('GRB Billing — Comprehensive Test Suite', () => {
   test('PUT /api/profile/password — should reject missing fields', async () => {
     await request(app).put('/api/profile/password')
       .set('Authorization', `Bearer ${token}`)
-      .send({ currentPassword: testPassword }).expect(400);
+      .send({ currentPin: testPin }).expect(400);
   });
 
-  test('PUT /api/profile/password — should reject short new password', async () => {
+  test('PUT /api/profile/password — should reject invalid new PIN', async () => {
     const res = await request(app).put('/api/profile/password')
       .set('Authorization', `Bearer ${token}`)
-      .send({ currentPassword: testPassword, newPassword: '12' }).expect(400);
-    assert.ok(res.body.error.includes('6 characters'));
+      .send({ currentPin: testPin, newPin: '12' }).expect(400);
+    assert.ok(res.body.error.includes('must be exactly 4 or 6 digits'));
   });
 
-  test('PUT /api/profile/password — should reject wrong current password', async () => {
+  test('PUT /api/profile/password — should reject wrong current PIN', async () => {
     await request(app).put('/api/profile/password')
       .set('Authorization', `Bearer ${token}`)
-      .send({ currentPassword: 'WrongOld!', newPassword: 'NewPass123!' }).expect(401);
+      .send({ currentPin: '9999', newPin: '5678' }).expect(401);
   });
 
-  test('PUT /api/profile/password — should change password successfully', async () => {
+  test('PUT /api/profile/password — should change PIN successfully', async () => {
     const res = await request(app).put('/api/profile/password')
       .set('Authorization', `Bearer ${token}`)
-      .send({ currentPassword: testPassword, newPassword: 'NewSecure456!' })
+      .send({ currentPin: testPin, newPin: '5678' })
       .expect(200);
-    assert.ok(res.body.message.includes('updated'));
+    assert.ok(res.body.message.includes('successfully'));
 
-    // Verify login with new password works
+    // Verify login with new PIN works
     const loginRes = await request(app).post('/api/auth/login')
-      .send({ email: testEmail, password: 'NewSecure456!' }).expect(200);
+      .send({ username: testUsername, pin: '5678' }).expect(200);
     assert.ok(loginRes.body.token);
     token = loginRes.body.token; // refresh token
   });
@@ -659,62 +659,6 @@ test.describe('GRB Billing — Comprehensive Test Suite', () => {
   test('GET /api/bills/:id/pdf — should 404 for nonexistent bill', async () => {
     await request(app).get('/api/bills/99999/pdf')
       .set('Authorization', `Bearer ${token}`).expect(404);
-  });
-
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  //  SECTION 11: EMAIL VALIDATION
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  test('POST /api/email/forgot-password — should reject missing email', async () => {
-    await request(app).post('/api/email/forgot-password')
-      .send({}).expect(400);
-  });
-
-  test('POST /api/email/forgot-password — should reject nonexistent email', async () => {
-    await request(app).post('/api/email/forgot-password')
-      .send({ email: 'nobody_ever@nowhere.com' }).expect(404);
-  });
-
-  test('POST /api/email/verify-otp — should reject missing fields', async () => {
-    await request(app).post('/api/email/verify-otp')
-      .send({}).expect(400);
-    await request(app).post('/api/email/verify-otp')
-      .send({ email: 'a@b.com' }).expect(400);
-  });
-
-  test('POST /api/email/verify-otp — should reject invalid OTP', async () => {
-    const res = await request(app).post('/api/email/verify-otp')
-      .send({ email: testEmail, otp: '000000' }).expect(400);
-    assert.ok(res.body.error);
-  });
-
-  test('POST /api/email/reset-password — should reject missing fields', async () => {
-    await request(app).post('/api/email/reset-password')
-      .send({}).expect(400);
-  });
-
-  test('POST /api/email/reset-password — should reject short password', async () => {
-    const res = await request(app).post('/api/email/reset-password')
-      .send({ email: testEmail, otp: '123456', newPassword: '12' }).expect(400);
-    assert.ok(res.body.error.includes('6 characters'));
-  });
-
-  test('POST /api/email/send-bill — should reject missing fields', async () => {
-    await request(app).post('/api/email/send-bill')
-      .set('Authorization', `Bearer ${token}`)
-      .send({}).expect(400);
-  });
-
-  test('POST /api/email/send-bill — should reject missing bill_id', async () => {
-    await request(app).post('/api/email/send-bill')
-      .set('Authorization', `Bearer ${token}`)
-      .send({ to_email: 'test@test.com' }).expect(400);
-  });
-
-  test('POST /api/email/send-bill — should reject nonexistent bill', async () => {
-    await request(app).post('/api/email/send-bill')
-      .set('Authorization', `Bearer ${token}`)
-      .send({ bill_id: '99999', to_email: 'test@test.com' }).expect(404);
   });
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
