@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
-<title>GRB Pooja Items</title>
+<title>GRB Pooja Items — Dashboard</title>
+<meta name="description" content="GRB Pooja Items billing dashboard. Manage invoices, customers, products, gallery and reports for your sacred supplies business."/>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
 <style>
 :root{
@@ -326,7 +327,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
 .c-total-bills::after { background: linear-gradient(90deg, #1e40af, #3b82f6); }
 .c-revenue::after { background: linear-gradient(90deg, #0f766e, #14b8a6); }
 .c-gst::after { background: linear-gradient(90deg, #6d28d9, #8b5cf6); }
-.c-outstanding::after { background: linear-gradient(90deg, #b91c1c, #ef4444); }
+.c-pending::after { background: linear-gradient(90deg, #b91c1c, #ef4444); }
 .c-customers::after { background: linear-gradient(90deg, #0369a1, #0ea5e9); }
 .c-today-paid::after { background: linear-gradient(90deg, #15803d, #22c55e); }
 
@@ -484,6 +485,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
     <button class="nb" onclick="pg('gallery')" id="nb-gallery"><span class="ni">🖼️</span> Gallery</button>
     <div class="ndiv"></div>
     <button class="nb" onclick="pg('reports')" id="nb-reports"><span class="ni">📊</span> Reports</button>
+    <button class="nb" onclick="pg('profile')" id="nb-profile"><span class="ni">⚙️</span> Profile</button>
   </nav>
   <div class="sb-foot">
     <button class="lbtn" id="btn-sidebar-logout" onclick="logout()">⬅ Logout</button>
@@ -730,11 +732,11 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
         <div class="rlbl-desc">All-time GST amount</div>
       </div>
 
-      <div class="rcard-modern c-outstanding" onclick="filterHistoryByCard('outstanding')" style="cursor:pointer;">
+      <div class="rcard-modern c-pending" onclick="filterHistoryByCard('pending')" style="cursor:pointer;">
         <div class="rcard-bg-icon">💳</div>
         <div class="rcard-header">
           <span class="rcard-icon">💳</span>
-          <h3>Outstanding</h3>
+          <h3>Pending</h3>
         </div>
         <div class="rval-large text-alert" id="rOB">₹0</div>
         <div class="rlbl-desc">Total balance remaining due</div>
@@ -782,9 +784,9 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
     </div>
     
     <div class="card" style="margin-top:1.5rem;border-top-color:#cc2222;">
-      <div class="ctitle" style="color:#cc2222;">⚠️ Outstanding Balance Report</div>
+      <div class="ctitle" style="color:#cc2222;">⚠️ Pending Balance Report</div>
       <div class="sbar" style="margin:1rem 1.4rem .5rem;">
-        <input type="text" id="obSrch" placeholder="Filter outstanding by customer name..." oninput="filterOutstanding(this.value)" autocomplete="off"/>
+        <input type="text" id="obSrch" placeholder="Filter pending by customer name..." oninput="filterOutstanding(this.value)" autocomplete="off"/>
       </div>
       <div class="tbl-wrap">
         <table class="dtbl">
@@ -792,7 +794,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
           <tbody id="obBody"></tbody>
         </table>
       </div>
-      <div class="empty" id="obEmpty">No outstanding balances recorded</div>
+      <div class="empty" id="obEmpty">No pending balances recorded</div>
       <div style="padding:1rem 1.4rem;background:#fff5f5;border-top:1px solid #ffebe6;display:flex;justify-content:space-between;align-items:center;font-weight:700;color:#cc2222;">
         <span>Total Remaining Balance</span>
         <span id="obTotalSum" style="font-family:var(--font-num);font-size:1.1rem;">₹0.00</span>
@@ -871,6 +873,7 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
               <div style="font-weight:700;margin-bottom:4px;color:var(--burg);">☁️ Backup Status:</div>
               <div style="display:flex;justify-content:space-between;"><span>Bills Backed Up:</span><strong id="gdBackedCount" class="num">0</strong></div>
               <div style="display:flex;justify-content:space-between;"><span>Bills Pending:</span><strong id="gdPendingCount" class="num">0</strong></div>
+              <div style="display:flex;justify-content:space-between;"><span>Waiting for Payment:</span><strong id="gdWaitingCount" class="num">0</strong></div>
               <div style="display:flex;justify-content:space-between;"><span>Bills Failed:</span><strong id="gdFailedCount" class="num" style="color:#cc2222;">0</strong></div>
             </div>
 
@@ -889,6 +892,59 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
       </div>
       <div style="padding:0 1.4rem 1.2rem;font-size:.78rem;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:.5rem;">
         <span>⚠️ Note: Restoring from a backup will overwrite all existing bills, products, customers, and payment histories. This action cannot be undone.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROFILE PAGE -->
+  <section class="page" id="page-profile">
+    <div class="card">
+      <div class="ctitle">⚙️ Profile Settings</div>
+      <div style="padding:1.4rem;">
+        <div style="display:flex;align-items:center;gap:1.2rem;margin-bottom:1.5rem;">
+          <div id="profilePicWrap" style="width:72px;height:72px;border-radius:50%;overflow:hidden;border:3px solid var(--burg);background:var(--cream2);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;" onclick="document.getElementById('profilePicInput').click()">
+            <img id="profilePicImg" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;"/>
+            <span id="profilePicInitial" style="font-size:1.8rem;font-weight:900;color:var(--burg);">A</span>
+          </div>
+          <div>
+            <div style="font-size:1.1rem;font-weight:800;color:var(--text);" id="profileDisplayName">—</div>
+            <div style="font-size:.82rem;color:var(--muted);" id="profileDisplayEmail">—</div>
+            <input type="file" id="profilePicInput" accept="image/*" style="display:none;" onchange="onProfilePicSelected(this)"/>
+            <button class="bedit" style="margin-top:.4rem;font-size:.72rem;padding:.2rem .6rem;" onclick="document.getElementById('profilePicInput').click()">📷 Change Photo</button>
+          </div>
+        </div>
+
+        <div class="mgrid" style="max-width:480px;">
+          <div class="ig2 full" style="margin-bottom:.9rem">
+            <label>Full Name *</label>
+            <input type="text" id="profName" placeholder="Your name"/>
+          </div>
+          <div class="ig2 full" style="margin-bottom:.9rem">
+            <label>Phone</label>
+            <input type="tel" id="profPhone" placeholder="Phone number" maxlength="15"/>
+          </div>
+          <div class="ig2 full" style="margin-bottom:.9rem">
+            <label>Email</label>
+            <input type="email" id="profEmail" disabled style="background:#f1f1f1;color:var(--muted);"/>
+          </div>
+        </div>
+        <button class="bprim" id="btn-save-profile" onclick="saveProfile()" style="padding:.65rem 1.8rem;min-height:40px;">Save Profile</button>
+      </div>
+    </div>
+
+    <!-- Change Password -->
+    <div class="card" style="margin-top:1.5rem;">
+      <div class="ctitle">🔒 Change Password</div>
+      <div style="padding:1.4rem;max-width:480px;">
+        <div class="ig2 full" style="margin-bottom:.9rem">
+          <label>Current Password *</label>
+          <input type="password" id="profCurPwd" placeholder="Enter current password"/>
+        </div>
+        <div class="ig2 full" style="margin-bottom:.9rem">
+          <label>New Password * (min 6 chars)</label>
+          <input type="password" id="profNewPwd" placeholder="Enter new password"/>
+        </div>
+        <button class="bprim" id="btn-change-password" onclick="changePassword()" style="padding:.65rem 1.8rem;min-height:40px;background:linear-gradient(135deg,#1a5f9e,#0d4f8a);">Change Password</button>
       </div>
     </div>
   </section>
@@ -912,6 +968,9 @@ input[type=number]{font-family:var(--font-num)!important;font-size:16px!importan
 
   <button class="bnb" onclick="pg('reports')" id="bnb-reports">
     <span class="bni">📊</span><span class="bnl">Reports</span>
+  </button>
+  <button class="bnb" onclick="pg('profile')" id="bnb-profile">
+    <span class="bni">⚙️</span><span class="bnl">Profile</span>
   </button>
 </nav>
 
@@ -1215,7 +1274,7 @@ function pg(name){
   if(document.getElementById('nb-'+name)) document.getElementById('nb-'+name).classList.add('on');
   if(document.getElementById('bnb-'+name)) document.getElementById('bnb-'+name).classList.add('on');
   const t={billing:'Billing',customers:'Customers',products:'Products',
-    reports:'Reports & Analytics',gallery:'Gallery','gallery-view':'Gallery'};
+    reports:'Reports & Analytics',gallery:'Gallery','gallery-view':'Gallery',profile:'Profile'};
   document.getElementById('ptitle').textContent=t[name]||name;
   // Scroll to top on page switch (fixes mobile page appearing mid-scroll)
   window.scrollTo(0,0);
@@ -1223,6 +1282,7 @@ function pg(name){
   if(name==='customers') renderCusts();
   if(name==='reports') renderReports();
   if(name==='gallery') renderGallery();
+  if(name==='profile') loadProfilePage();
 
 }
 
@@ -1637,7 +1697,7 @@ async function printBill(){
     pdf_url:saved.pdf_url,
     gd_file_id: saved.gd_file_id || '',
     gd_file_link: saved.gd_file_link || '',
-    backup_status: saved.backup_status || 'Pending'
+    backup_status: saved.backup_status || (saved.payment_status === 'paid' ? 'Pending' : 'Pending (Waiting for Payment)')
   });
   localStorage.setItem('grb_bills',JSON.stringify(bills.slice(0,150)));
   toast('Bill '+saved.id+(saved.id.startsWith('TEMP')?' saved offline ✓':' saved ✓'));
@@ -1728,7 +1788,7 @@ function renderReports(){
       const elTDP = document.getElementById('rTDP');
       if (elDS) elDS.textContent = '₹' + (parseFloat(t.sales_today) || 0).toFixed(0);
       if (elTB) elTB.textContent = a.total_bills || 0;
-      if (elTR) elTR.textContent = '₹' + (parseFloat(a.total_revenue) || 0).toFixed(0);
+      if (elTR) elTR.textContent = '₹' + (parseFloat(a.total_paid) || 0).toFixed(0);
       if (elGC) elGC.textContent = '₹' + (parseFloat(a.total_gst) || 0).toFixed(0);
       if (elOB) elOB.textContent = '₹' + (parseFloat(a.total_outstanding) || 0).toFixed(0);
       if (elTC) elTC.textContent = a.total_customers || 0;
@@ -1766,7 +1826,7 @@ function _renderLocalReportStats(){
   
   if (elDS) elDS.textContent = '₹' + tb.reduce((s, b) => s + (parseFloat(b.total) || 0), 0).toFixed(0);
   if (elTB) elTB.textContent = bills.length;
-  if (elTR) elTR.textContent = '₹' + bills.reduce((s, b) => s + (parseFloat(b.total) || 0), 0).toFixed(0);
+  if (elTR) elTR.textContent = '₹' + bills.reduce((s, b) => s + (parseFloat(b.amount_paid) || 0), 0).toFixed(0);
   if (elGC) elGC.textContent = '₹' + bills.reduce((s, b) => s + (parseFloat(b.gst) || 0), 0).toFixed(0);
   
   // Calculate and display total outstanding
@@ -1803,11 +1863,13 @@ function _renderBillHistoryTable(){
           
       // Backup badge
       const bStatus = b.backup_status || 'Pending';
-      const backupBadge = bStatus === 'Backed Up'
-        ? `<a href="${b.gd_file_link || '#'}" target="_blank" style="background:#e6f4ff;color:#0050b3;border:1.5px solid #91d5ff;padding:.2rem .5rem;border-radius:6px;font-size:.7rem;font-weight:700;text-decoration:none;display:inline-block;">☁️ Backed Up</a>`
+      const backupBadge = (bStatus === 'Backed Up' || bStatus === 'Completed')
+        ? `<a href="${b.gd_file_link || '#'}" target="_blank" style="background:#e6f4ff;color:#0050b3;border:1.5px solid #91d5ff;padding:.2rem .5rem;border-radius:6px;font-size:.7rem;font-weight:700;text-decoration:none;display:inline-block;">☁️ Completed</a>`
         : bStatus === 'Failed'
           ? `<span style="background:#ffebe6;color:#cc2222;border:1.5px solid #ffa39e;padding:.2rem .5rem;border-radius:6px;font-size:.7rem;font-weight:700;display:inline-block;">❌ Failed</span>`
-          : `<span style="background:#fff7e6;color:#b26a00;border:1.5px solid #ffd591;padding:.2rem .5rem;border-radius:6px;font-size:.7rem;font-weight:700;display:inline-block;">⏳ Pending</span>`;
+          : bStatus === 'Pending (Waiting for Payment)'
+            ? `<span style="background:#fff7e6;color:#b26a00;border:1.5px solid #ffd591;padding:.2rem .5rem;border-radius:6px;font-size:.7rem;font-weight:700;display:inline-block;">⏳ Pending (Wait)</span>`
+            : `<span style="background:#fff7e6;color:#b26a00;border:1.5px solid #ffd591;padding:.2rem .5rem;border-radius:6px;font-size:.7rem;font-weight:700;display:inline-block;">⏳ Pending</span>`;
           
       hb.innerHTML += `<tr>
         <td><code style="font-size:.76rem;background:#fff0e8;color:#780116;padding:.13rem .45rem;border-radius:5px">${b.id}</code></td>
@@ -2413,7 +2475,6 @@ function getBillHtml(bno, cname, addr, ds, ts, rows, sub, gst, grand, gstOn, gst
         <div class="header-line"></div>
         <div class="badge-row">
           <span class="badge-pill">${typeLabel}</span>
-          ${paymentLabel ? `<span class="status-pill status-${paymentLabel.toLowerCase()}">${paymentLabel}</span>` : ''}
         </div>
         <div class="meta-row">
           <div style="flex: 1; text-align: center;">Bill No: <span class="num" style="font-weight:bold;">${bno}</span></div>
@@ -2598,18 +2659,13 @@ async function viewBillReport(id){
       <div style="display: flex; justify-content: center; align-items: center; margin: 8px 0 12px; gap: 8px; flex-wrap: wrap;">
         <span style="background: #780116; color: #fff; font-size: 11px; font-weight: 800; padding: 4px 18px; letter-spacing: 1.5px; text-transform: uppercase; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);">${typeLabel}</span>
         ${
-          b.payment_status === 'paid' 
-            ? `<span style="background:#e6f9ed;color:#1a6b1a;border:1px solid #b3e6b3;font-size:11px;font-weight:800;padding:4px 12px;border-radius:4px;font-family:'Helvetica Neue',Helvetica;">PAID</span>`
-            : b.payment_status === 'partial'
-              ? `<span style="background:#fff7e6;color:#b26a00;border:1px solid #ffe8cc;font-size:11px;font-weight:800;padding:4px 12px;border-radius:4px;font-family:'Helvetica Neue',Helvetica;">PARTIAL</span>`
-              : `<span style="background:#ffebe6;color:#cc2222;border:1px solid #ffcccc;font-size:11px;font-weight:800;padding:4px 12px;border-radius:4px;font-family:'Helvetica Neue',Helvetica;">UNPAID</span>`
-        }
-        ${
-          b.backup_status === 'Backed Up'
-            ? `<a href="${b.gd_file_link || '#'}" target="_blank" style="background:#e6f4ff;color:#0050b3;border:1px solid #91d5ff;font-size:11px;font-weight:800;padding:4px 12px;border-radius:4px;font-family:'Helvetica Neue',Helvetica;text-decoration:none;display:inline-block;">☁️ BACKED UP</a>`
+          (b.backup_status === 'Backed Up' || b.backup_status === 'Completed')
+            ? `<a href="${b.gd_file_link || '#'}" target="_blank" style="background:#e6f4ff;color:#0050b3;border:1px solid #91d5ff;font-size:11px;font-weight:800;padding:4px 12px;border-radius:4px;font-family:'Helvetica Neue',Helvetica;text-decoration:none;display:inline-block;">☁️ COMPLETED</a>`
             : b.backup_status === 'Failed'
               ? `<span style="background:#ffebe6;color:#cc2222;border:1px solid #ffcccc;font-size:11px;font-weight:800;padding:4px 12px;border-radius:4px;font-family:'Helvetica Neue',Helvetica;display:inline-block;">❌ FAILED</span>`
-              : `<span style="background:#fff7e6;color:#b26a00;border:1px solid #ffe8cc;font-size:11px;font-weight:800;padding:4px 12px;border-radius:4px;font-family:'Helvetica Neue',Helvetica;display:inline-block;">⏳ PENDING</span>`
+              : b.backup_status === 'Pending (Waiting for Payment)'
+                ? `<span style="background:#fff7e6;color:#b26a00;border:1px solid #ffe8cc;font-size:11px;font-weight:800;padding:4px 12px;border-radius:4px;font-family:'Helvetica Neue',Helvetica;display:inline-block;">⏳ PENDING (WAITING FOR PAYMENT)</span>`
+                : `<span style="background:#fff7e6;color:#b26a00;border:1px solid #ffe8cc;font-size:11px;font-weight:800;padding:4px 12px;border-radius:4px;font-family:'Helvetica Neue',Helvetica;display:inline-block;">⏳ PENDING</span>`
         }
       </div>
       <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 500; padding: 8px 0; border-top: 1px solid #780116; border-bottom: 1px solid #780116; margin-bottom: 10px; font-family: Georgia, serif;">
@@ -2721,7 +2777,7 @@ async function downloadPdfFile(){
   if(!_viewBillId){toast('No bill selected.','error');return;}
   const b=bills.find(z=>z.id===_viewBillId);
   if(b&&b.pdf_url){
-    window.open(b.pdf_url,'_blank');
+    window.open(b.pdf_url + (b.pdf_url.includes('?') ? '&' : '?') + 't=' + Date.now(),'_blank');
     return;
   }
   // Fallback: download dynamically as blob
@@ -2764,7 +2820,7 @@ function buildWhatsAppBillText(bill, items) {
   if (!origin || origin.includes('localhost') || origin.includes('127.0.0.1') || origin.includes('192.168.')) {
     origin = 'https://grb-billing.onrender.com';
   }
-  const pdfUrl = bill.gd_file_link || (origin + '/api/bills/' + billId + '/pdf?template=whatsapp');
+  const pdfUrl = bill.pdf_url || bill.gd_file_link || (origin + '/api/bills/' + billId + '/pdf?template=whatsapp');
   const d = new Date(bill.date || bill.created_at || Date.now());
   const ds = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
   const ts = d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
@@ -2944,7 +3000,7 @@ async function whatsappBill() {
     pdf_url: saved.pdf_url,
     gd_file_id: saved.gd_file_id || '',
     gd_file_link: saved.gd_file_link || '',
-    backup_status: saved.backup_status || 'Pending'
+    backup_status: saved.backup_status || (saved.payment_status === 'paid' ? 'Pending' : 'Pending (Waiting for Payment)')
   };
   
   bills.unshift(finalBill);
@@ -3014,7 +3070,7 @@ function filterHistoryByCard(filterType) {
       show = d.toLocaleDateString('en-IN') === todayStr;
     } else if (filterType === 'paid') {
       show = bill.payment_status === 'paid';
-    } else if (filterType === 'outstanding') {
+    } else if (filterType === 'pending') {
       show = bill.payment_status === 'unpaid' || bill.payment_status === 'partial';
     } else if (filterType === 'all') {
       show = true;
@@ -3061,7 +3117,17 @@ async function viewCustHistory(custId) {
     topWrap.innerHTML = '<span style="font-size:.78rem;color:var(--muted)">No product purchases recorded yet</span>';
   } else {
     topProducts.forEach(tp => {
-      topWrap.innerHTML += `<span class="pill" style="background:rgba(120,1,22,0.08);color:var(--burg);border:1px solid rgba(120,1,22,0.15);">${x(tp.product_name)} (${tp.total_qty} units)</span>`;
+      const rawType = (tp.type || 'Piece').toLowerCase().trim();
+      const qty = parseFloat(tp.total_qty) || 0;
+      let unitStr = 'units';
+      if (rawType === 'box' || rawType === 'boxes') {
+        unitStr = qty === 1 ? 'box' : 'boxes';
+      } else if (rawType === 'piece' || rawType === 'pieces') {
+        unitStr = qty === 1 ? 'piece' : 'pieces';
+      } else {
+        unitStr = qty === 1 ? rawType : (rawType.endsWith('s') ? rawType : rawType + 's');
+      }
+      topWrap.innerHTML += `<span class="pill" style="background:rgba(120,1,22,0.08);color:var(--burg);border:1px solid rgba(120,1,22,0.15);">${x(tp.product_name)} (${tp.total_qty} ${unitStr})</span>`;
     });
   }
   
@@ -3375,9 +3441,11 @@ async function loadGDriveBackupStatus() {
     if (stats) {
       const elBacked = document.getElementById('gdBackedCount');
       const elPending = document.getElementById('gdPendingCount');
+      const elWaiting = document.getElementById('gdWaitingCount');
       const elFailed = document.getElementById('gdFailedCount');
       if (elBacked) elBacked.textContent = stats.backed_up;
       if (elPending) elPending.textContent = stats.pending;
+      if (elWaiting) elWaiting.textContent = stats.waiting_payment || 0;
       if (elFailed) elFailed.textContent = stats.failed;
       
       const backupBtn = document.getElementById('btnGDriveBackup');
@@ -3478,6 +3546,124 @@ async function restoreFromGDriveSelected() {
     }
   }
 }
+
+// ── PROFILE PAGE FUNCTIONS ──
+async function loadProfilePage() {
+  if (!isOnline) {
+    toast('Profile settings are not available offline.', 'error');
+    return;
+  }
+  try {
+    const res = await api('GET', '/profile');
+    if (res) {
+      document.getElementById('profileDisplayName').textContent = res.name || '—';
+      document.getElementById('profileDisplayEmail').textContent = '@' + (res.username || '—');
+      document.getElementById('profName').value = res.name || '';
+      document.getElementById('profPhone').value = res.phone || '';
+      document.getElementById('profEmail').value = res.username || '';
+
+      const img = document.getElementById('profilePicImg');
+      const initial = document.getElementById('profilePicInitial');
+      if (res.profile_pic) {
+        img.src = res.profile_pic;
+        img.style.display = 'block';
+        initial.style.display = 'none';
+        profilePicData = res.profile_pic;
+      } else {
+        initial.textContent = (res.name || 'U').charAt(0).toUpperCase();
+        initial.style.display = 'block';
+        img.style.display = 'none';
+        profilePicData = '';
+      }
+    }
+  } catch (err) {
+    toast('Failed to load profile details.', 'error');
+  }
+}
+
+function onProfilePicSelected(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) {
+    toast('Profile image must be less than 2MB.', 'error');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    profilePicData = e.target.result;
+    const img = document.getElementById('profilePicImg');
+    const initial = document.getElementById('profilePicInitial');
+    img.src = profilePicData;
+    img.style.display = 'block';
+    initial.style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function saveProfile() {
+  const name = document.getElementById('profName').value.trim();
+  const phone = document.getElementById('profPhone').value.trim();
+  if (!name) {
+    toast('Name is required.', 'error');
+    return;
+  }
+  const btn = document.getElementById('btn-save-profile');
+  btn.textContent = 'Saving...';
+  btn.disabled = true;
+  try {
+    const res = await api('PUT', '/profile', { name, phone, profile_pic: profilePicData });
+    if (res) {
+      toast('Profile updated successfully ✓', 'success');
+      document.getElementById('profileDisplayName').textContent = res.name;
+      document.getElementById('uname').textContent = res.name;
+      if (res.profile_pic) {
+        updateTopbarPic(res.profile_pic, res.name);
+      } else {
+        updateTopbarPic(null, res.name);
+      }
+      const u = JSON.parse(localStorage.getItem('grb_user') || '{}');
+      u.name = res.name;
+      u.profile_pic = res.profile_pic;
+      localStorage.setItem('grb_user', JSON.stringify(u));
+    }
+  } catch (err) {
+    toast('Failed to update profile.', 'error');
+  } finally {
+    btn.textContent = 'Save Profile';
+    btn.disabled = false;
+  }
+}
+
+async function changePassword() {
+  const curPin = document.getElementById('profCurPwd').value;
+  const newPin = document.getElementById('profNewPwd').value;
+  if (!curPin || !newPin) {
+    toast('Both current PIN and new PIN are required.', 'error');
+    return;
+  }
+  if (!/^\d{4}$|^\d{6}$/.test(newPin)) {
+    toast('New security PIN must be exactly 4 or 6 digits.', 'error');
+    return;
+  }
+  const btn = document.getElementById('btn-change-password');
+  btn.textContent = 'Updating...';
+  btn.disabled = true;
+  try {
+    const res = await api('PUT', '/profile/password', { currentPin: curPin, newPin: newPin });
+    if (res && !res.error) {
+      toast('Security PIN updated successfully ✓', 'success');
+      document.getElementById('profCurPwd').value = '';
+      document.getElementById('profNewPwd').value = '';
+    } else {
+      toast(res ? res.error : 'Failed to update security PIN.', 'error');
+    }
+  } catch (err) {
+    toast('Failed to update security PIN.', 'error');
+  } finally {
+    btn.textContent = 'Change PIN';
+    btn.disabled = false;
+  }
+}
 </script>
 
 <!-- BALANCE EDIT MODAL -->
@@ -3552,7 +3738,7 @@ async function restoreFromGDriveSelected() {
           <div style="font-size:1.4rem;font-weight:800;color:var(--burg);margin-top:.2rem;font-family:var(--font-num);" id="chTotalPurchase">₹0.00</div>
         </div>
         <div style="background:var(--cream2);border-radius:10px;padding:.8rem;text-align:center;border-left:4px solid #cc2222;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
-          <div style="font-size:.65rem;text-transform:uppercase;color:var(--muted);font-weight:700;">Outstanding</div>
+          <div style="font-size:.65rem;text-transform:uppercase;color:var(--muted);font-weight:700;">Pending</div>
           <div style="font-size:1.4rem;font-weight:800;color:#cc2222;margin-top:.2rem;font-family:var(--font-num);" id="chOutstanding">₹0.00</div>
         </div>
         <div style="background:var(--cream2);border-radius:10px;padding:.8rem;text-align:center;border-left:4px solid var(--gold);box-shadow:0 2px 8px rgba(0,0,0,0.05);">
