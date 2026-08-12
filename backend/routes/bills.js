@@ -54,9 +54,14 @@ router.get('/', async (req, res) => {
     const { date, customer } = req.query;
     let query  = `
       SELECT b.*, c.phone AS customer_phone,
-        (SELECT COUNT(*) FROM bill_items bi WHERE bi.bill_id = b.id) AS items_count
+        COALESCE(bi.items_count, 0) AS items_count
       FROM bills b 
       LEFT JOIN customers c ON b.customer_id = c.id
+      LEFT JOIN (
+        SELECT bill_id, COUNT(*) AS items_count
+        FROM bill_items
+        GROUP BY bill_id
+      ) bi ON bi.bill_id = b.id
     `;
     let params = [];
     let conds  = [];
@@ -129,17 +134,17 @@ router.post('/', async (req, res) => {
 
     await client.query('BEGIN');
 
-    const subtotal  = items.reduce((s, i) => s + (i.price * i.quantity), 0);
+    const subtotal  = Math.round(items.reduce((s, i) => s + (i.price * i.quantity), 0) * 100) / 100;
     const gstPct    = parseFloat(gst_percent) || 0;
-    const gstAmount = subtotal * (gstPct / 100);
-    const itemsTotal = subtotal + gstAmount;
+    const gstAmount = Math.round(subtotal * (gstPct / 100) * 100) / 100;
+    const itemsTotal = Math.round((subtotal + gstAmount) * 100) / 100;
 
     const reqPrevBalance = parseFloat(previous_balance) || 0;
     const finalTotal = itemsTotal; // Bill total is just the current items total
 
     // Balance fields
     const paid    = parseFloat(req.body.amount_paid) || 0;
-    const balance = (req.body.balance_amount !== undefined && req.body.balance_amount !== null && !isNaN(parseFloat(req.body.balance_amount))) ? parseFloat(req.body.balance_amount) : itemsTotal;
+    const balance = (req.body.balance_amount !== undefined && req.body.balance_amount !== null && !isNaN(parseFloat(req.body.balance_amount))) ? Math.round(parseFloat(req.body.balance_amount) * 100) / 100 : itemsTotal;
     const showBal = show_balance !== false; // default true
     const status  = computePaymentStatus(paid, balance);
 
@@ -158,9 +163,9 @@ router.post('/', async (req, res) => {
 
     for (const item of items) {
       await client.query(
-        `INSERT INTO bill_items (bill_id, product_id, product_name, type, quantity, price, total)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-        [billId, item.product_id || null, item.product_name, item.type || 'Piece', item.quantity, item.price, item.price * item.quantity]
+        `INSERT INTO bill_items (id, bill_id, product_id, product_name, type, quantity, price, total)
+         VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7)`,
+        [billId, item.product_id || null, item.product_name, item.type || 'Piece', item.quantity, item.price, Math.round(item.price * item.quantity * 100) / 100]
       );
     }
 
@@ -270,8 +275,8 @@ router.put('/:id/balance', async (req, res) => {
             paidBillsToBackup.push(row.id);
           }
           await client.query(
-            `INSERT INTO balance_history (bill_id, old_balance, new_balance, old_paid, new_paid, note)
-             VALUES ($1, $2, $3, $4, $5, $6)`,
+            `INSERT INTO balance_history (id, bill_id, old_balance, new_balance, old_paid, new_paid, note)
+             VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6)`,
             [row.id, currentBal, nextBal, currentPaid, nextPaid, row.id === billId ? (note || null) : `Payment allocated from Bill #${billId} receipt. ${note ? 'Note: ' + note : ''}`]
           );
           remainingPayment -= applyAmt;
@@ -286,8 +291,8 @@ router.put('/:id/balance', async (req, res) => {
           );
           updatedBillIds.add(row.id);
           await client.query(
-            `INSERT INTO balance_history (bill_id, old_balance, new_balance, old_paid, new_paid, note)
-             VALUES ($1, $2, $3, $4, $5, $6)`,
+            `INSERT INTO balance_history (id, bill_id, old_balance, new_balance, old_paid, new_paid, note)
+             VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6)`,
             [row.id, currentBal, nextBal, currentPaid, nextPaid, row.id === billId ? (note || null) : `Partial payment allocated from Bill #${billId} receipt. ${note ? 'Note: ' + note : ''}`]
           );
           remainingPayment = 0;
@@ -310,8 +315,8 @@ router.put('/:id/balance', async (req, res) => {
           paidBillsToBackup.push(billId);
         }
         await client.query(
-          `INSERT INTO balance_history (bill_id, old_balance, new_balance, old_paid, new_paid, note)
-           VALUES ($1, $2, $3, $4, $5, $6)`,
+          `INSERT INTO balance_history (id, bill_id, old_balance, new_balance, old_paid, new_paid, note)
+           VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6)`,
           [billId, curBal, nextBal, curPaid, nextPaid, `Overpayment credit applied. ${note ? 'Note: ' + note : ''}`]
         );
       }
@@ -326,8 +331,8 @@ router.put('/:id/balance', async (req, res) => {
         paidBillsToBackup.push(billId);
       }
       await client.query(
-        `INSERT INTO balance_history (bill_id, old_balance, new_balance, old_paid, new_paid, note)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
+        `INSERT INTO balance_history (id, bill_id, old_balance, new_balance, old_paid, new_paid, note)
+         VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6)`,
         [billId, parseFloat(oldBill.balance_amount) || 0, newBal, parseFloat(oldBill.amount_paid) || 0, newPaid, note || null]
       );
     }

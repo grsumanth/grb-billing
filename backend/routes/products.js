@@ -64,7 +64,7 @@ router.post('/', async (req, res) => {
     }
 
     const result = await pool.query(
-      `INSERT INTO products (product_name, type, price) VALUES ($1, $2, $3) RETURNING id, product_name, product_name AS name, type, price, created_at, updated_at`,
+      `INSERT INTO products (id, product_name, type, price) VALUES (gen_random_uuid(), $1, $2, $3) RETURNING id, product_name, product_name AS name, type, price, created_at, updated_at`,
       [name.trim(), type, parseFloat(price)]
     );
 

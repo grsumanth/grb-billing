@@ -43,7 +43,7 @@ router.post('/', async (req, res) => {
     const imagesJson = JSON.stringify(images || []);
 
     const result = await pool.query(
-      `INSERT INTO gallery (name, price, images) VALUES ($1, $2, $3) 
+      `INSERT INTO gallery (id, name, price, images) VALUES (gen_random_uuid(), $1, $2, $3) 
        RETURNING id, name, price, images, created_at`,
       [name.trim(), parsedPrice, imagesJson]
     );

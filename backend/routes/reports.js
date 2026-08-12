@@ -105,6 +105,9 @@ router.get('/daily', async (req, res) => {
       return res.status(400).json({ error: 'Days must be between 1 and 365.' });
     }
 
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - days);
+
     const result = await pool.query(`
       SELECT
         DATE(created_at)            AS date,
@@ -114,10 +117,10 @@ router.get('/daily', async (req, res) => {
         COALESCE(SUM(amount_paid),0) AS paid,
         COALESCE(SUM(balance_amount),0) AS outstanding
       FROM bills
-      WHERE created_at >= NOW() - MAKE_INTERVAL(days => $1)
+      WHERE created_at >= $1
       GROUP BY DATE(created_at)
       ORDER BY date ASC
-    `, [days]);
+    `, [cutoffDate.toISOString()]);
 
     res.json(result.rows);
   } catch (err) {

@@ -6,7 +6,7 @@ const auth    = require('../middleware/auth');
 const router = express.Router();
 
 // ── GET /api/profile ──────────────────────────────
-router.get('/', auth, async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const result = await pool.query(
       'SELECT id, name, username, phone, role, profile_pic, created_at FROM users WHERE id = $1',
@@ -20,7 +20,7 @@ router.get('/', auth, async (req, res) => {
 });
 
 // ── PUT /api/profile ──────────────────────────────
-router.put('/', auth, async (req, res) => {
+router.put('/', async (req, res) => {
   try {
     const { name, phone, profile_pic } = req.body;
     if (!name) return res.status(400).json({ error: 'Name is required.' });
@@ -37,7 +37,7 @@ router.put('/', auth, async (req, res) => {
 });
 
 // ── PUT /api/profile/password ─────────────────────
-router.put('/password', auth, async (req, res) => {
+router.put('/password', async (req, res) => {
   try {
     const currentPwd = req.body.currentPassword || req.body.currentPin;
     const newPwd = req.body.newPassword || req.body.newPin;

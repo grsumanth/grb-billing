@@ -37,8 +37,8 @@ router.post('/signup', async (req, res) => {
 
     // SECURITY: Always assign 'user' role. Admin must be set via DB directly.
     const result = await pool.query(
-      `INSERT INTO users (name, username, password, role)
-       VALUES ($1, $2, $3, $4) RETURNING id, name, username, role, created_at`,
+      `INSERT INTO users (id, name, username, password, role)
+       VALUES (gen_random_uuid(), $1, $2, $3, $4) RETURNING id, name, username, role, created_at`,
       [name.trim(), cleanUsername, hashed, 'user']
     );
 

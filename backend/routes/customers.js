@@ -55,8 +55,8 @@ router.post('/', async (req, res) => {
     }
 
     const result = await pool.query(
-      `INSERT INTO customers (name, phone, email, address, notes)
-       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      `INSERT INTO customers (id, name, phone, email, address, notes)
+       VALUES (gen_random_uuid(), $1, $2, $3, $4, $5) RETURNING *`,
       [name.trim(), phone.trim(), email||null, address||null, notes||null]
     );
 
